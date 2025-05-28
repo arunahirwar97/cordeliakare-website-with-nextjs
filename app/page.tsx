@@ -675,26 +675,57 @@ export default function CordeliakarePage() {
 
       {/* About Section */}
       <section className="py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">       
           <motion.div
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="text-center mb-16"
+            className="text-center mb-16 mt-16"
           >
             <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
-              About Cordeliakare
+            About Cordeliakare
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-lg text-muted-foreground max-w-4xl mx-auto">
+          </motion.div>
+
+          {/* Main Solutions Feature */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6"
+            >
+              <p className="text-lg text-muted-foreground">
               Welcome to Cordeliakare - Transforming Healthcare with Innovation. In the ever-evolving world of digital
               health, Cordeliakare stands as a beacon of innovation, bringing together a complete digital health
               ecosystem.
-            </motion.p>
-          </motion.div>
+              </p>
+            </motion.div>
+
+            {/* Right Image - Doctor with Mobile Interface */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative"
+            >
+            <Image
+                src="/images/about_us.png"
+                alt="Dr. Nadeem Vaidya Testimonial"
+                width={600}
+                height={400}
+                className=""
+              />              
+            </motion.div>
+          </div>
+
+          
         </div>
       </section>
-
       {/* Challenges Section */}
       <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-1000/20 dark:to-blue-1000/20 mt-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
