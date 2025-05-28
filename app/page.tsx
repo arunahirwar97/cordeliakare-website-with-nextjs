@@ -64,35 +64,82 @@ export default function CordeliakarePage() {
     setMounted(true)
   }, [])
 
+
+  const [expandedCards, setExpandedCards] = useState({});
+
+  const toggleCard = (index) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
   }
-
+  type Solution = {
+    title: string;
+    description: string[];
+    icon: Search;
+    color: string;
+    image_name: string;
+  };
   const solutions = [
     {
-      title: "Digital Discovery",
-      description: "Guide patients to the right care, at the right location, right now.",
+      title: "Enabling Remote care delivery",
+      description: [
+        "Patient mHealth app is connected with HMS system for care delivery",
+        "Appointment Booking & Management",
+        "Telemedicine / Virtual Consultations",
+        "Electronic Health Records (EHR) Access",
+        "Prescription & Medication Tracking",
+        "View and pay hospital bills",
+        "Hospital Navigation & Information",
+        "Emergency & Support Features"
+    ],
       icon: Search,
       color: "bg-blue-500",
+      image_name : "/images/remote_care.png"
     },
     {
-      title: "Care Navigation",
-      description: "Streamline patient journeys with intelligent routing and scheduling.",
+      title: "Intelligent Referral Management",
+      description: [
+        "Consultation and review of the case history",
+        "Post-treatment Follow-up",
+        "Discover top-rated surgeons and hospitals, along with treatment costs and reviews.",
+        "Book an appointment for pre-consultation, post surgery consultation, diet consultation and ambulatory services.",
+        "mHealth platform is collaborated with leading hospitals for providing intelligent platform for referring surgical cases in India and abroad.",
+        "Medical Tourism Referral"
+    ],
       icon: Stethoscope,
       color: "bg-green-500",
+      image_name : "/images/intellegent_referral_management.png"
     },
     {
       title: "Smart Scheduling",
-      description: "Reduce booking friction with automated appointment management.",
+      description: [
+        "Integrated Electronic Health Records (EHR/EMR)",
+        "Revenue Cycle Management (RCM)",
+        "Designed for large or technology-forward hospitals and healthcare networks",
+        "Inventory & Pharmacy Management",
+        "Radiology/Lab & PACS Integration",
+        "OPD / IPD Workflow Management",
+        "Feedback & Grievance Module",
+        "Cloud-Based: Yes",
+        "On-premise: Yes",
+        "ABDM-Ready: Yes",
+        "Used By: Private hospitals, diagnostics chains",
+        "Multi-location & Multi-specialty Support: Yes"
+    ],
       icon: Calendar,
       color: "bg-purple-500",
+      image_name : "/images/advanced_hims.png"
     },
-    {
-      title: "Virtual Delivery",
-      description: "Expand your digital borders with telehealth capabilities.",
-      icon: Monitor,
-      color: "bg-orange-500",
-    },
+    // {
+    //   title: "Virtual Delivery",
+    //   description: "Expand your digital borders with telehealth capabilities.",
+    //   icon: Monitor,
+    //   color: "bg-orange-500",
+    // },
   ];
   
   const plateforms = [
@@ -649,17 +696,100 @@ export default function CordeliakarePage() {
       </section>
 
       {/* Solutions Suite */}
+
+
       <section className="py-20">
+      
+      
+      
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Solutions Grid */}
           <motion.div
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="text-center mb-16"
+            className="text-center mb-10 mt-10"
           >
             <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
-              Solutions Suite
+            Challenges in Healthcare Today
+            </motion.h2>
+          </motion.div>
+
+
+          <div className="grid grid-cols-1 gap-6 mb-4 md:grid-cols-3">
+            {solutions.map((solution, index) => {
+              const showAll = expandedCards[index] || false;
+              const visibleBenefits = showAll ? solution.description : solution.description.slice(0, 2);
+
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -10, scale: 1.02 }}
+                  className="group"
+                >
+                  <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <CardContent className="p-6 text-center flex flex-col justify-between h-full">
+                      <div>
+                      {solution.image_name && (
+                        <img
+                          src={solution.image_name}
+                          alt={solution.title}
+                          className="mt-4 w-full h-32 object-cover rounded-xl"
+                        />
+                      )}
+                        <h3 className="text-xl font-bold mb-3 mt-3">{solution.title}</h3>
+
+                        <div className="space-y-4 mb-4">
+                          {Array.isArray(solution.description) &&
+                            visibleBenefits.map((benefit_sol, i) => (
+                              <motion.div
+                                key={i}
+                                // initial={{ opacity: 0, x: -20 }}
+                                // whileInView={{ opacity: 1, x: 0 }}
+                                // viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                                className="flex items-left space-x-3 text-left"
+                              >
+                                <CheckCircle className="h-5 w-5 text-green-500" />
+                                <span>{benefit_sol}</span>
+                              </motion.div>
+                            ))}
+                        </div>
+
+                        {solution.description.length > 2 && (
+                          <button
+                            className="text-sm text-blue-500 hover:underline"
+                            onClick={() => toggleCard(index)}
+                          >
+                            {showAll ? "Show Less" : "Read More"}
+                          </button>
+                        )}
+                      </div>
+
+                      
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+          {/* End here */}
+          
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+            className="text-center mb-16 mt-16"
+          >
+            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
+            Transforming Healthcare with Innovation
             </motion.h2>
           </motion.div>
 
@@ -680,10 +810,15 @@ export default function CordeliakarePage() {
 
               <div className="space-y-4">
                 {[
-                  "Expand your digital borders",
-                  "Effortlessly guide patients to care",
-                  "Reduce booking friction",
-                  "Offload and create capacity",
+                    "Streamline Patient Referrals",
+                    "Enhancing Patient Care",
+                    "Streamlined Operations",
+                    "Empowering Medical Teams",
+                    "Improve Patient Outcomes",
+                    "Improve Revenue Streams",
+                    "Enhanced Accessibility",
+                    "Better Decision-Making",
+                    "Improved Patient Engagement"
                 ].map((benefit, index) => (
                   <motion.div
                     key={index}
@@ -693,7 +828,7 @@ export default function CordeliakarePage() {
                     transition={{ delay: index * 0.1 }}
                     className="flex items-center space-x-3"
                   >
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-6 w-6 text-green-500" />
                     <span>{benefit}</span>
                   </motion.div>
                 ))}
@@ -712,77 +847,17 @@ export default function CordeliakarePage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="relative"
             >
-              <div className="relative">
-                {/* Placeholder for doctor image with mobile interface */}
-                <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-2xl p-8 text-center">
-                  <div className="w-64 h-64 mx-auto bg-gradient-to-br from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full flex items-center justify-center mb-4">
-                    <Stethoscope className="h-24 w-24 text-blue-600" />
-                  </div>
-                  <p className="text-muted-foreground">Doctor using mobile platform interface</p>
-                </div>
-
-                {/* Floating appointment cards */}
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-                  className="absolute -top-4 -right-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 border"
-                >
-                  <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">CS</span>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium">Dr. Chris Smith</p>
-                      <p className="text-xs text-muted-foreground">9:00 AM</p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, delay: 1 }}
-                  className="absolute top-1/2 -left-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 border"
-                >
-                  <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">TL</span>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium">Dr. Tina Lopez</p>
-                      <p className="text-xs text-muted-foreground">10:30 AM</p>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
+            <Image
+                src="/images/helth_care.png"
+                alt="Dr. Nadeem Vaidya Testimonial"
+                width={600}
+                height={400}
+                className="w-full h-auto"
+              />              
             </motion.div>
           </div>
 
-          {/* Solutions Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {solutions.map((solution, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="group"
-              >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <CardContent className="p-6 text-center">
-                    <div
-                      className={`w-16 h-16 ${solution.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <solution.icon className="h-8 w-8 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-3">{solution.title}</h3>
-                    <p className="text-muted-foreground text-sm">{solution.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+          
         </div>
       </section>
 
