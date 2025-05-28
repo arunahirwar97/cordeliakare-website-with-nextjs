@@ -115,7 +115,7 @@ export default function CordeliakarePage() {
       image_name : "/images/intellegent_referral_management.png"
     },
     {
-      title: "Smart Scheduling",
+      title: "Advanced Hospital Management System (HMS)",
       description: [
         "Integrated Electronic Health Records (EHR/EMR)",
         "Revenue Cycle Management (RCM)",
@@ -578,7 +578,7 @@ export default function CordeliakarePage() {
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden ">
         <motion.div
           style={{ y: backgroundY }}
           className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900"
@@ -590,7 +590,7 @@ export default function CordeliakarePage() {
           style={{ y: heroY, opacity: heroOpacity }}
           className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
         >
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -599,7 +599,7 @@ export default function CordeliakarePage() {
             <Badge variant="secondary" className="mb-4 px-4 py-2">
               HELLO! MEET THE
             </Badge>
-          </motion.div>
+          </motion.div> */}
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -607,28 +607,28 @@ export default function CordeliakarePage() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
           >
-            The{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">capacity</span>
+            Transforming   {" "}
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Healthcare</span>
             <br />
-            to <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">care</span>{" "}
-            for
+            with <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Innovation</span>{" "}
+            {/* for
             <br />
             more{" "}
-            <span className="bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent">people.</span>
+            <span className="bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent">people.</span> */}
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto"
+            className="text-xl md:text-2xl text-muted-foreground mb-1 max-w-3xl mx-auto"
           >
             Our HIMS System brings Hospitals and patients on one platform.
             <br />
             More care and less stress — simplify access, free up clinicians, and watch your system grow.
           </motion.p>
 
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
@@ -642,7 +642,7 @@ export default function CordeliakarePage() {
               <Play className="mr-2 h-5 w-5" />
               Watch Video
             </Button>
-          </motion.div>
+          </motion.div> */}
         </motion.div>
 
         {/* Floating Elements */}
@@ -695,15 +695,160 @@ export default function CordeliakarePage() {
         </div>
       </section>
 
-      {/* Solutions Suite */}
-
-
-      <section className="py-20">
-      
-      
-      
+      {/* Challenges Section */}
+      <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-1000/20 dark:to-blue-1000/20 mt-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+            className="text-center mb-16"
+          >
+            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6 mt-6">
+              Key Challenges in the Healthcare Ecosystem
+            </motion.h2>
+          </motion.div>
 
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {challenges.map((challenge, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+                className="group"
+              >
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800">
+                  <CardContent className="p-6">
+                    <div
+                      className={`w-16 h-16 bg-gradient-to-r ${challenge.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <challenge.icon className="h-8 w-8 text-white" />
+                    </div>
+
+                    <h3 className="text-xl font-bold mb-3">{challenge.title}</h3>
+                    <p className="text-muted-foreground mb-4 text-sm">{challenge.subtitle}</p>
+
+                    <div className="space-y-2 mb-6">
+                      {challenge.points.map((point, pointIndex) => (
+                        <motion.div
+                          key={pointIndex}
+                          initial={{ opacity: 0, x: -20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: index * 0.1 + pointIndex * 0.1 }}
+                          className="flex items-start space-x-2"
+                        >
+                          <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-xs leading-relaxed">{point}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      className="p-0 h-auto font-medium text-blue-600 hover:text-blue-700 text-sm"
+                    >
+                      Read More <ArrowRight className="ml-1 h-3 w-3" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* Solutions Suite */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">       
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+            className="text-center mb-16 mt-16"
+          >
+            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
+            Your Trusted Health Platform for Hospitals and Patients
+            </motion.h2>
+          </motion.div>
+
+          {/* Main Solutions Feature */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6"
+            >
+              <h3 className="text-2xl md:text-3xl font-bold">The real-time digital front door</h3>
+              <p className="text-lg text-muted-foreground">
+                Guide patients to the right care, at the right location, right now.
+              </p>
+
+              <div className="space-y-4">
+                {[
+                    "Streamline Patient Referrals",
+                    "Enhancing Patient Care",
+                    "Streamlined Operations",
+                    "Empowering Medical Teams",
+                    "Improve Patient Outcomes",
+                    "Improve Revenue Streams",
+                    "Enhanced Accessibility",
+                    "Better Decision-Making",
+                    "Improved Patient Engagement"
+                ].map((benefit, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center space-x-3"
+                  >
+                    <CheckCircle className="h-6 w-6 text-green-500" />
+                    <span>{benefit}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-6">
+                Request A Demo
+              </Button> */}
+            </motion.div>
+
+            {/* Right Image - Doctor with Mobile Interface */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative"
+            >
+            <Image
+                src="/images/helth_care.png"
+                alt="Dr. Nadeem Vaidya Testimonial"
+                width={600}
+                height={400}
+                className="w-full h-auto"
+              />              
+            </motion.div>
+          </div>
+
+          
+        </div>
+      </section>
+
+      {/* Who Can Use Our Platform Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Solutions Grid */}
           <motion.div
             initial="initial"
@@ -713,10 +858,9 @@ export default function CordeliakarePage() {
             className="text-center mb-10 mt-10"
           >
             <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
-            Challenges in Healthcare Today
+              Who Can Use Our Platform
             </motion.h2>
           </motion.div>
-
 
           <div className="grid grid-cols-1 gap-6 mb-4 md:grid-cols-3">
             {solutions.map((solution, index) => {
@@ -780,230 +924,10 @@ export default function CordeliakarePage() {
             })}
           </div>
           {/* End here */}
-          
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="text-center mb-16 mt-16"
-          >
-            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
-            Transforming Healthcare with Innovation
-            </motion.h2>
-          </motion.div>
-
-          {/* Main Solutions Feature */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-            {/* Left Content */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="space-y-6"
-            >
-              <h3 className="text-2xl md:text-3xl font-bold">The real-time digital front door</h3>
-              <p className="text-lg text-muted-foreground">
-                Guide patients to the right care, at the right location, right now.
-              </p>
-
-              <div className="space-y-4">
-                {[
-                    "Streamline Patient Referrals",
-                    "Enhancing Patient Care",
-                    "Streamlined Operations",
-                    "Empowering Medical Teams",
-                    "Improve Patient Outcomes",
-                    "Improve Revenue Streams",
-                    "Enhanced Accessibility",
-                    "Better Decision-Making",
-                    "Improved Patient Engagement"
-                ].map((benefit, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-center space-x-3"
-                  >
-                    <CheckCircle className="h-6 w-6 text-green-500" />
-                    <span>{benefit}</span>
-                  </motion.div>
-                ))}
-              </div>
-
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-6">
-                Request A Demo
-              </Button>
-            </motion.div>
-
-            {/* Right Image - Doctor with Mobile Interface */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
-            >
-            <Image
-                src="/images/helth_care.png"
-                alt="Dr. Nadeem Vaidya Testimonial"
-                width={600}
-                height={400}
-                className="w-full h-auto"
-              />              
-            </motion.div>
-          </div>
-
-          
         </div>
       </section>
 
-      {/* Who Can Use Our Platform Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="text-center mb-16"
-          >
-            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
-              Who Can Use Our Platform
-            </motion.h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {[
-              {
-                title: "Patients",
-                description:
-                  "Access to digital prescriptions, appointment booking, health records, and reminders — all in one app. Seamlessly manage your health from home.",
-                buttonText: "Install Now",
-                buttonVariant: "default" as const,
-              },
-              {
-                title: "Specialists",
-                description:
-                  "Simplified patient scheduling, digital reports, and AI-powered insights to improve consultations and save time.",
-                buttonText: "Install Now",
-                buttonVariant: "default" as const,
-              },
-              {
-                title: "Clinics",
-                description:
-                  "Digital queue management, prescription writing, patient database and more to boost productivity and satisfaction.",
-                buttonText: "Learn More",
-                buttonVariant: "default" as const,
-              },
-              {
-                title: "Diagnosis Centre",
-                description:
-                  "Easy test scheduling, report upload, and integration with hospitals and patients. Reduce manual work and errors.",
-                buttonText: "View Demo",
-                buttonVariant: "default" as const,
-              },
-              {
-                title: "Hospitals & Network Hospitals",
-                description:
-                  "End-to-end hospital solution: OPD/IPD management, doctor-patient scheduling, record tracking, insurance integration & more.",
-                buttonText: "View Demo",
-                buttonVariant: "default" as const,
-              },
-            ].map((platform, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
-                className="group"
-              >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <CardContent className="p-6 text-center">
-                    <h3 className="text-xl font-bold mb-4">{platform.title}</h3>
-                    <p className="text-muted-foreground text-sm mb-6 leading-relaxed">{platform.description}</p>
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full" size="sm">
-                      {platform.buttonText}
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Challenges Section */}
-      <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="text-center mb-16"
-          >
-            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
-              Key Challenges in the Healthcare Ecosystem
-            </motion.h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {challenges.map((challenge, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
-                className="group"
-              >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800">
-                  <CardContent className="p-6">
-                    <div
-                      className={`w-16 h-16 bg-gradient-to-r ${challenge.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <challenge.icon className="h-8 w-8 text-white" />
-                    </div>
-
-                    <h3 className="text-xl font-bold mb-3">{challenge.title}</h3>
-                    <p className="text-muted-foreground mb-4 text-sm">{challenge.subtitle}</p>
-
-                    <div className="space-y-2 mb-6">
-                      {challenge.points.map((point, pointIndex) => (
-                        <motion.div
-                          key={pointIndex}
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: index * 0.1 + pointIndex * 0.1 }}
-                          className="flex items-start space-x-2"
-                        >
-                          <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-xs leading-relaxed">{point}</span>
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    <Button
-                      variant="ghost"
-                      className="p-0 h-auto font-medium text-blue-600 hover:text-blue-700 text-sm"
-                    >
-                      Read More <ArrowRight className="ml-1 h-3 w-3" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* Testimonials Section - New */}
       <section className="py-20">
@@ -1089,7 +1013,7 @@ export default function CordeliakarePage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="px-8 py-6 text-lg border-white text-white hover:bg-white hover:text-blue-600"
+                className="px-8 py-6 text-lg border-white text-green hover:bg-green hover:text-blue-600"
               >
                 <Link href="https://prod.cordeliakare.com/login" className="flex items-center">
                   Login to Platform
