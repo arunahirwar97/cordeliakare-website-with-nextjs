@@ -623,9 +623,9 @@ export default function CordeliakarePage() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="text-xl md:text-2xl text-muted-foreground mb-1 max-w-3xl mx-auto"
           >
-            Our HIMS System brings Hospitals and patients on one platform.
+            Our comprehensive mHealth integrated solution with HMS enables 
             <br />
-            More care and less stress — simplify access, free up clinicians, and watch your system grow.
+            healthcare providers to deliver patient-centric, efficient, and high-quality care. By leveraging mobile technologies, data analytics, and AI-driven insights, we can improve patient outcomes, enhance the patient experience, and optimize healthcare operations
           </motion.p>
 
           {/* <motion.div
