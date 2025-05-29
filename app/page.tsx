@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   Users,
-  Stethoscope,
   Building2,
   Shield,
   Calendar,
@@ -27,6 +26,11 @@ import {
   Hospital,
   Search,
   Monitor,
+  UserPlus,
+  Stethoscope,
+  Building2 as BuildingHospital,
+  Microscope,
+  Network as NetworkIcon,
   Image as ImageIcon,
   ScissorsSquareDashedBottom,
 } from "lucide-react"
@@ -93,6 +97,53 @@ export default function CordeliakarePage() {
     setPopupData(null);
   };
   
+
+  const headersolutions = [
+    {
+      id: "Patients",
+      title: "Patients",
+      description:
+        "We provide comprehensive tools tailored for hospitals and health systems to improve care coordination and patient outcomes.",
+      icon: UserPlus,
+      color: "bg-blue-500",
+      image_name: "/images/rem/patients.png",
+    },
+    {
+      id: "Specialist",
+      title: "Specialist",
+      description:
+        "Solutions for payers focused on cost management, analytics, and improving member engagement.",
+      icon: Stethoscope,
+      color: "bg-green-500",
+      image_name: "/images/rem/specialist.png",
+    },
+    {
+      id: "Clinics",
+      title: "Clinics",
+      description:
+        "Our platform supports providers with patient engagement, workflow optimization, and seamless integrations.",
+      icon: BuildingHospital,
+      color: "bg-purple-500",
+      image_name: "/images/rem/clinics.png",
+    },
+    {
+      id: "Diagnosis_centre",
+      title: "Diagnosis Centre",
+      description:
+        "Our platform supports providers with patient engagement, workflow optimization, and seamless integrations.",
+      icon: Microscope,
+      color: "bg-red-500",
+      image_name: "/images/rem/diagnosis.png",
+    },
+    {
+      id: "network_hospitals",
+      title: "Hospitals and Network Hospitals",
+      description:
+        "Our platform supports providers with patient engagement, workflow optimization, and seamless integrations.",
+      icon: NetworkIcon,
+      color: "bg-yellow-500",
+      image_name: "/images/rem/hospitals.png",
+    },]
   const solutions = [
     {
       title: "Enabling Remote care delivery",
@@ -301,7 +352,8 @@ export default function CordeliakarePage() {
                   src="/cordeliakare_logo.png" // Make sure logo.png is inside the /public folder
                   alt="Logo"
                   width={180}
-                  height={120}
+                  height={100}
+                  priority
                 />
             </Link> 
               {/* <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -322,7 +374,7 @@ export default function CordeliakarePage() {
                   Solutions <ChevronDown className="ml-1 h-4 w-4" />
                 </button>
                 <div className="absolute top-full left-0 mt-2 w-64 bg-background border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  {solutions.map((solution, index) => (
+                  {headersolutions.map((solution, index) => (
                     <div key={index} className="p-3 hover:bg-muted rounded-lg cursor-pointer">
                       <div className="flex items-center space-x-3">
                         <div className={`w-8 h-8 ${solution.color} rounded-lg flex items-center justify-center`}>
@@ -606,7 +658,7 @@ export default function CordeliakarePage() {
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden ">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden top-20 ">
         <motion.div
           style={{ y: backgroundY }}
           className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900"
@@ -1114,7 +1166,7 @@ export default function CordeliakarePage() {
               <Button
                 size="lg"
                 variant="secondary"
-                className="px-8 py-6 text-lg border-white text-black hover:bg-green hover:text-blue-600"
+                className="px-8 py-6 text-lg flex flex-col sm:flex-row gap-4 justify-center"
               >
                 <Link href="https://prod.cordeliakare.com/login" className="flex items-center">
                   Login to Platform
