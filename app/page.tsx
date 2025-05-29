@@ -59,30 +59,40 @@ export default function CordeliakarePage() {
   const heroY = useTransform(scrollYProgress, [0, 1], [0, -200])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
   const backgroundY = useTransform(scrollYProgress, [0, 1], [0, -100])
-
+  const [expandedCards, setExpandedCards] = useState({});
+  const [openCardsHealth, setOpenCardsHealth] = useState([]);
+  const [popupData, setPopupData] = useState(null);
+  
   useEffect(() => {
     setMounted(true)
   }, [])
 
 
-  const [expandedCards, setExpandedCards] = useState({});
-
+  
+  
   const toggleCard = (index) => {
     setExpandedCards(prev => ({
       ...prev,
       [index]: !prev[index],
     }));
   };
+  const toggleCard1 = (index) => {
+    setOpenCardsHealth((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
   }
-  type Solution = {
-    title: string;
-    description: string[];
-    icon: Search;
-    color: string;
-    image_name: string;
+
+  const openPopup = (challenge) => {
+    setPopupData(challenge);
   };
+
+  const closePopup = () => {
+    setPopupData(null);
+  };
+  
   const solutions = [
     {
       title: "Enabling Remote care delivery",
@@ -216,6 +226,17 @@ export default function CordeliakarePage() {
         "Lack of Access to Trusted Healthcare Providers",
         "Lack of Awareness & Understanding of disease and management",
         "Delays in Diagnosis or Scheduling",
+        "Cost & Affordability",
+        "Emotional and Mental Stress due to costly and complex surgical procedure",
+        "Complex Documentation & Paperwork",
+        "Lack of Continuity in Care",
+        "Trust & Safety Concerns",
+        "Post-Procedure Recovery Challenges",
+        "Transportation & Logistics",
+        "Queues for registration and doctor consultation",
+        "Commute problem for differently abled and chronic disease management",
+        "Hassles in carrying medical reports and prescriptions",
+        "Difficulty in rescheduling or refund in case of unforeseen circumstances",
       ],
       icon: Users,
       gradient: "from-blue-500 to-cyan-500",
@@ -224,9 +245,10 @@ export default function CordeliakarePage() {
       title: "Doctors",
       subtitle: "Why digital health records are the future of efficient clinical practice",
       points: [
-        "Managing patients with multiple chronic conditions",
-        "Balancing patient care with administrative responsibilities",
-        "Effectively communicating with patients and families",
+        "Managing patients with multiple chronic conditions.",
+        "Balancing patient care with administrative responsibilities.",
+        "Effectively communicating with patients and families.",
+        "Navigating the complexities of the healthcare system.",
       ],
       icon: Stethoscope,
       gradient: "from-green-500 to-emerald-500",
@@ -235,9 +257,13 @@ export default function CordeliakarePage() {
       title: "Hospital/Network Hospitals",
       subtitle: "Streamlined hospital operations and enhanced patient care",
       points: [
-        "Patients demand high service quality and shorter wait times",
-        "High competition forces hospitals to enhance patient satisfaction",
-        "Administrative effort needed for insurance claims affects efficiency",
+        "Patients increasingly demand high service quality, shorter wait times, and billing transparency.",
+        "High competition forces hospitals to enhance patient satisfaction or risk losing business to competitors.",
+        "Significant administrative effort is needed for insurance claims, affecting efficiency.",
+        "Lacks in overseas patients approachability.",
+        "Ensuring uniform quality, patient experience, and clinical standards across the network is challenging.",
+        "High cost of digital transformation: Implementing hospital information systems (HIS), EMRs, and telehealth is expensive.",
+        "Poor interoperability: Lack of seamless integration between departments, especially in multi-site networks.",
       ],
       icon: Building2,
       gradient: "from-purple-500 to-violet-500",
@@ -246,9 +272,11 @@ export default function CordeliakarePage() {
       title: "Data Security and Privacy",
       subtitle: "Crucial protection for the future of digital health records",
       points: [
-        "Increased exposure to cyber threats and legal liability",
-        "Hospitals targeted by ransomware due to high-value patient data",
-        "Data breaches result in severe legal consequences under HIPAA",
+        "Increased exposure to cyber threats and legal liability for data breaches.",
+        "Hospitals are increasingly targeted by ransomware and cybercriminals due to the high value of patient data on the black market.",
+        "Data breaches can result in severe legal consequences, including penalties under HIPAA and other regional healthcare compliance laws.",
+        "Internet-connected medical devices often lack proper security protocols, becoming easy entry points for attackers.",
+        "Without strict access control policies, unauthorized staff may access sensitive data, increasing the risk of internal breaches.",
       ],
       icon: Shield,
       gradient: "from-red-500 to-pink-500",
@@ -263,17 +291,17 @@ export default function CordeliakarePage() {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b"
+        className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b h-40"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
           <div className="flex justify-between items-center h-16">
             <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
             <Link href="/">
                 <Image
                   src="/cordeliakare_logo.png" // Make sure logo.png is inside the /public folder
                   alt="Logo"
-                  width={80}
-                  height={50}
+                  width={180}
+                  height={120}
                 />
             </Link> 
               {/* <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -728,70 +756,112 @@ export default function CordeliakarePage() {
       </section>
       {/* Challenges Section */}
       <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-1000/20 dark:to-blue-1000/20 mt-5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <motion.div
+      initial="initial"
+      whileInView="animate"
+      viewport={{ once: true }}
+      variants={staggerContainer}
+      className="text-center mb-16"
+    >
+      <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6 mt-6">
+        Key Challenges in the Healthcare Ecosystem
+      </motion.h2>
+    </motion.div>
+
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {challenges.map((challenge, i) => {
+        const index = i + 10; // Unique index offset
+        return (
           <motion.div
-            initial="initial"
-            whileInView="animate"
+            key={index}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            variants={staggerContainer}
-            className="text-center mb-16"
+            transition={{ duration: 0.6, delay: i * 0.1 }}
+            whileHover={{ y: -5 }}
+            className="group"
           >
-            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6 mt-6">
-              Key Challenges in the Healthcare Ecosystem
-            </motion.h2>
+            <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800">
+              <CardContent className="p-6">
+                <div
+                  className={`w-16 h-16 bg-gradient-to-r ${challenge.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                >
+                  <challenge.icon className="h-8 w-8 text-white" />
+                </div>
+
+                <h3 className="text-xl font-bold mb-3">{challenge.title}</h3>
+                <p className="text-muted-foreground mb-4 text-sm">{challenge.subtitle}</p>
+
+                <div className="space-y-2 mb-4">
+                  {challenge.points
+                    .slice(0, openCardsHealth.includes(index) ? challenge.points.length : 3)
+                    .map((point, pointIndex) => (
+                      <motion.div
+                        key={pointIndex}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 + pointIndex * 0.1 }}
+                        className="flex items-start space-x-2"
+                      >
+                        <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-xs leading-relaxed">{point}</span>
+                      </motion.div>
+                    ))}
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <Button
+                    variant="ghost"
+                    className="p-0 h-auto font-medium text-blue-600 hover:text-blue-700 text-sm"
+                    onClick={() => toggleCard1(index)}
+                  >
+                    {openCardsHealth.includes(index) ? "Show Less" : "Read More"}
+                    <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
+
+                  {["Doctors", "Patients"].includes(challenge.title) && (
+                    <button
+                      onClick={() => openPopup(challenge)}
+                      className="text-sm border px-3 py-1 rounded hover:bg-gray-100"
+                    >
+                      Install
+                    </button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
+        );
+      })}
+    </div>
+  </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {challenges.map((challenge, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
-                className="group"
-              >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800">
-                  <CardContent className="p-6">
-                    <div
-                      className={`w-16 h-16 bg-gradient-to-r ${challenge.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <challenge.icon className="h-8 w-8 text-white" />
-                    </div>
-
-                    <h3 className="text-xl font-bold mb-3">{challenge.title}</h3>
-                    <p className="text-muted-foreground mb-4 text-sm">{challenge.subtitle}</p>
-
-                    <div className="space-y-2 mb-6">
-                      {challenge.points.map((point, pointIndex) => (
-                        <motion.div
-                          key={pointIndex}
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: index * 0.1 + pointIndex * 0.1 }}
-                          className="flex items-start space-x-2"
-                        >
-                          <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-xs leading-relaxed">{point}</span>
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    <Button
-                      variant="ghost"
-                      className="p-0 h-auto font-medium text-blue-600 hover:text-blue-700 text-sm"
-                    >
-                      Read More <ArrowRight className="ml-1 h-3 w-3" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+  {/* Popup Modal */}
+  {popupData && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 ">
+      <div className="bg-white dark:bg-gray-900 rounded-xl p-6 max-w-3xl w-full relative shadow-lg">
+        <button
+          onClick={closePopup}
+          className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+        >
+          ✕
+        </button>
+        {/* <h3 className="text-lg font-semibold mb-2">{popupData.title}</h3> */}
+       
+        <Image
+          src="/images/qr_code_image.jpg"
+          alt="Dr. Nadeem Vaidya Testimonial"
+          width={300}
+          height={100}   // increase height here to show full image
+          className="rounded-lg w-full object-contain mb-4"  // use object-contain to keep entire image visible
+        />
+        {/* <p className="text-sm text-gray-700 dark:text-gray-300">{popupData.description}</p> */}
+      </div>
+    </div>
+  )}
+</section>
 
 
       {/* Solutions Suite */}
@@ -1043,8 +1113,8 @@ export default function CordeliakarePage() {
               </Button>
               <Button
                 size="lg"
-                variant="outline"
-                className="px-8 py-6 text-lg border-white text-green hover:bg-green hover:text-blue-600"
+                variant="secondary"
+                className="px-8 py-6 text-lg border-white text-black hover:bg-green hover:text-blue-600"
               >
                 <Link href="https://prod.cordeliakare.com/login" className="flex items-center">
                   Login to Platform
@@ -1065,10 +1135,10 @@ export default function CordeliakarePage() {
             <div className="flex items-center space-x-2">
               <Link href="/">
                   <Image
-                    src="/cordeliakare_logo.png" // Make sure logo.png is inside the /public folder
+                    src="/footer_logo.png" // Make sure logo.png is inside the /public folder
                     alt="Logo"
-                    width={150}
-                    height={50}
+                    width={200}
+                    height={70}
                   />
               </Link> 
             </div>

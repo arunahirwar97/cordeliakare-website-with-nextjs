@@ -8,6 +8,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Cordeliakare - Hospital Information Management System",
+  favicon: "/favicon.png",
   description:
     "Transforming Healthcare with Innovation. Complete digital health ecosystem bringing hospitals and patients together.",
     generator: 'v0.dev'
