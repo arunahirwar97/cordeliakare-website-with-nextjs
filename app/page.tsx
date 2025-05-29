@@ -71,7 +71,42 @@ export default function CordeliakarePage() {
     setMounted(true)
   }, [])
 
+  const [currentIndex, setCurrentIndex] = useState(0);
 
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+  const testimonials = [
+    
+    {
+      name: "Dr. Debadarshi Rath, MD, MCh — Senior Urologist Consultant",
+      description:
+        "Dr. Debadarshi Rath holds an MD degree and a super-specialty MCh qualification, reflecting extensive training and expertise in both medicine and advanced surgical procedures. As a senior urologist consultant, Dr. Debadarshi Rath brings a wealth of clinical experience and in-depth knowledge, dedicated to delivering high-quality patient care and innovative treatment solutions in urology.",
+      imgSrc: "dr_debadarshi_rath.jpg",
+      alt: "Dr. Debadarshi Rath, MD, MCh — Senior Urologist Consultant",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation" },
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Online Consultation" },
+      ],
+    },
+    {
+      name: "Dr. Sangam Garg",
+      description:
+        "Dr. Sangam Garg is a highly skilled orthopedic surgeon with an MS degree and a super-specialty MCh in Orthopedics. With comprehensive expertise in diagnosing and treating musculoskeletal disorders, Dr. Sangam Garg combines advanced surgical skills with compassionate patient care to restore mobility and improve quality of life.",
+      imgSrc: "/dr_sangam_image.png",
+      alt: "Dr. Nadeem Vaidya Testimonial",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/jiviyathehos/appointment", label: "Hospital Consultation" },
+        { url: "", label: "Contact Us" }, // will NOT render
+      ],
+    },
+  ];
+  
+  const { name, description, imgSrc, alt, buttons } = testimonials[currentIndex];
   
   
   const toggleCard = (index) => {
@@ -97,7 +132,6 @@ export default function CordeliakarePage() {
     setPopupData(null);
   };
   
-
   const headersolutions = [
     {
       id: "Patients",
@@ -256,7 +290,7 @@ export default function CordeliakarePage() {
       color: "bg-rose-500",
     },
     {
-      title: "Hospital with surgical facilities",
+      title: "Hospital With Surgical Cacilities",
       description: "Solutions for payers focused on cost management, analytics, and improving member engagement.",
       icon: ScissorsSquareDashedBottom,
       color: "bg-amber-500",
@@ -348,13 +382,25 @@ export default function CordeliakarePage() {
           <div className="flex justify-between items-center h-16">
             <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
             <Link href="/">
-                <Image
-                  src="/cordeliakare_logo.png" // Make sure logo.png is inside the /public folder
-                  alt="Logo"
-                  width={180}
-                  height={100}
-                  priority
-                />
+                
+                <Link href="/">
+                  <Image
+                    src="/black_background-removebg-preview.png" // Make sure logo.png is inside the /public folder
+                    alt="Logo"
+                    width={180}
+                    height={100}
+                    className="hidden dark:block"
+                  />
+              </Link> 
+              <Link href="/">
+                  <Image
+                    src="/cordeliakare_logo.png" // Make sure logo.png is inside the /public folder
+                    alt="Logo"
+                    width={180}
+                    height={100}
+                    className="dark:hidden"
+                  />
+              </Link>
             </Link> 
               {/* <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">C</span>
@@ -755,166 +801,177 @@ export default function CordeliakarePage() {
 
       {/* About Section */}
       <section className="py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">       
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="text-center mb-16 mt-16"
+            className="text-center mb-16"
           >
             <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
-            About Cordeliakare
+            About CordeLiakare
             </motion.h2>
+            {/* <motion.div variants={fadeInUp} className="w-16 h-1 bg-blue-600 mx-auto mb-8"></motion.div> */}
           </motion.div>
 
-          {/* Main Solutions Feature */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-            {/* Left Content */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="space-y-6"
-            >
-              <p className="text-lg text-muted-foreground">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="grid lg:grid-cols-2 gap-12 items-center"
+          >
+            {/* Text Content */}
+            <div className="space-y-6">
+              {/* <h3 className="text-2xl font-bold">Nadeem Vaidya - Ophthalmology</h3> */}
+              <p className="text-lg text-muted-foreground leading-relaxed">
               Welcome to Cordeliakare - Transforming Healthcare with Innovation. In the ever-evolving world of digital
               health, Cordeliakare stands as a beacon of innovation, bringing together a complete digital health
               ecosystem.
               </p>
-            </motion.div>
+              {/* <Button className="bg-blue-600 hover:bg-blue-700">
+                Schedule a Demo
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button> */}
+            </div>
 
-            {/* Right Image - Doctor with Mobile Interface */}
+            {/* Video Testimonial */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+              className="relative rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
             >
-            <Image
-                src="/images/about_us.png"
+              <Image
+                src="https://dev.cordeliakare.com/cordelia/assets/images/Frame_5.png"
                 alt="Dr. Nadeem Vaidya Testimonial"
                 width={600}
                 height={400}
-                className=""
-              />              
+                className="w-full h-auto"
+              />
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-lg"
+                >
+                  <Link href="https://hm-cordelia-s3-dev.s3.ap-south-1.amazonaws.com/about_us_video.mp4" target="_blank" >
+                    <Play className="h-8 w-8 text-white ml-1" />
+                  </Link>
+                </motion.div>
+              </div>
             </motion.div>
-          </div>
-
-          
+          </motion.div>
         </div>
       </section>
+
       {/* Challenges Section */}
       <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-1000/20 dark:to-blue-1000/20 mt-5">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <motion.div
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true }}
-      variants={staggerContainer}
-      className="text-center mb-16"
-    >
-      <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6 mt-6">
-        Key Challenges in the Healthcare Ecosystem
-      </motion.h2>
-    </motion.div>
-
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {challenges.map((challenge, i) => {
-        const index = i + 10; // Unique index offset
-        return (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial="initial"
+            whileInView="animate"
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: i * 0.1 }}
-            whileHover={{ y: -5 }}
-            className="group"
+            variants={staggerContainer}
+            className="text-center mb-16"
           >
-            <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800">
-              <CardContent className="p-6">
-                <div
-                  className={`w-16 h-16 bg-gradient-to-r ${challenge.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
-                >
-                  <challenge.icon className="h-8 w-8 text-white" />
-                </div>
-
-                <h3 className="text-xl font-bold mb-3">{challenge.title}</h3>
-                <p className="text-muted-foreground mb-4 text-sm">{challenge.subtitle}</p>
-
-                <div className="space-y-2 mb-4">
-                  {challenge.points
-                    .slice(0, openCardsHealth.includes(index) ? challenge.points.length : 3)
-                    .map((point, pointIndex) => (
-                      <motion.div
-                        key={pointIndex}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.1 + pointIndex * 0.1 }}
-                        className="flex items-start space-x-2"
-                      >
-                        <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-xs leading-relaxed">{point}</span>
-                      </motion.div>
-                    ))}
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <Button
-                    variant="ghost"
-                    className="p-0 h-auto font-medium text-blue-600 hover:text-blue-700 text-sm"
-                    onClick={() => toggleCard1(index)}
-                  >
-                    {openCardsHealth.includes(index) ? "Show Less" : "Read More"}
-                    <ArrowRight className="ml-1 h-3 w-3" />
-                  </Button>
-
-                  {["Doctors", "Patients"].includes(challenge.title) && (
-                    <button
-                      onClick={() => openPopup(challenge)}
-                      className="text-sm border px-3 py-1 rounded hover:bg-gray-100"
-                    >
-                      Install
-                    </button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6 mt-6">
+              Key Challenges in the Healthcare Ecosystem
+            </motion.h2>
           </motion.div>
-        );
-      })}
-    </div>
-  </div>
 
-  {/* Popup Modal */}
-  {popupData && (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 ">
-      <div className="bg-white dark:bg-gray-900 rounded-xl p-6 max-w-3xl w-full relative shadow-lg">
-        <button
-          onClick={closePopup}
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
-        >
-          ✕
-        </button>
-        {/* <h3 className="text-lg font-semibold mb-2">{popupData.title}</h3> */}
-       
-        <Image
-          src="/images/qr_code_image.jpg"
-          alt="Dr. Nadeem Vaidya Testimonial"
-          width={300}
-          height={100}   // increase height here to show full image
-          className="rounded-lg w-full object-contain mb-4"  // use object-contain to keep entire image visible
-        />
-        {/* <p className="text-sm text-gray-700 dark:text-gray-300">{popupData.description}</p> */}
-      </div>
-    </div>
-  )}
-</section>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {challenges.map((challenge, i) => {
+              const index = i + 10; // Unique index offset
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="group"
+                >
+                  <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800">
+                    <CardContent className="p-6">
+                      <div
+                        className={`w-16 h-16 bg-gradient-to-r ${challenge.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                      >
+                        <challenge.icon className="h-8 w-8 text-white" />
+                      </div>
 
+                      <h3 className="text-xl font-bold mb-3">{challenge.title}</h3>
+                      <p className="text-muted-foreground mb-4 text-sm">{challenge.subtitle}</p>
+
+                      <div className="space-y-2 mb-4">
+                        {challenge.points
+                          .slice(0, openCardsHealth.includes(index) ? challenge.points.length : 3)
+                          .map((point, pointIndex) => (
+                            <motion.div
+                              key={pointIndex}
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: i * 0.1 + pointIndex * 0.1 }}
+                              className="flex items-start space-x-2"
+                            >
+                              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                              <span className="text-xs leading-relaxed">{point}</span>
+                            </motion.div>
+                          ))}
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <Button
+                          variant="ghost"
+                          className="p-0 h-auto font-medium text-blue-600 hover:text-blue-700 text-sm"
+                          onClick={() => toggleCard1(index)}
+                        >
+                          {openCardsHealth.includes(index) ? "Show Less" : "Read More"}
+                          <ArrowRight className="ml-1 h-3 w-3" />
+                        </Button>
+
+                        {/* {["Doctors", "Patients"].includes(challenge.title) && (
+                          <button
+                            onClick={() => openPopup(challenge)}
+                            className="text-sm border px-3 py-1 rounded hover:bg-gray-100"
+                          >
+                            Install
+                          </button>
+                        )} */}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Popup Modal */}
+        {popupData && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 ">
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-6 max-w-3xl w-full relative shadow-lg">
+              <button
+                onClick={closePopup}
+                className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+              >
+                ✕
+              </button>
+              {/* <h3 className="text-lg font-semibold mb-2">{popupData.title}</h3> */}
+            
+              <Image
+                src="/images/qr_code_image.jpg"
+                alt="Dr. Nadeem Vaidya Testimonial"
+                width={300}
+                height={100}   // increase height here to show full image
+                className="rounded-lg w-full object-contain mb-4"  // use object-contain to keep entire image visible
+              />
+              {/* <p className="text-sm text-gray-700 dark:text-gray-300">{popupData.description}</p> */}
+            </div>
+          </div>
+        )}
+      </section>
 
       {/* Solutions Suite */}
       <section className="py-20">
@@ -1011,7 +1068,7 @@ export default function CordeliakarePage() {
             className="text-center mb-10 mt-10"
           >
             <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
-              Who Can Use Our Platform
+              Our Healthcare Solutions
             </motion.h2>
           </motion.div>
 
@@ -1084,66 +1141,94 @@ export default function CordeliakarePage() {
 
       {/* Testimonials Section - New */}
       <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="text-center mb-16"
-          >
-            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6">
-              Empowering Doctors Everyday
-            </motion.h2>
-            <motion.div variants={fadeInUp} className="w-16 h-1 bg-blue-600 mx-auto mb-8"></motion.div>
-          </motion.div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl md:text-4xl font-bold mb-6"
+        >
+          Empowering Doctors Everyday
+        </motion.h2>
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: 64 }}
+          className="h-1 bg-blue-600 mx-auto mb-8"
+        />
+      </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="grid lg:grid-cols-2 gap-12 items-center"
-          >
-            {/* Text Content */}
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold">Nadeem Vaidya - Ophthalmology</h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Dr. Nadeem Vaidya from Retina OC, has used technology to run his ophthalmology practice. Using DrChrono
-                he has been able to thrive while maintaining full ownership and insights from patient check-in to
-                payment disbursement.
-              </p>
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                Schedule a Demo
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
+      {/* Container with relative positioning for arrows */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            {/* Video Testimonial */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-              className="relative rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
-            >
-              <Image
-                src="/images/testimonial-doctor.png"
-                alt="Dr. Nadeem Vaidya Testimonial"
-                width={600}
-                height={400}
-                className="w-full h-auto"
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-lg"
-                >
-                  <Play className="h-8 w-8 text-white ml-1" />
-                </motion.div>
-              </div>
-            </motion.div>
+        {/* Left Arrow */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-0 top-1/2 -translate-y-1/2 p-1 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 z-10"
+          aria-label="Previous testimonial"
+        >
+          &#8592;
+        </button>
+
+        {/* Right Arrow */}
+        <button
+          onClick={nextSlide}
+          className="absolute right-0 top-1/2 -translate-y-1/2 p-1 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 z-10"
+          aria-label="Next testimonial"
+        >
+          &#8594;
+        </button>
+
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="grid sm:grid-cols-2 gap-12 items-center"
+        >
+          {/* Text Content */}
+          <div className="space-y-6 max-w-full">
+  <h3 className="text-2xl font-bold">{name}</h3>
+  <p className="text-lg text-muted-foreground">{description}</p>
+
+  <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+    {buttons.map(
+      (btn, idx) =>
+        btn.url && (
+          <a
+            key={idx}
+            href={btn.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto"
+          >
+            <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
+              {btn.label}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </a>
+        )
+    )}
+  </div>
+</div>
+
+          {/* Video Testimonial */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.3 }}
+            className="relative rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
+          >
+            <Image src={imgSrc} alt={alt} width={600} height={400} className="w-full h-auto" />
+            {/* <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-lg"
+              >
+                <Play className="h-8 w-8 text-white ml-1" />
+              </motion.div>
+            </div> */}
           </motion.div>
-        </div>
-      </section>
+        </motion.div>
+      </div>
+    </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
@@ -1187,12 +1272,22 @@ export default function CordeliakarePage() {
             <div className="flex items-center space-x-2">
               <Link href="/">
                   <Image
-                    src="/footer_logo.png" // Make sure logo.png is inside the /public folder
+                    src="/black_background-removebg-preview.png" // Make sure logo.png is inside the /public folder
                     alt="Logo"
                     width={200}
                     height={70}
+                    className="hidden dark:block"
                   />
               </Link> 
+              <Link href="/">
+                  <Image
+                    src="/cordeliakare_logo.png" // Make sure logo.png is inside the /public folder
+                    alt="Logo"
+                    width={200}
+                    height={70}
+                    className="dark:hidden"
+                  />
+              </Link>
             </div>
             <p className="text-sm text-muted-foreground">
               Reimagine the Healthcare IT by using our SaaS product. CordeLiaKare is a scalable product for all different sizes of healthcare providers to manage the operations in a patient centric way.
