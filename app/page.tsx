@@ -86,15 +86,15 @@ export default function CordeliakarePage() {
       name: "Dr. Debadarshi Rath, MD, MCh — Senior Urologist Consultant",
       description:
         "Dr. Debadarshi Rath holds an MD degree and a super-specialty MCh qualification, reflecting extensive training and expertise in both medicine and advanced surgical procedures. As a senior urologist consultant, Dr. Debadarshi Rath brings a wealth of clinical experience and in-depth knowledge, dedicated to delivering high-quality patient care and innovative treatment solutions in urology.",
-      imgSrc: "dr_debadarshi_rath.jpg",
+      imgSrc: "/dr_images/dr_debadarshi_rath.jpg",
       alt: "Dr. Debadarshi Rath, MD, MCh — Senior Urologist Consultant",
       buttons: [
         { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation" },
-        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Online Consultation" },
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Online" },
       ],
     },
     {
-      name: "Dr. Sangam Garg",
+      name: "Dr. Sangam Garg, MCh in Orthopedics",
       description:
         "Dr. Sangam Garg is a highly skilled orthopedic surgeon with an MS degree and a super-specialty MCh in Orthopedics. With comprehensive expertise in diagnosing and treating musculoskeletal disorders, Dr. Sangam Garg combines advanced surgical skills with compassionate patient care to restore mobility and improve quality of life.",
       imgSrc: "/dr_sangam_image.png",
@@ -102,6 +102,86 @@ export default function CordeliakarePage() {
       buttons: [
         { url: "https://prod.cordeliakare.com/hims/jiviyathehos/appointment", label: "Hospital Consultation" },
         { url: "", label: "Contact Us" }, // will NOT render
+      ],
+    },
+    {
+      name: "Dr. Kanhu Charan Digal, MBBS, MD Pediatrics, DM Neonatology — Neonatologist & Paediatrician",
+      description:
+        "Dr. Kanhu Charan Digal holds an MBBS degree, along with an MD in Pediatrics and a super-specialty DM in Neonatology, reflecting advanced training in child and newborn care. As a dedicated neonatologist and paediatrician, Dr. Kanhu Charan Digal brings comprehensive clinical expertise and compassion to ensure the health and well-being of infants and children at every stage of development.",
+      imgSrc: "/dr_images/Kanhu_Charan_Digal.jpg",
+      alt: "Kanhu Charan Digal,  MBBS, MD Pediatrics, DM Neonatology — Neonatologist & Paediatricia",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation", label: "Online" },
+      ],
+    },
+    {
+      name: "Dr. Poornima RN, MBBS, DNB, FAPE — Paediatrician & Paediatric Endocrinologist",
+      description:
+        "Dr. Poornima RN holds an MBBS degree, a Diplomate of National Board (DNB), and a Fellowship in Paediatric Endocrinology (FAPE), showcasing her advanced training and specialization in child health and hormonal disorders. As a dedicated paediatrician and paediatric endocrinologist, she brings a wealth of clinical expertise and compassionate care, focused on supporting healthy growth and development in children.",
+      imgSrc: "/dr_images/poornima.jpg",
+      alt: "Kanhu Charan Digal,  MBBS, MD Pediatrics, DM Neonatology — Neonatologist & Paediatricia",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation", label: "Online" },
+      ],
+    },
+    {
+      name: "Dr. Sohandas Shetty, MBBS, DDVL — Dermatologist & Cosmetologist",
+      description:
+        "Dr. Sohandas Shetty holds an MBBS degree and a Diploma in Dermatology, Venereology, and Leprosy (DDVL), reflecting his specialized training in skin health and cosmetic treatments. As an experienced dermatologist and cosmetologist, he is committed to providing expert care and advanced solutions for a wide range of skin and aesthetic concerns.",
+      imgSrc: "/dr_images/Sohandas.jpg",
+      alt: "Kanhu Charan Digal,  MBBS, MD Pediatrics, DM Neonatology — Neonatologist & Paediatricia",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation", label: "Online" },
+      ],
+    },
+    {
+      name: "Dr. Subhash Yadav, MBBS, MD Medicine — General Medicine Specialist",
+      description:
+        "Dr. Subhash Yadav holds an MBBS degree and an MD in Medicine, with expertise in managing blood pressure, thyroid disorders, diabetes, headaches, and infections. Committed to comprehensive patient care, he provides accurate diagnosis and effective treatment for a wide range of medical conditions.",
+      imgSrc: "/dr_images/Subhash.jpg",
+      alt: "Kanhu Charan Digal,  MBBS, MD Pediatrics, DM Neonatology — Neonatologist & Paediatricia",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation", label: "Online" },
+      ],
+    },
+    {
+      name: "Dr. SWAPNA M, MD, DNB, CCEBDM — Preventive Medicine Specialist",
+      description:
+        "Dr. SWAPNA M holds an MD, Diplomate of National Board (DNB), and a Certification in Evidence-Based Diabetes Management (CCEBDM), highlighting her advanced expertise in preventive medicine. Specializing in diabetes care and allergy management, she is dedicated to proactive healthcare approaches that improve long-term patient outcomes.",
+      imgSrc: "/dr_images/SWAPNA.jpg",
+      alt: "Kanhu Charan Digal,  MBBS, MD Pediatrics, DM Neonatology — Neonatologist & Paediatricia",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation", label: "Online" },
+      ],
+    },
+    {
+      name: "Dr. Talleen Pardhan, BDS — Dental Surgeon",
+      description:
+        "Dr. Talleen Pardhan holds a Bachelor of Dental Surgery (BDS) degree, specializing in dental care and oral health. As a skilled dental surgeon, Dr. Pardhan is committed to providing comprehensive treatment and promoting optimal dental wellness for patients.",
+      imgSrc: "/dr_images/Talleen.jpg",
+      alt: "Kanhu Charan Digal,  MBBS, MD Pediatrics, DM Neonatology — Neonatologist & Paediatricia",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation", label: "Online" },
+      ],
+    },
+    {
+      name: "Dr. Sohandas Shetty, MBBS, DDVL — Dermatologist & Cosmetologist",
+      description:
+        "Dr. Sohandas Shetty holds an MBBS degree and a Diploma in Dermatology, Venereology, and Leprosy (DDVL), reflecting his specialized training in skin health and cosmetic treatments. As an experienced dermatologist and cosmetologist, he is committed to providing expert care and advanced solutions for a wide range of skin and aesthetic concerns.",
+      imgSrc: "/dr_images/Sohandas.jpg",
+      alt: "Kanhu Charan Digal,  MBBS, MD Pediatrics, DM Neonatology — Neonatologist & Paediatricia",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation", label: "Online" },
+      ],
+    },
+    {
+      name: "Dr. Sohandas Shetty, MBBS, DDVL — Dermatologist & Cosmetologist",
+      description:
+        "Dr. Sohandas Shetty holds an MBBS degree and a Diploma in Dermatology, Venereology, and Leprosy (DDVL), reflecting his specialized training in skin health and cosmetic treatments. As an experienced dermatologist and cosmetologist, he is committed to providing expert care and advanced solutions for a wide range of skin and aesthetic concerns.",
+      imgSrc: "/dr_images/Sohandas.jpg",
+      alt: "Kanhu Charan Digal,  MBBS, MD Pediatrics, DM Neonatology — Neonatologist & Paediatricia",
+      buttons: [
+        { url: "https://prod.cordeliakare.com/hims/UNCEHOSPITAL/appointment?doctor_id=373&department_id=259", label: "Hospital Consultation", label: "Online" },
       ],
     },
   ];
@@ -865,7 +945,7 @@ export default function CordeliakarePage() {
       </section>
 
       {/* Challenges Section */}
-      <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-1000/20 dark:to-blue-1000/20 mt-5">
+      <section className="py-20 bg-gradient-to-br from-green-50   mt-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="initial"
@@ -875,7 +955,7 @@ export default function CordeliakarePage() {
             className="text-center mb-16"
           >
             <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold mb-6 mt-6">
-              Key Challenges in the Healthcare Ecosystem
+            Insights into challenges of Healthcare Ecosystem
             </motion.h2>
           </motion.div>
 
@@ -1193,6 +1273,22 @@ export default function CordeliakarePage() {
     {buttons.map(
       (btn, idx) =>
         btn.url && (
+
+          <>
+          <a
+            key={idx}
+            onClick={() => openPopup(btn.label)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto"
+          >
+            {["Online"].includes(btn.label) && (
+                <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
+                  Online Consultation
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            )}
+          </a>
           <a
             key={idx}
             href={btn.url}
@@ -1200,11 +1296,14 @@ export default function CordeliakarePage() {
             rel="noopener noreferrer"
             className="w-full sm:w-auto"
           >
-            <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
-              {btn.label}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            {["Hospital Consultation"].includes(btn.label) && (
+                <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
+                {btn.label}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              )}
           </a>
+          </>
         )
     )}
   </div>
@@ -1245,7 +1344,9 @@ export default function CordeliakarePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" className="px-8 py-6 text-lg">
-                Request A Demo
+              <Link href="https://prod.cordeliakare.com/login" className="flex items-center">
+                    Request A Demo
+              </Link>
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
