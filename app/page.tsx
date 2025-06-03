@@ -1420,7 +1420,7 @@ export default function CordeliakarePage() {
           <div>
             <h2 className="text-lg font-semibold mb-4">Contact Us</h2>
             <p className="text-sm flex items-center space-x-2"><FaMapMarkerAlt /><span> GF13 Ajantha Meadows, Third Cross, <br></br>AkshayaNagar, Bangalore - 560068, Karnataka, India</span></p>
-            <p className="text-sm flex items-center space-x-2 mb-11"><FaEnvelope /><span> support@cordeliatech.atlassian.net</span></p>
+            <a className="text-sm flex items-center space-x-2 mb-11" href="mailto:contactus@cordeliatech.com" target={"_blank"}><FaEnvelope /><span> contactus@cordeliatech.com</span></a>
           </div>
 
           {/* Social */}
