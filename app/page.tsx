@@ -340,7 +340,7 @@ export default function CordeliakarePage() {
       color: "bg-red-500",
     },
     {
-      title: "USA",
+      title: "AFRICA",
       description: "Solutions for payers focused on cost management, analytics, and improving member engagement.",
       icon: Flag,
       color: "bg-yellow-500",
@@ -368,6 +368,7 @@ export default function CordeliakarePage() {
       description: "We provide comprehensive tools tailored for hospitals and health systems to improve care coordination and patient outcomes.",
       icon: Hospital,
       color: "bg-rose-500",
+      "url" : "https://prod.cordeliakare.com/hospitals"
     },
     {
       title: "Hospital With Surgical Cacilities",
@@ -380,6 +381,7 @@ export default function CordeliakarePage() {
       description: "Solutions for payers focused on cost management, analytics, and improving member engagement.",
       icon: ImageIcon,
       color: "bg-lime-500",
+      url : "https://prod.cordeliakare.com/gallery"
     },
   ]
 
@@ -461,8 +463,6 @@ export default function CordeliakarePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
           <div className="flex justify-between items-center h-16">
             <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
-            <Link href="/">
-                
                 <Link href="/">
                   <Image
                     src="/black_background-removebg-preview.png" // Make sure logo.png is inside the /public folder
@@ -481,7 +481,6 @@ export default function CordeliakarePage() {
                     className="dark:hidden"
                   />
               </Link>
-            </Link> 
               {/* <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">C</span>
               </div>
@@ -584,19 +583,30 @@ export default function CordeliakarePage() {
                 Hospitals <ChevronDown className="ml-1 h-4 w-4" />
                 </button>
                 <div className="absolute top-full left-0 mt-2 w-64 bg-background border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  {hospitals.map((solution, index) => (
-                    <div key={index} className="p-3 hover:bg-muted rounded-lg cursor-pointer">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-8 h-8 ${solution.color} rounded-lg flex items-center justify-center`}>
-                          <solution.icon className="h-4 w-4 text-white" />
+                {hospitals.map((solution, index) => {
+                    const Wrapper = solution.url ? 'a' : 'div';
+                    return (
+                      <Wrapper
+                        key={index}
+                        href={solution.url || undefined}
+                        target={solution.url ? "_blank" : undefined}
+                        rel={solution.url ? "noopener noreferrer" : undefined}
+                        className="block"
+                      >
+                        <div className="p-3 hover:bg-muted rounded-lg cursor-pointer">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-8 h-8 ${solution.color} rounded-lg flex items-center justify-center`}>
+                              <solution.icon className="h-4 w-4 text-white" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-sm">{solution.title}</div>
+                              <div className="text-xs text-muted-foreground">{solution.description}</div>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-medium text-sm">{solution.title}</div>
-                          <div className="text-xs text-muted-foreground">{solution.description}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      </Wrapper>
+                    );
+                  })}
                 </div>
               </div>
               
@@ -1290,7 +1300,7 @@ export default function CordeliakarePage() {
             )}
           </a>
           <a
-            key={idx}
+            key={idx+1}
             href={btn.url}
             target="_blank"
             rel="noopener noreferrer"
@@ -1402,16 +1412,15 @@ export default function CordeliakarePage() {
               <li><a href="#" className="hover:underline">Home</a></li>
               <li><a href="#about" className="hover:underline">About Us</a></li>
               <li><a href="#services" className="hover:underline">Services</a></li>
-              <li><a href="#contact" className="hover:underline">Contact Us</a></li>
+              <li><a href="https://www.cordeliatech.com/contact-us/" className="hover:underline" target={"_blank"}>Contact Us</a></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
             <h2 className="text-lg font-semibold mb-4">Contact Us</h2>
-            <p className="text-sm flex items-center space-x-2"><FaPhoneAlt /><span> +91 96110 11381</span></p>
-            <p className="text-sm flex items-center space-x-2 "><FaMapMarkerAlt /><span> GF13 Ajantha Meadows, Third Cross, <br></br>AkshayaNagar, Bangalore - 560068, Karnataka, India</span></p>
-            <p className="text-sm flex items-center space-x-2"><FaEnvelope /><span> support@cordeliatech.atlassian.net</span></p>
+            <p className="text-sm flex items-center space-x-2"><FaMapMarkerAlt /><span> GF13 Ajantha Meadows, Third Cross, <br></br>AkshayaNagar, Bangalore - 560068, Karnataka, India</span></p>
+            <p className="text-sm flex items-center space-x-2 mb-11"><FaEnvelope /><span> support@cordeliatech.atlassian.net</span></p>
           </div>
 
           {/* Social */}
@@ -1427,7 +1436,7 @@ export default function CordeliakarePage() {
               <a href="https://www.instagram.com/p/C8JQm-ESn1q/?igsh=MTRqdXB1MjkydXZsag%3D%3D" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500">
                 <FaInstagram />
               </a>
-              <a href="https://www.linkedin.com/company/cordelia-technology/posts" target="_blank" rel="noopener noreferrer" className="hover:text-blue-700">
+              <a href="https://www.linkedin.com/company/cordelia-technology/posts" target="_blank" rel="noopener noreferrer" className="hover:text-blue-700 mb-20">
                 <FaLinkedinIn />
               </a>
             </div>
@@ -1444,7 +1453,7 @@ export default function CordeliakarePage() {
 
         {/* Copyright */}
         <div className="mt-6 text-center text-sm ">
-          © {new Date().getFullYear()} Cordeliatech Pvt Ltd. All rights reserved.
+          © {new Date().getFullYear()} Cordelia Technology Private Limited. All rights reserved.
         </div>
       </div>
     </footer>
