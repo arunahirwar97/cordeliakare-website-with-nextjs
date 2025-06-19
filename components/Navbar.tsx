@@ -101,7 +101,7 @@ const mvts = [
     title: "Patient in India",
     slug: "india",
     description:
-      "We provide comprehensive tools tailored for hospitals and health systems to improve care coordination and patient outcomes.",
+      "Our platform that helps patients discover top-rated surgeons and hospitals, receive expert consultations and case reviews, and get clear cost estimates—empowering timely and informed decisions.",
     icon: Flag,
     color: "bg-red-500",
   },
@@ -179,9 +179,9 @@ export default function Navbar() {
   };
 
   const toggleMobileDropdown = (dropdown) => {
-    setMobileDropdowns(prev => ({
+    setMobileDropdowns((prev) => ({
       ...prev,
-      [dropdown]: !prev[dropdown]
+      [dropdown]: !prev[dropdown],
     }));
   };
 
@@ -438,12 +438,16 @@ export default function Navbar() {
               <div className="px-4 py-4 space-y-4">
                 {/* Solutions Dropdown */}
                 <div>
-                  <button 
-                    onClick={() => toggleMobileDropdown('solutions')}
+                  <button
+                    onClick={() => toggleMobileDropdown("solutions")}
                     className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
                   >
-                    Solutions 
-                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.solutions ? 'rotate-180' : ''}`} />
+                    Solutions
+                    <ChevronDown
+                      className={`ml-1 h-4 w-4 transition-transform ${
+                        mobileDropdowns.solutions ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
                   <AnimatePresence>
                     {mobileDropdowns.solutions && (
@@ -454,14 +458,23 @@ export default function Navbar() {
                         className="ml-4 mt-2 space-y-2"
                       >
                         {headersolutions.map((solution, index) => (
-                          <div key={index} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                          <div
+                            key={index}
+                            className="p-2 hover:bg-muted rounded-lg cursor-pointer"
+                          >
                             <div className="flex items-center space-x-3">
-                              <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                              <div
+                                className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}
+                              >
                                 <solution.icon className="h-3 w-3 text-white" />
                               </div>
                               <div>
-                                <div className="font-medium text-xs">{solution.title}</div>
-                                <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                                <div className="font-medium text-xs">
+                                  {solution.title}
+                                </div>
+                                <div className="text-xs text-muted-foreground line-clamp-2">
+                                  {solution.description}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -473,12 +486,16 @@ export default function Navbar() {
 
                 {/* Platform Dropdown */}
                 <div>
-                  <button 
-                    onClick={() => toggleMobileDropdown('platform')}
+                  <button
+                    onClick={() => toggleMobileDropdown("platform")}
                     className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
                   >
-                    Platform 
-                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.platform ? 'rotate-180' : ''}`} />
+                    Platform
+                    <ChevronDown
+                      className={`ml-1 h-4 w-4 transition-transform ${
+                        mobileDropdowns.platform ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
                   <AnimatePresence>
                     {mobileDropdowns.platform && (
@@ -489,14 +506,23 @@ export default function Navbar() {
                         className="ml-4 mt-2 space-y-2"
                       >
                         {plateforms.map((solution, index) => (
-                          <div key={index} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                          <div
+                            key={index}
+                            className="p-2 hover:bg-muted rounded-lg cursor-pointer"
+                          >
                             <div className="flex items-center space-x-3">
-                              <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                              <div
+                                className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}
+                              >
                                 <solution.icon className="h-3 w-3 text-white" />
                               </div>
                               <div>
-                                <div className="font-medium text-xs">{solution.title}</div>
-                                <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                                <div className="font-medium text-xs">
+                                  {solution.title}
+                                </div>
+                                <div className="text-xs text-muted-foreground line-clamp-2">
+                                  {solution.description}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -508,12 +534,16 @@ export default function Navbar() {
 
                 {/* Surgical Care Dropdown */}
                 <div>
-                  <button 
-                    onClick={() => toggleMobileDropdown('surgical')}
+                  <button
+                    onClick={() => toggleMobileDropdown("surgical")}
                     className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
                   >
-                    Surgical Care 
-                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.surgical ? 'rotate-180' : ''}`} />
+                    Surgical Care
+                    <ChevronDown
+                      className={`ml-1 h-4 w-4 transition-transform ${
+                        mobileDropdowns.surgical ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
                   <AnimatePresence>
                     {mobileDropdowns.surgical && (
@@ -524,7 +554,10 @@ export default function Navbar() {
                         className="ml-4 mt-2 space-y-2"
                       >
                         {mvts.map((solution, index) => (
-                          <div key={index} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                          <div
+                            key={index}
+                            className="p-2 hover:bg-muted rounded-lg cursor-pointer"
+                          >
                             <Link href={`/surgical-care/${solution.slug}`}>
                               <div className="flex items-center space-x-3">
                                 {solution.slug === "india" ? (
@@ -536,13 +569,19 @@ export default function Navbar() {
                                     className="rounded"
                                   />
                                 ) : (
-                                  <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                                  <div
+                                    className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}
+                                  >
                                     <solution.icon className="h-3 w-3 text-white" />
                                   </div>
                                 )}
                                 <div>
-                                  <div className="font-medium text-xs">{solution.title}</div>
-                                  <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                                  <div className="font-medium text-xs">
+                                    {solution.title}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground line-clamp-2">
+                                    {solution.description}
+                                  </div>
                                 </div>
                               </div>
                             </Link>
@@ -555,12 +594,16 @@ export default function Navbar() {
 
                 {/* Appointments Dropdown */}
                 <div>
-                  <button 
-                    onClick={() => toggleMobileDropdown('appointments')}
+                  <button
+                    onClick={() => toggleMobileDropdown("appointments")}
                     className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
                   >
-                    Appointments 
-                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.appointments ? 'rotate-180' : ''}`} />
+                    Appointments
+                    <ChevronDown
+                      className={`ml-1 h-4 w-4 transition-transform ${
+                        mobileDropdowns.appointments ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
                   <AnimatePresence>
                     {mobileDropdowns.appointments && (
@@ -571,14 +614,23 @@ export default function Navbar() {
                         className="ml-4 mt-2 space-y-2"
                       >
                         {appointments.map((solution, index) => (
-                          <div key={index} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                          <div
+                            key={index}
+                            className="p-2 hover:bg-muted rounded-lg cursor-pointer"
+                          >
                             <div className="flex items-center space-x-3">
-                              <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                              <div
+                                className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}
+                              >
                                 <solution.icon className="h-3 w-3 text-white" />
                               </div>
                               <div>
-                                <div className="font-medium text-xs">{solution.title}</div>
-                                <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                                <div className="font-medium text-xs">
+                                  {solution.title}
+                                </div>
+                                <div className="text-xs text-muted-foreground line-clamp-2">
+                                  {solution.description}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -590,12 +642,16 @@ export default function Navbar() {
 
                 {/* Hospitals Dropdown */}
                 <div>
-                  <button 
-                    onClick={() => toggleMobileDropdown('hospitals')}
+                  <button
+                    onClick={() => toggleMobileDropdown("hospitals")}
                     className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
                   >
-                    Hospitals 
-                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.hospitals ? 'rotate-180' : ''}`} />
+                    Hospitals
+                    <ChevronDown
+                      className={`ml-1 h-4 w-4 transition-transform ${
+                        mobileDropdowns.hospitals ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
                   <AnimatePresence>
                     {mobileDropdowns.hospitals && (
@@ -612,17 +668,25 @@ export default function Navbar() {
                               key={index}
                               href={solution.url || undefined}
                               target={solution.url ? "_blank" : undefined}
-                              rel={solution.url ? "noopener noreferrer" : undefined}
+                              rel={
+                                solution.url ? "noopener noreferrer" : undefined
+                              }
                               className="block"
                             >
                               <div className="p-2 hover:bg-muted rounded-lg cursor-pointer">
                                 <div className="flex items-center space-x-3">
-                                  <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                                  <div
+                                    className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}
+                                  >
                                     <solution.icon className="h-3 w-3 text-white" />
                                   </div>
                                   <div>
-                                    <div className="font-medium text-xs">{solution.title}</div>
-                                    <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                                    <div className="font-medium text-xs">
+                                      {solution.title}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground line-clamp-2">
+                                      {solution.description}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
