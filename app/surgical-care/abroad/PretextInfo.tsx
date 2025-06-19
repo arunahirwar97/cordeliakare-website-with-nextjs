@@ -7,11 +7,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function PretextInfo() {
+  const [userPresent, setUserPresent] = useState(false);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const user = localStorage.getItem("user"); 
+    setUserPresent(!!user);
   }, []);
 
   if (!mounted) return null;
@@ -99,13 +102,21 @@ export default function PretextInfo() {
               </span>
               Why Choose Medical Tourism?
             </h2>
-            <p className={`${isDark ? "text-gray-300" : "text-gray-700"} mb-4 text-justify`}>
+            <p
+              className={`${
+                isDark ? "text-gray-300" : "text-gray-700"
+              } mb-4 text-justify`}
+            >
               Medical Value Tourism (MVT) is revolutionizing healthcare by
               offering patients across the globe access to high-quality medical
               services at affordable prices, often combined with travel to
               destinations known for hospitality and healing.
             </p>
-            <p className={`${isDark ? "text-gray-300" : "text-gray-700"} text-justify`}>
+            <p
+              className={`${
+                isDark ? "text-gray-300" : "text-gray-700"
+              } text-justify`}
+            >
               At our core, we aim to bridge the gap between top-tier medical
               expertise and international patients looking for cost-effective,
               timely, and specialized treatments.
@@ -216,12 +227,9 @@ export default function PretextInfo() {
         </motion.div>
 
         {/* Treatments and Destinations */}
-        <motion.div
-          variants={itemVariants}
-          className="grid md:grid-cols-2 gap-8 mb-12"
-        >
+        <motion.div variants={itemVariants} className="mb-12">
           {/* Specialized Treatments */}
-          <div>
+          <div className="mb-12">
             <h2
               className={`text-2xl font-bold mb-4 ${
                 isDark ? "text-white" : "text-gray-900"
@@ -289,61 +297,235 @@ export default function PretextInfo() {
             </div>
           </div>
 
-          {/* Destinations */}
+          {/* Your Care Path */}
           <div>
             <h2
-              className={`text-2xl font-bold mb-4 ${
+              className={`text-2xl font-bold mb-6 ${
                 isDark ? "text-white" : "text-gray-900"
               }`}
             >
-              Top Medical Tourism Destinations
+              Your Care Path
             </h2>
-            <div className="grid gap-4">
+            <div className="space-y-4">
               {[
                 {
-                  country: "India",
-                  specialty:
-                    "Excellence in cardiac, orthopedic, and fertility care",
-                  color: isDark
-                    ? "bg-amber-900 text-amber-200"
-                    : "bg-amber-100 text-amber-800",
+                  title: "Virtual OPD Centers",
+                  description: "Consult with specialists from your location",
+                  icon: (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                  ),
                 },
                 {
-                  country: "Thailand",
-                  specialty: "World leader in cosmetic surgery and wellness",
-                  color: isDark
-                    ? "bg-blue-900 text-blue-200"
-                    : "bg-blue-100 text-blue-800",
+                  title: "Patient Consultation and Diagnostics",
+                  description: "Comprehensive health assessment and tests",
+                  icon: (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      />
+                    </svg>
+                  ),
                 },
                 {
-                  country: "Turkey",
-                  specialty: "Advanced transplant and dental treatments",
-                  color: isDark
-                    ? "bg-red-900 text-red-200"
-                    : "bg-red-100 text-red-800",
+                  title: "Local Diagnostics Integration",
+                  description:
+                    "Seamless integration with your local test results",
+                  icon: (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                      />
+                    </svg>
+                  ),
                 },
                 {
-                  country: "UAE",
-                  specialty: "Fast-growing hub for oncology and diagnostics",
-                  color: isDark
-                    ? "bg-emerald-900 text-emerald-200"
-                    : "bg-emerald-100 text-emerald-800",
+                  title: "Upload Medical Records",
+                  description:
+                    "Secure digital transfer of your medical history",
+                  icon: (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                  ),
                 },
-              ].map((destination, index) => (
+                {
+                  title: "Hospital Recommendations in India",
+                  description:
+                    "Personalized hospital suggestions based on your needs",
+                  icon: (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      />
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Travel and Accommodation Arrangements",
+                  description:
+                    "Comprehensive travel planning and stay coordination",
+                  icon: (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                      />
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Hospital Liaison and Booking",
+                  description:
+                    "Direct coordination with hospitals for your treatment",
+                  icon: (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Post-treatment Follow-up",
+                  description:
+                    "Continued care and monitoring after your procedure",
+                  icon: (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Return and Aftercare through CordeliaKare Platform",
+                  description: "Ongoing support through our dedicated platform",
+                  icon: (
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
+                    </svg>
+                  ),
+                },
+              ].map((step, index) => (
                 <motion.div
                   key={index}
-                  whileHover={{ scale: 1.02 }}
-                  className={`rounded-lg overflow-hidden ${
-                    isDark ? "border-gray-700" : "border-gray-200"
-                  }`}
+                  whileHover={{ x: 5 }}
+                  className={`flex items-start p-4 rounded-lg ${
+                    isDark ? "bg-gray-700" : "bg-white"
+                  } shadow-sm`}
                 >
-                  <div className={`p-3 font-semibold ${destination.color}`}>
-                    {destination.country}
-                  </div>
-                  <div className={`p-4 ${isDark ? "bg-gray-800" : "bg-white"}`}>
-                    <p className={isDark ? "text-gray-300" : "text-gray-700"}>
-                      {destination.specialty}
-                    </p>
+                  <div className="flex items-start w-full">
+                    <div className="mr-4 flex-shrink-0">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                        {index + 1}
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <div
+                        className={`p-2 rounded-lg mr-4 ${
+                          isDark
+                            ? "bg-purple-900 text-purple-300"
+                            : "bg-purple-100 text-purple-600"
+                        }`}
+                      >
+                        {step.icon}
+                      </div>
+                      <div>
+                        <h3
+                          className={`font-semibold ${
+                            isDark ? "text-white" : "text-gray-800"
+                          }`}
+                        >
+                          {step.title}
+                        </h3>
+                        <p
+                          className={`text-sm ${
+                            isDark ? "text-gray-300" : "text-gray-600"
+                          }`}
+                        >
+                          {step.description}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -375,7 +557,7 @@ export default function PretextInfo() {
               {
                 title: "Zero Waiting Time",
                 desc: "Immediate access to diagnostics, consultations, and surgeries",
-                icon: "⏱️",
+                icon: "⏱",
               },
               {
                 title: "Global-Standard Facilities",
@@ -385,7 +567,7 @@ export default function PretextInfo() {
               {
                 title: "Personalized Care",
                 desc: "Dedicated patient coordinators ensure end-to-end support",
-                icon: "👩‍⚕️",
+                icon: "👩‍⚕",
               },
               {
                 title: "Safe Recovery",
@@ -395,7 +577,7 @@ export default function PretextInfo() {
               {
                 title: "Post-Care Programs",
                 desc: "Wellness programs, nutrition advice, and alternative therapies",
-                icon: "💆‍♂️",
+                icon: "💆‍♂",
               },
             ].map((item, index) => (
               <motion.div
@@ -439,7 +621,7 @@ export default function PretextInfo() {
           >
             <Link
               href={{
-                pathname: "/surgical-care/search",
+                pathname: `${userPresent ? "/surgical-care/search" : "/auth/abroad/login"}`,
                 query: { location: "Abroad" },
               }}
             >

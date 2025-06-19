@@ -2,7 +2,9 @@
 import PretextInfo from './PretextInfo';
 
 export default function SurgicalCareAbroadPage() {
-  return <PretextInfo />;
+  return (
+    <PretextInfo />
+  );
 }
 
 export const metadata = {

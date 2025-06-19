@@ -102,7 +102,7 @@ const mvts = [
     slug: "india",
     description:
       "We provide comprehensive tools tailored for hospitals and health systems to improve care coordination and patient outcomes.",
-    icon: Globe,
+    icon: Flag,
     color: "bg-red-500",
   },
   {
@@ -110,7 +110,7 @@ const mvts = [
     slug: "abroad",
     description:
       "Solutions for payers focused on cost management, analytics, and improving member engagement.",
-    icon: Flag,
+    icon: Globe,
     color: "bg-yellow-500",
   },
 ];
@@ -161,6 +161,13 @@ const hospitals = [
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [mobileDropdowns, setMobileDropdowns] = useState({
+    solutions: false,
+    platform: false,
+    surgical: false,
+    appointments: false,
+    hospitals: false,
+  });
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -169,6 +176,13 @@ export default function Navbar() {
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  const toggleMobileDropdown = (dropdown) => {
+    setMobileDropdowns(prev => ({
+      ...prev,
+      [dropdown]: !prev[dropdown]
+    }));
   };
 
   if (!mounted) return null;
@@ -185,7 +199,6 @@ export default function Navbar() {
             className="flex items-center space-x-2 mb-4"
             whileHover={{ scale: 1.05 }}
           >
-            
             <Link href="/">
               <Image
                 src="/cordeliakare_logo.png"
@@ -270,11 +283,21 @@ export default function Navbar() {
                     className="p-3 hover:bg-muted rounded-lg cursor-pointer"
                   >
                     <div className="flex items-center space-x-3">
-                      <div
-                        className={`w-8 h-8 ${solution.color} rounded-lg flex items-center justify-center`}
-                      >
-                        <solution.icon className="h-4 w-4 text-white" />
-                      </div>
+                      {solution.slug === "india" ? (
+                        <Image
+                          src="/images/indian-flag.png"
+                          alt="Indian Flag"
+                          width={24}
+                          height={26}
+                          className="mb-10"
+                        />
+                      ) : (
+                        <div
+                          className={`w-10 h-8 ${solution.color} rounded-lg flex items-center justify-center`}
+                        >
+                          <solution.icon className="h-4 w-6 text-white" />
+                        </div>
+                      )}
                       <div>
                         <Link href={`/surgical-care/${solution.slug}`}>
                           <div className="font-medium text-sm">
@@ -413,27 +436,207 @@ export default function Navbar() {
               className="md:hidden bg-background border-t"
             >
               <div className="px-4 py-4 space-y-4">
-                <Link href="#platform" className="block text-sm font-medium">
-                  Platform
-                </Link>
-                <Link href="#solutions" className="block text-sm font-medium">
-                  Solutions
-                </Link>
-                <Link
-                  href="#customer-stories"
-                  className="block text-sm font-medium"
-                >
-                  Customer Stories
-                </Link>
-                <Link href="#resources" className="block text-sm font-medium">
-                  Resources
-                </Link>
-                <Link href="#company" className="block text-sm font-medium">
-                  Company
-                </Link>
+                {/* Solutions Dropdown */}
+                <div>
+                  <button 
+                    onClick={() => toggleMobileDropdown('solutions')}
+                    className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
+                  >
+                    Solutions 
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.solutions ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {mobileDropdowns.solutions && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="ml-4 mt-2 space-y-2"
+                      >
+                        {headersolutions.map((solution, index) => (
+                          <div key={index} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                                <solution.icon className="h-3 w-3 text-white" />
+                              </div>
+                              <div>
+                                <div className="font-medium text-xs">{solution.title}</div>
+                                <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Platform Dropdown */}
+                <div>
+                  <button 
+                    onClick={() => toggleMobileDropdown('platform')}
+                    className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
+                  >
+                    Platform 
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.platform ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {mobileDropdowns.platform && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="ml-4 mt-2 space-y-2"
+                      >
+                        {plateforms.map((solution, index) => (
+                          <div key={index} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                                <solution.icon className="h-3 w-3 text-white" />
+                              </div>
+                              <div>
+                                <div className="font-medium text-xs">{solution.title}</div>
+                                <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Surgical Care Dropdown */}
+                <div>
+                  <button 
+                    onClick={() => toggleMobileDropdown('surgical')}
+                    className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
+                  >
+                    Surgical Care 
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.surgical ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {mobileDropdowns.surgical && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="ml-4 mt-2 space-y-2"
+                      >
+                        {mvts.map((solution, index) => (
+                          <div key={index} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                            <Link href={`/surgical-care/${solution.slug}`}>
+                              <div className="flex items-center space-x-3">
+                                {solution.slug === "india" ? (
+                                  <Image
+                                    src="/images/indian-flag.png"
+                                    alt="Indian Flag"
+                                    width={20}
+                                    height={20}
+                                    className="rounded"
+                                  />
+                                ) : (
+                                  <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                                    <solution.icon className="h-3 w-3 text-white" />
+                                  </div>
+                                )}
+                                <div>
+                                  <div className="font-medium text-xs">{solution.title}</div>
+                                  <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                                </div>
+                              </div>
+                            </Link>
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Appointments Dropdown */}
+                <div>
+                  <button 
+                    onClick={() => toggleMobileDropdown('appointments')}
+                    className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
+                  >
+                    Appointments 
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.appointments ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {mobileDropdowns.appointments && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="ml-4 mt-2 space-y-2"
+                      >
+                        {appointments.map((solution, index) => (
+                          <div key={index} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                                <solution.icon className="h-3 w-3 text-white" />
+                              </div>
+                              <div>
+                                <div className="font-medium text-xs">{solution.title}</div>
+                                <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Hospitals Dropdown */}
+                <div>
+                  <button 
+                    onClick={() => toggleMobileDropdown('hospitals')}
+                    className="flex items-center justify-between w-full text-sm font-medium py-2 hover:text-blue-600 transition-colors"
+                  >
+                    Hospitals 
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${mobileDropdowns.hospitals ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {mobileDropdowns.hospitals && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="ml-4 mt-2 space-y-2"
+                      >
+                        {hospitals.map((solution, index) => {
+                          const Wrapper = solution.url ? "a" : "div";
+                          return (
+                            <Wrapper
+                              key={index}
+                              href={solution.url || undefined}
+                              target={solution.url ? "_blank" : undefined}
+                              rel={solution.url ? "noopener noreferrer" : undefined}
+                              className="block"
+                            >
+                              <div className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                                <div className="flex items-center space-x-3">
+                                  <div className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}>
+                                    <solution.icon className="h-3 w-3 text-white" />
+                                  </div>
+                                  <div>
+                                    <div className="font-medium text-xs">{solution.title}</div>
+                                    <div className="text-xs text-muted-foreground line-clamp-2">{solution.description}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Wrapper>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
                 <Button
                   asChild
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700 mt-4"
                 >
                   <Link href="https://prod.cordeliakare.com/login">Login</Link>
                 </Button>
