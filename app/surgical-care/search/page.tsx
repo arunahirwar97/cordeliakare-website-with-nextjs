@@ -1,9 +1,15 @@
 // app/surgical-care/abroad/page.tsx
 
+import { Suspense } from "react";
 import SurgicalCareForm from "./SurgicalCareForm";
+import LoadingSpinner from "@/components/loading/LoadingComponent";
 
 export default function SurgicalCareSearchPage() {
-  return <SurgicalCareForm />;
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <SurgicalCareForm />
+    </Suspense>
+  );
 }
 
 export const metadata = {

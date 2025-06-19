@@ -1,7 +1,13 @@
+import { Suspense } from 'react';
 import SurgicalCareForm from '../search/SurgicalCareForm';
+import LoadingSpinner from '@/components/loading/LoadingComponent';
 
 export default function SurgicalCareIndiaPage() {
-  return <SurgicalCareForm />;
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <SurgicalCareForm />
+    </Suspense>
+  );
 }
 
 export const metadata = {
