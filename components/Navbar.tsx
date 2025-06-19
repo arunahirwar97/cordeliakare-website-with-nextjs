@@ -109,7 +109,7 @@ const mvts = [
     title: "Patient in Abroad",
     slug: "abroad",
     description:
-      "Solutions for payers focused on cost management, analytics, and improving member engagement.",
+      "We provide international patients with dedicated, step-by-step support—connecting you to top-rated surgeons and hospitals, facilitating expert consultations, and assisting you through every stage of your treatment journey",
     icon: Globe,
     color: "bg-yellow-500",
   },
