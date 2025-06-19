@@ -13,7 +13,7 @@ export default function PretextInfo() {
 
   useEffect(() => {
     setMounted(true);
-    const user = localStorage.getItem("user"); 
+    const user = localStorage.getItem("user");
     setUserPresent(!!user);
   }, []);
 
@@ -226,310 +226,305 @@ export default function PretextInfo() {
           </div>
         </motion.div>
 
-        {/* Treatments and Destinations */}
+        {/* Specialized Treatments - Full Width */}
         <motion.div variants={itemVariants} className="mb-12">
-          {/* Specialized Treatments */}
-          <div className="mb-12">
-            <h2
-              className={`text-2xl font-bold mb-4 ${
-                isDark ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Specialized Treatments We Offer
-            </h2>
-            <div
-              className={`rounded-lg shadow-sm overflow-hidden ${
-                isDark ? "bg-gray-800" : "bg-white"
-              }`}
-            >
-              {[
-                "Cardiology & Cardiothoracic Surgery",
-                "Orthopedics & Joint Replacement",
-                "Oncology (Cancer Treatment)",
-                "Cosmetic & Plastic Surgery",
-                "IVF and Fertility Treatments",
-                "Neurology & Neurosurgery",
-                "Dental Procedures",
-              ].map((treatment, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ x: 5 }}
-                  className={`p-4 ${
-                    index % 2 === 0
-                      ? isDark
-                        ? "bg-gray-700"
-                        : "bg-gray-50"
-                      : isDark
-                      ? "bg-gray-800"
-                      : "bg-white"
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <span
-                      className={`p-1 rounded-full mr-3 ${
-                        isDark
-                          ? "bg-green-900 text-green-300"
-                          : "bg-green-100 text-green-600"
+          <h2
+            className={`text-3xl font-bold mb-6 text-center ${
+              isDark ? "text-white" : "text-gray-900"
+            }`}
+          >
+            Specialized Treatments We Offer
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {[
+              "Cardiology & Cardiothoracic Surgery",
+              "Orthopedics & Joint Replacement",
+              "Oncology (Cancer Treatment)",
+              "Cosmetic & Plastic Surgery",
+              "IVF and Fertility Treatments",
+              "Neurology & Neurosurgery",
+              "Dental Procedures",
+              "Bariatric Surgery",
+            ].map((treatment, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ y: -3 }}
+                className={`p-4 rounded-lg shadow-sm transition-all ${
+                  isDark
+                    ? "bg-gray-800 hover:shadow-lg hover:shadow-green-500/20"
+                    : "bg-white hover:shadow-md border border-gray-200"
+                }`}
+              >
+                <div className="flex items-center">
+                  <span
+                    className={`p-2 rounded-full mr-3 ${
+                      isDark
+                        ? "bg-green-900 text-green-300"
+                        : "bg-green-100 text-green-600"
+                    }`}
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    className={`font-medium ${
+                      isDark ? "text-gray-200" : "text-gray-700"
+                    }`}
+                  >
+                    {treatment}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Your Care Path - Vertical Flow */}
+        <motion.div variants={itemVariants} className="mb-12">
+          <h2
+            className={`text-3xl font-bold mb-8 text-center ${
+              isDark ? "text-white" : "text-gray-900"
+            }`}
+          >
+            Your Care Path
+          </h2>
+          <div className="max-w-4xl mx-auto space-y-4">
+            {[
+              {
+                title: "Virtual OPD Centers",
+                description: "Consult with specialists from your location",
+                icon: (
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Patient Consultation and Diagnostics",
+                description: "Comprehensive health assessment and tests",
+                icon: (
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Local Diagnostics Integration",
+                description:
+                  "Seamless integration with your local test results",
+                icon: (
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Upload Medical Records",
+                description: "Secure digital transfer of your medical history",
+                icon: (
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Hospital Recommendations in India",
+                description:
+                  "Personalized hospital suggestions based on your needs",
+                icon: (
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Travel and Accommodation Arrangements",
+                description:
+                  "Comprehensive travel planning and stay coordination",
+                icon: (
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Hospital Liaison and Booking",
+                description:
+                  "Direct coordination with hospitals for your treatment",
+                icon: (
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Post-treatment Follow-up",
+                description:
+                  "Continued care and monitoring after your procedure",
+                icon: (
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Return and Aftercare through CordeliaKare Platform",
+                description: "Ongoing support through our dedicated platform",
+                icon: (
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
+                ),
+              },
+            ].map((step, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.02, x: 5 }}
+                className={`rounded-lg shadow-sm transition-all ${
+                  isDark
+                    ? "bg-gray-800 hover:shadow-lg hover:shadow-purple-500/20"
+                    : "bg-white hover:shadow-md border border-gray-200"
+                }`}
+              >
+                <div className="flex items-center p-6">
+                  <div
+                    className={`flex items-center justify-center w-12 h-12 rounded-full mr-6 text-lg font-bold flex-shrink-0 ${
+                      isDark
+                        ? "bg-purple-900 text-purple-300"
+                        : "bg-purple-100 text-purple-600"
+                    }`}
+                  >
+                    {index + 1}
+                  </div>
+                  <div
+                    className={`p-3 rounded-lg mr-6 flex-shrink-0 ${
+                      isDark
+                        ? "bg-purple-800 text-purple-300"
+                        : "bg-purple-50 text-purple-600"
+                    }`}
+                  >
+                    {step.icon}
+                  </div>
+                  <div className="flex-1 text-center">
+                    <h3
+                      className={`font-semibold text-lg mb-2 ${
+                        isDark ? "text-white" : "text-gray-800"
                       }`}
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </span>
-                    <span
-                      className={isDark ? "text-gray-200" : "text-gray-700"}
+                      {step.title}
+                    </h3>
+                    <p
+                      className={`${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      }`}
                     >
-                      {treatment}
-                    </span>
+                      {step.description}
+                    </p>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Your Care Path */}
-          <div>
-            <h2
-              className={`text-2xl font-bold mb-6 ${
-                isDark ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Your Care Path
-            </h2>
-            <div className="space-y-4">
-              {[
-                {
-                  title: "Virtual OPD Centers",
-                  description: "Consult with specialists from your location",
-                  icon: (
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Patient Consultation and Diagnostics",
-                  description: "Comprehensive health assessment and tests",
-                  icon: (
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Local Diagnostics Integration",
-                  description:
-                    "Seamless integration with your local test results",
-                  icon: (
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Upload Medical Records",
-                  description:
-                    "Secure digital transfer of your medical history",
-                  icon: (
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Hospital Recommendations in India",
-                  description:
-                    "Personalized hospital suggestions based on your needs",
-                  icon: (
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Travel and Accommodation Arrangements",
-                  description:
-                    "Comprehensive travel planning and stay coordination",
-                  icon: (
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Hospital Liaison and Booking",
-                  description:
-                    "Direct coordination with hospitals for your treatment",
-                  icon: (
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Post-treatment Follow-up",
-                  description:
-                    "Continued care and monitoring after your procedure",
-                  icon: (
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Return and Aftercare through CordeliaKare Platform",
-                  description: "Ongoing support through our dedicated platform",
-                  icon: (
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                      />
-                    </svg>
-                  ),
-                },
-              ].map((step, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ x: 5 }}
-                  className={`flex items-start p-4 rounded-lg ${
-                    isDark ? "bg-gray-700" : "bg-white"
-                  } shadow-sm`}
-                >
-                  <div className="flex items-start w-full">
-                    <div className="mr-4 flex-shrink-0">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
-                        {index + 1}
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <div
-                        className={`p-2 rounded-lg mr-4 ${
-                          isDark
-                            ? "bg-purple-900 text-purple-300"
-                            : "bg-purple-100 text-purple-600"
-                        }`}
-                      >
-                        {step.icon}
-                      </div>
-                      <div>
-                        <h3
-                          className={`font-semibold ${
-                            isDark ? "text-white" : "text-gray-800"
-                          }`}
-                        >
-                          {step.title}
-                        </h3>
-                        <p
-                          className={`text-sm ${
-                            isDark ? "text-gray-300" : "text-gray-600"
-                          }`}
-                        >
-                          {step.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
@@ -557,7 +552,7 @@ export default function PretextInfo() {
               {
                 title: "Zero Waiting Time",
                 desc: "Immediate access to diagnostics, consultations, and surgeries",
-                icon: "⏱",
+                icon: "⏱️",
               },
               {
                 title: "Global-Standard Facilities",
@@ -567,7 +562,7 @@ export default function PretextInfo() {
               {
                 title: "Personalized Care",
                 desc: "Dedicated patient coordinators ensure end-to-end support",
-                icon: "👩‍⚕",
+                icon: "👩‍⚕️",
               },
               {
                 title: "Safe Recovery",
@@ -577,7 +572,7 @@ export default function PretextInfo() {
               {
                 title: "Post-Care Programs",
                 desc: "Wellness programs, nutrition advice, and alternative therapies",
-                icon: "💆‍♂",
+                icon: "💆‍♂️",
               },
             ].map((item, index) => (
               <motion.div
@@ -619,14 +614,24 @@ export default function PretextInfo() {
                 : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
           >
-            <Link
-              href={{
-                pathname: `${userPresent ? "/surgical-care/search" : "/auth/abroad/login"}`,
-                query: { location: "Abroad" },
-              }}
-            >
-              Start Your Medical Journey Now
-            </Link>
+            {userPresent ? (
+              <Link
+                href={{
+                  pathname: "/surgical-care/search",
+                  query: { location: "Abroad" },
+                }}
+              >
+                Start Your Medical Journey Now
+              </Link>
+            ) : (
+              <Link
+                href={{
+                  pathname: "/auth/abroad/login",
+                }}
+              >
+                Start Your Medical Journey Now
+              </Link>
+            )}
           </button>
         </motion.div>
       </motion.div>
