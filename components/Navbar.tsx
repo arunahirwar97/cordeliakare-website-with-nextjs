@@ -101,7 +101,7 @@ const mvts = [
     title: "Patient in India",
     slug: "india",
     description:
-      "Our platform that helps patients discover top-rated surgeons and hospitals, receive expert consultations and case reviews, and get clear cost estimates—empowering timely and informed decisions.",
+      "Our platform that helps patients discover top-rated surgeons and hospitals, receive expert consultations and case reviews, and get clear cost estimates—empowering timely and informed decisions.",
     icon: Flag,
     color: "bg-red-500",
   },
