@@ -193,7 +193,7 @@ export default function Navbar() {
       animate={{ y: 0 }}
       className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b h-30"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5">
         <div className="flex justify-between items-center h-16">
           <motion.div
             className="flex items-center space-x-2 mb-4"
@@ -201,11 +201,11 @@ export default function Navbar() {
           >
             <Link href="/">
               <Image
-                src="/cordeliakare_logo.png"
+                src="/cordelia-logo.png"
                 alt="Logo"
-                width={120}
-                height={65}
-                className="dark:bg-gray-200 rounded-full "
+                width={80}
+                height={45}
+                className=""
               />
             </Link>
           </motion.div>
@@ -461,6 +461,7 @@ export default function Navbar() {
                           <div
                             key={index}
                             className="p-2 hover:bg-muted rounded-lg cursor-pointer"
+                            onClick={() => setIsMenuOpen(false)}
                           >
                             <div className="flex items-center space-x-3">
                               <div
@@ -472,7 +473,7 @@ export default function Navbar() {
                                 <div className="font-medium text-xs">
                                   {solution.title}
                                 </div>
-                                <div className="text-xs text-muted-foreground line-clamp-2">
+                                <div className="text-xs text-muted-foreground">
                                   {solution.description}
                                 </div>
                               </div>
@@ -509,6 +510,7 @@ export default function Navbar() {
                           <div
                             key={index}
                             className="p-2 hover:bg-muted rounded-lg cursor-pointer"
+                            onClick={() => setIsMenuOpen(false)}
                           >
                             <div className="flex items-center space-x-3">
                               <div
@@ -520,7 +522,7 @@ export default function Navbar() {
                                 <div className="font-medium text-xs">
                                   {solution.title}
                                 </div>
-                                <div className="text-xs text-muted-foreground line-clamp-2">
+                                <div className="text-xs text-muted-foreground">
                                   {solution.description}
                                 </div>
                               </div>
@@ -557,6 +559,7 @@ export default function Navbar() {
                           <div
                             key={index}
                             className="p-2 hover:bg-muted rounded-lg cursor-pointer"
+                            onClick={() => setIsMenuOpen(false)}
                           >
                             <Link href={`/surgical-care/${solution.slug}`}>
                               <div className="flex items-center space-x-3">
@@ -579,7 +582,7 @@ export default function Navbar() {
                                   <div className="font-medium text-xs">
                                     {solution.title}
                                   </div>
-                                  <div className="text-xs text-muted-foreground line-clamp-2">
+                                  <div className="text-xs text-muted-foreground ">
                                     {solution.description}
                                   </div>
                                 </div>
@@ -617,6 +620,7 @@ export default function Navbar() {
                           <div
                             key={index}
                             className="p-2 hover:bg-muted rounded-lg cursor-pointer"
+                            onClick={() => setIsMenuOpen(false)}
                           >
                             <div className="flex items-center space-x-3">
                               <div
@@ -628,7 +632,7 @@ export default function Navbar() {
                                 <div className="font-medium text-xs">
                                   {solution.title}
                                 </div>
-                                <div className="text-xs text-muted-foreground line-clamp-2">
+                                <div className="text-xs text-muted-foreground">
                                   {solution.description}
                                 </div>
                               </div>
@@ -673,7 +677,7 @@ export default function Navbar() {
                               }
                               className="block"
                             >
-                              <div className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                              <div onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
                                 <div className="flex items-center space-x-3">
                                   <div
                                     className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}
@@ -684,7 +688,7 @@ export default function Navbar() {
                                     <div className="font-medium text-xs">
                                       {solution.title}
                                     </div>
-                                    <div className="text-xs text-muted-foreground line-clamp-2">
+                                    <div className="text-xs text-muted-foreground">
                                       {solution.description}
                                     </div>
                                   </div>

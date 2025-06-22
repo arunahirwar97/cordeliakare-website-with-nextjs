@@ -2,37 +2,77 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Moon, Sun, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import Turnstile from 'react-turnstile'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [phone, setPhone] = useState('')
+  const [otp, setOtp] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [captchaToken, setCaptchaToken] = useState('')
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
-  const { theme, setTheme } = useTheme()
+  const { theme, systemTheme } = useTheme()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Cloudflare Turnstile site key (replace with your own)
+  const TURNSTILE_SITE_KEY = '1x00000000000000000000AA'
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null // Avoid flash of incorrect theme
+  }
+
+  // Determine the current theme (handles system preference)
+  const currentTheme = theme === 'system' ? systemTheme : theme
+  const isDark = currentTheme === 'dark'
+
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!captchaToken) {
+      setError('Please complete the CAPTCHA')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+    
+    try {
+      // Simulate API call to send OTP
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setOtpSent(true)
+    } catch (err) {
+      setError('Failed to send OTP. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
     
     try {
-      // Mock login - replace with real API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      // Simulate OTP verification
+      await new Promise(resolve => setTimeout(resolve, 1000))
       router.push('/dashboard')
     } catch (err) {
-      setError('Invalid credentials. Please try again.')
+      setError('Invalid OTP. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'} p-4`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -43,7 +83,7 @@ export default function LoginPage() {
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden"
+          className={`rounded-xl shadow-xl overflow-hidden ${isDark ? 'bg-gray-800' : 'bg-white'}`}
         >
           <div className="p-8">
             <div className="text-center mb-8">
@@ -51,12 +91,12 @@ export default function LoginPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-3xl font-bold text-gray-800 dark:text-white mb-2"
+                className={`text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}
               >
-                Welcome Back
+                {otpSent ? 'Verify OTP' : 'Welcome Back'}
               </motion.h1>
-              <p className="text-gray-600 dark:text-gray-300">
-                Sign in to access your account
+              <p className={isDark ? 'text-gray-300' : 'text-gray-600'}>
+                {otpSent ? `Enter OTP sent to +91 ${phone}` : 'Sign in with your mobile number'}
               </p>
             </div>
 
@@ -64,85 +104,176 @@ export default function LoginPage() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-3 rounded-md mb-4 text-sm"
+                className={`p-3 rounded-md mb-4 text-sm ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'}`}
               >
                 {error}
               </motion.div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="your@email.com"
-                  required
-                />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="••••••••"
-                  required
-                />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="pt-2"
-              >
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-semibold shadow-md transition-all duration-300 flex items-center justify-center"
+            {!otpSent ? (
+              <form onSubmit={handleSendOtp} className="space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
                 >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    'Sign In'
-                  )}
-                </button>
-              </motion.div>
-            </form>
+                  <label htmlFor="phone" className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Mobile Number
+                  </label>
+                  <div className="flex">
+                    <span className={`inline-flex items-center px-3 rounded-l-md border border-r-0 ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-300' 
+                        : 'bg-gray-100 border-gray-300 text-gray-500'
+                    }`}>
+                      +91
+                    </span>
+                    <input
+                      id="phone"
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      className={`flex-1 min-w-0 block w-full px-3 py-3 rounded-none rounded-r-md border ${
+                        isDark
+                          ? 'bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500'
+                          : 'bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500'
+                      }`}
+                      placeholder="9876543210"
+                      maxLength={10}
+                      required
+                    />
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <Turnstile
+                    sitekey={TURNSTILE_SITE_KEY}
+                    onVerify={setCaptchaToken}
+                    theme={isDark ? 'dark' : 'light'}
+                  />
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="pt-2"
+                >
+                  <button
+                    type="submit"
+                    disabled={loading || phone.length !== 10}
+                    className={`w-full py-3 px-4 rounded-lg font-semibold shadow-md transition-all duration-300 flex items-center justify-center ${
+                      loading || phone.length !== 10
+                        ? isDark
+                          ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : isDark
+                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                    }`}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Sending OTP...
+                      </>
+                    ) : (
+                      'Send OTP'
+                    )}
+                  </button>
+                </motion.div>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp} className="space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <label htmlFor="otp" className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    6-digit OTP
+                  </label>
+                  <input
+                    id="otp"
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className={`w-full px-4 py-3 rounded-lg border ${
+                      isDark
+                        ? 'bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500'
+                        : 'bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500'
+                    }`}
+                    placeholder="Enter 6-digit OTP"
+                    maxLength={6}
+                    required
+                  />
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="pt-2"
+                >
+                  <button
+                    type="submit"
+                    disabled={loading || otp.length !== 6}
+                    className={`w-full py-3 px-4 rounded-lg font-semibold shadow-md transition-all duration-300 flex items-center justify-center ${
+                      loading || otp.length !== 6
+                        ? isDark
+                          ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : isDark
+                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                    }`}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Verifying...
+                      </>
+                    ) : (
+                      'Verify & Sign In'
+                    )}
+                  </button>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                  className="text-center"
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtpSent(false)
+                      setOtp('')
+                    }}
+                    className={`text-sm ${isDark ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-800'} font-medium transition-colors`}
+                  >
+                    Change Mobile Number
+                  </button>
+                </motion.div>
+              </form>
+            )}
 
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 0.8 }}
               className="mt-6 text-center"
             >
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>
                 Don't have an account?{' '}
                 <button
                   onClick={() => router.push('/auth/register')}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors"
+                  className={`font-medium transition-colors ${isDark ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-800'}`}
                 >
                   Register here
                 </button>

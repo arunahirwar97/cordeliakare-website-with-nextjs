@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,10 +35,21 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            {/* Place Toaster here, inside ThemeProvider but outside other components */}
+            <Toaster 
+              position="top-center"
+              toastOptions={{
+                className: '',
+                style: {
+                  background: 'hsl(var(--background))',
+                  color: 'hsl(var(--foreground))',
+                  border: '1px solid hsl(var(--border))',
+                },
+              }}
+            />
+            
             <Navbar />
             <main className="min-h-screen pt-16 pb-8">
-              {" "}
-              {/* Added padding here */}
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3">
                 {children}
               </div>
