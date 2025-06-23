@@ -18,22 +18,14 @@ export default function Footer() {
           {/* Logo & About */}
           <div className="max-w-sm space-y-4">
             <div className="flex items-center space-x-2">
+              
               <Link href="/">
                 <Image
-                  src="/black_background-removebg-preview.png"
+                  src="/cordelia-logo.png"
                   alt="Logo"
                   width={200}
                   height={70}
-                  className="hidden dark:block"
-                />
-              </Link>
-              <Link href="/">
-                <Image
-                  src="/cordeliakare_logo.png"
-                  alt="Logo"
-                  width={200}
-                  height={70}
-                  className="dark:hidden"
+                  
                 />
               </Link>
             </div>
