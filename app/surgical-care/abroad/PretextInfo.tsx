@@ -155,7 +155,7 @@ export default function PretextInfo() {
               </span>
               Who We Are
             </h2>
-            <p className={isDark ? "text-gray-300" : "text-gray-700"}>
+            <p className={`${isDark ? "text-gray-300" : "text-gray-700"} text-justify`}>
               At the core of CordeLiakare, we deliver a seamless experience that
               addresses all your medical treatment needs and supports a swift
               recovery. We serve international patients from the SAARC region,
