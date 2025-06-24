@@ -33,7 +33,7 @@ const LoadingSpinner = ({
         className="w-40 h-40 mx-auto mb-8"
       >
         <Image
-          src="/cordeliakare_logo.png"
+          src="/cordelia-logo.png"
           alt="CordeliaKare Logo"
           width={160}
           height={160}
