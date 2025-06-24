@@ -156,10 +156,16 @@ export default function PretextInfo() {
               Who We Are
             </h2>
             <p className={isDark ? "text-gray-300" : "text-gray-700"}>
-              At the heart of CordeLiakare we provide our patients a seamless
-              experience for their surgical requirements and a quick recovery
-              thereafter. All treatments are performed in internationally
-              accredited hospitals by certified specialists.
+              At the core of CordeLiakare, we deliver a seamless experience that
+              addresses all your medical treatment needs and supports a swift
+              recovery. We serve international patients from the SAARC region,
+              Africa (including Nigeria, Ethiopia, Tanzania, Kenya, Uganda, and
+              Ghana), Southeast Asia, the Middle East/GCC, and developed
+              countries, ensuring that every treatment is conducted in
+              internationally accredited hospitals by certified specialists. We
+              also cultivate strong partnerships with healthcare facilitators in
+              our source countries and leverage digital platforms to enhance our
+              outreach and patient support.
             </p>
           </div>
         </motion.div>
@@ -339,7 +345,7 @@ export default function PretextInfo() {
                   </svg>
                 ),
               },
-              
+
               {
                 title: "Upload Medical Records",
                 description: "Secure digital transfer of your medical history",
