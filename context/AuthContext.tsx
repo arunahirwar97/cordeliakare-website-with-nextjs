@@ -40,29 +40,50 @@ interface ApiErrorResponse {
   message?: string;
   user_id?: string;
 }
+interface Salutation {
+  name: string;
+  id: number;
+}
 
 // Context value type
 interface AuthContextType {
   user: User | null;
+  setUser:any;
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
   otpSent: boolean;
   otpExpired: boolean;
-  sendOtp: (phone: string, loginType: string) => Promise<{ success: boolean; error?: string }>;
-  verifyOtp: (phone: string, otp: string, loginType: string) => Promise<{ success: boolean; error?: string }>;
+  sendOtp: (
+    phone: string,
+    loginType: string
+  ) => Promise<{ success: boolean; error?: string }>;
+  verifyOtp: (
+    phone: string,
+    otp: string,
+    loginType: string
+  ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   clearError: () => void;
   clearOtpState: () => void;
-  sendRegistrationOtp: (phone: string, role: string) => Promise<{ success: boolean; error?: string }>;
-  verifyRegistrationOtp: (phone: string, otp: string, role: string) => Promise<{ success: boolean; error?: string; data?: any }>;
+  sendRegistrationOtp: (
+    phone: string,
+    role: string
+  ) => Promise<{ success: boolean; error?: string }>;
+  verifyRegistrationOtp: (
+    phone: string,
+    otp: string,
+    role: string
+  ) => Promise<{ success: boolean; error?: string; data?: any }>;
 }
 
 // Create context with proper typing
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const [salutations, setSalutations] = useState<Salutation[]>([]);
+  const [isLoadingSalutations, setIsLoadingSalutations] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -77,10 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const storedToken = localStorage.getItem("token");
         const storedUser = localStorage.getItem("user");
-
+        // console.log("token===>", token);
         if (storedToken && storedUser) {
           setToken(storedToken);
-          setUser(JSON.parse(storedUser) as User);
         }
       } catch (err) {
         console.error("Failed to initialize auth", err);
@@ -92,10 +112,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     initializeAuth();
-  }, []);
+    fetchSalutations();
+  }, [token]);
 
   const sendRegistrationOtp = useCallback(
-    async (phone: string, role: string): Promise<{ success: boolean; error?: string }> => {
+    async (
+      phone: string,
+      role: string
+    ): Promise<{ success: boolean; error?: string }> => {
       setLoading(true);
       setError(null);
       setOtpSent(false);
@@ -104,7 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const formattedPhoneNumber = phone.replace(/\D/g, "");
         const response = await axios.post<OtpResponse>(
-          `https://dev.cordeliakare.com/api/registrationotp`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/registrationotp`,
           {
             phone: formattedPhoneNumber,
             login_type: role,
@@ -114,6 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (response.status === 200) {
           setOtpSent(true);
+          // console.log(response);
           return { success: true };
         } else {
           const errorMsg =
@@ -138,7 +163,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const verifyRegistrationOtp = useCallback(
-    async (phone: string, otp: string, role: string): Promise<{ success: boolean; error?: string; data?: any }> => {
+    async (
+      phone: string,
+      otp: string,
+      role: string
+    ): Promise<{ success: boolean; error?: string; data?: any }> => {
       setLoading(true);
       setError(null);
       setOtpExpired(false);
@@ -147,22 +176,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Remove all non-digit characters from phone number
         const formattedPhone = phone.replace(/\D/g, "");
 
-        if (!otp.trim()) {
-          setError("OTP is invalid");
-          return { success: false, error: "OTP is invalid" };
-        }
-
         const response = await axios.post<VerifyOtpResponse>(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/otpverification`,
           {
-            phone: formattedPhone,
-            confirmation_type: role,
+            phone: phone,
+            confirmation_type: "user",
             otp: otp,
             type: "register",
             prefix_code: "91",
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              'Accept': 'application/json',
+            },
           }
         );
-
+        // console.log("RESPONSE===>", response);
         if (response.status === 200 || response.status === 201) {
           // Clear OTP state
           setOtpSent(false);
@@ -208,7 +238,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
-    const sendOtp = useCallback(async (phone: string, loginType: string): Promise<{ success: boolean; error?: string }> => {
+  const sendOtp = useCallback(
+    async (
+      phone: string,
+      loginType: string
+    ): Promise<{ success: boolean; error?: string }> => {
       setLoading(true);
       setError(null);
       setOtpSent(false);
@@ -216,7 +250,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       try {
         const response = await axios.post<OtpResponse>(
-          "https://dev.cordeliakare.com/api/login",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/login`,
           {
             phone: phone,
             login_type: loginType,
@@ -226,6 +260,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (response.status === 200) {
           setOtpSent(true);
+          // console.log(response);
           return { success: true };
         } else {
           const errorMsg = response.data.message || "Failed to send OTP";
@@ -246,10 +281,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } finally {
         setLoading(false);
       }
-    }, []);
+    },
+    []
+  );
 
   const verifyOtp = useCallback(
-    async (phone: string, otp: string, loginType: string): Promise<{ success: boolean; error?: string }> => {
+    async (
+      phone: string,
+      otp: string,
+      loginType: string
+    ): Promise<{ success: boolean; error?: string }> => {
       setLoading(true);
       setError(null);
       setOtpExpired(false);
@@ -262,20 +303,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             confirmation_type: loginType,
             otp: otp,
             type: "login",
-            prefix_code: "+91",
+            prefix_code: "91",
           }
         );
-
         if (response.status === 200) {
+          // console.log("response", response);
           if (response.data.token && response.data.user) {
             setToken(response.data.token);
             setUser(response.data.user);
             localStorage.setItem("token", response.data.token);
-            localStorage.setItem("user", JSON.stringify(response.data.user));
+            localStorage.setItem("user", "patient");
 
             // Redirect based on role
             const redirectPath =
-              loginType === "doctor" ? "/doctor/dashboard" : "/dashboard";
+              loginType === "doctor" ? "/doctor/dashboard" : "/";
             router.push(redirectPath);
 
             return { success: true };
@@ -315,8 +356,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setOtpExpired(false);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    router.push("/login");
+    router.push("/");
   }, [router]);
+
+  const fetchSalutations = async () => {
+    try {
+      setIsLoadingSalutations(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/get/salutation`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch salutations");
+      }
+      const data = await response.json();
+      setSalutations(data.data);
+      setIsLoadingSalutations(false);
+    } catch (error) {
+      console.error("Error fetching salutations:", error);
+    }
+  };
 
   const clearError = useCallback((): void => setError(null), []);
 
@@ -329,6 +387,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value: AuthContextType = {
     user,
+    setUser,
     token,
     isAuthenticated,
     loading,
@@ -342,6 +401,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearOtpState,
     sendRegistrationOtp,
     verifyRegistrationOtp,
+    salutations,
+    isLoadingSalutations,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

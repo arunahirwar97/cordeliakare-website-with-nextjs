@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PhoneVerification from './steps/phone-verification';
 import CompleteProfile from './steps/complete-profile';
@@ -11,8 +11,16 @@ export default function IndianRegistration() {
   const [step, setStep] = useState<number>(1);
   const [phone, setPhone] = useState<string>('');
   const [verified, setVerified] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   const { theme } = useTheme();
-  const isDark = theme === 'dark';
+
+  // Ensure component is mounted before using theme
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Default to light theme during SSR to avoid hydration mismatch
+  const isDark = mounted ? theme === 'dark' : false;
 
   const handlePhoneVerified = (verifiedPhone: string) => {
     setPhone(verifiedPhone);

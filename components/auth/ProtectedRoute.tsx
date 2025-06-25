@@ -7,16 +7,17 @@ import { useEffect } from 'react'
 import LoadingSpinner from '../loading/LoadingComponent'
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, loading } = useAuth()
+  const { loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    const token = localStorage.getItem('token')
+    if (!loading && !token) {
       router.push('/auth/login')
     }
-  }, [isAuthenticated, loading, router])
+  }, [ loading, router])
 
-  if (loading || !isAuthenticated) {
+  if (loading) {
     return (<LoadingSpinner />);
   }
 

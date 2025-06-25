@@ -1,5 +1,7 @@
 "use client";
 
+import { LogOut, User } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -169,10 +171,18 @@ export default function Navbar() {
     hospitals: false,
   });
   const { theme, setTheme } = useTheme();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { logout, user } = useAuth();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    const token = localStorage.getItem("token");
+    if(token) {
+      setIsLoggedIn(true);
+    }else{
+      setIsLoggedIn(false);
+    }
+  }, [user]);
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -183,6 +193,11 @@ export default function Navbar() {
       ...prev,
       [dropdown]: !prev[dropdown],
     }));
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsLoggedIn(false);
   };
 
   if (!mounted) return null;
@@ -405,12 +420,35 @@ export default function Navbar() {
               </motion.div>
             </motion.button>
 
-            <Button
-              asChild
-              className="hidden md:inline-flex bg-blue-600 hover:bg-blue-700"
-            >
-              <Link href="https://prod.cordeliakare.com/login">Login</Link>
-            </Button>
+            {/* Replace the login button with this conditional rendering */}
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-2">
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-muted"
+                >
+                  <Link href="/profile">
+                    <User className="h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="hidden md:inline-flex bg-red-400 dark:bg-red-700"
+                >
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Button
+                asChild
+                className="hidden md:inline-flex bg-blue-600 hover:bg-blue-700"
+              >
+                <Link href="/auth/login">Login</Link>
+              </Button>
+            )}
 
             {/* Mobile menu button */}
             <button
@@ -677,7 +715,10 @@ export default function Navbar() {
                               }
                               className="block"
                             >
-                              <div onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-muted rounded-lg cursor-pointer">
+                              <div
+                                onClick={() => setIsMenuOpen(false)}
+                                className="p-2 hover:bg-muted rounded-lg cursor-pointer"
+                              >
                                 <div className="flex items-center space-x-3">
                                   <div
                                     className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}

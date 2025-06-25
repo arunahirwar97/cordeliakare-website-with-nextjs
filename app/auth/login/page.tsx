@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { theme, systemTheme } = useTheme();
-  const [loginType, setLoginType] = useState<"patient" | "doctor">("patient");
+  const [loginType, setLoginType] = useState("patient");
   
   // Use auth context
   const {
@@ -111,7 +111,7 @@ export default function LoginPage() {
             </div>
 
             {/* Login type selector */}
-            <div className="flex justify-center mb-6">
+            {/* <div className="flex justify-center mb-6">
               <div
                 className={`inline-flex rounded-md shadow-sm ${
                   isDark ? "bg-gray-700" : "bg-gray-100"
@@ -149,7 +149,7 @@ export default function LoginPage() {
                   Doctor
                 </button>
               </div>
-            </div>
+            </div> */}
 
             {error && (
               <motion.div
@@ -264,22 +264,22 @@ export default function LoginPage() {
                       isDark ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
-                    6-digit OTP
+                    5-digit OTP
                   </label>
                   <input
                     id="otp"
                     type="text"
                     value={otp}
                     onChange={(e) =>
-                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 5))
                     }
                     className={`w-full px-4 py-3 rounded-lg border ${
                       isDark
                         ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
                         : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                     }`}
-                    placeholder="Enter 6-digit OTP"
-                    maxLength={6}
+                    placeholder="Enter 5-digit OTP"
+                    maxLength={5}
                     required
                   />
                 </motion.div>
@@ -317,9 +317,9 @@ export default function LoginPage() {
                 >
                   <button
                     type="submit"
-                    disabled={loading || otp.length !== 6}
+                    disabled={loading || otp.length !== 5}
                     className={`w-full py-3 px-4 rounded-lg font-semibold shadow-md transition-all duration-300 flex items-center justify-center ${
-                      loading || otp.length !== 6
+                      loading || otp.length !== 5
                         ? isDark
                           ? "bg-gray-700 text-gray-400 cursor-not-allowed"
                           : "bg-gray-200 text-gray-500 cursor-not-allowed"

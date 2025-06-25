@@ -1,8 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import axios from "axios";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { Loader2 } from "lucide-react";
+import LoadingSpinner from "@/components/loading/LoadingComponent";
+
+interface Salutation {
+  name: string;
+  id: number;
+}
 
 interface CompleteProfileProps {
   phone: string;
@@ -10,229 +19,223 @@ interface CompleteProfileProps {
 }
 
 // API Configuration - Update this with your actual API base URL
-const API_BASE_URL = process.env.API_BASE_URL || 'https://dev.cordeliakare.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export default function CompleteProfile({ phone, isDark }: CompleteProfileProps) {
+export default function CompleteProfile({
+  phone,
+  isDark,
+}: CompleteProfileProps) {
+  const { isLoadingSalutations, salutations, setUser } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
-    register_type: 'patient',
+    register_type: "patient",
     image: null as File | null,
-    salutation: '',
-    firstName: '',
-    lastName: '',
-    fatherName: '',
-    email: '',
-    gender: '',
-    dob: '',
-    bloodGroup: '',
-    referredBy: '',
-    address: '',
+    salutation: "",
+    firstName: "",
+    lastName: "",
+    fatherName: "",
+    email: "",
+    gender: "",
+    dob: "",
+    bloodGroup: "",
+    referredBy: "",
+    address: "",
     phone: phone,
-    area: '',
-    locality: '',
-    state: '',
-    country: 'India',
-    pincode: '',
-    emergencyContactName: '',
-    emergencyContactRelation: '',
-    emergencyContactPhone: '',
-    aadhaarNumber: '',
-    panNumber: '',
-    passportNumber: '',
-    registrationType: ''
+    area: "",
+    locality: "",
+    state: "",
+    country: "India",
+    pincode: "",
+    emergencyContactName: "",
+    emergencyContactRelation: "",
+    emergencyContactPhone: "",
+    aadhaarNumber: "",
+    panNumber: "",
+    passportNumber: "",
+    registrationType: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeSection, setActiveSection] = useState('personal');
+  const [activeSection, setActiveSection] = useState("personal");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData(prev => ({ ...prev, image: e.target.files![0] }));
+      setFormData((prev) => ({ ...prev, image: e.target.files![0] }));
     }
   };
 
   // Convert gender to numeric value as required by API
   const getGenderValue = (gender: string): number | null => {
     switch (gender) {
-      case 'Male': return 0;
-      case 'Female': return 1;
-      case 'Other': return 2;
-      default: return null;
+      case "Male":
+        return 0;
+      case "Female":
+        return 1;
+      case "Other":
+        return 2;
+      default:
+        return null;
     }
   };
 
   // Convert salutation to ID as required by API
-  const getSalutationId = (salutation: string): string => {
-    const salutationMap: { [key: string]: string } = {
-      'Mr': '1',
-      'Mrs': '2', 
-      'Ms': '3',
-      'Dr': '4'
-    };
-    return salutationMap[salutation] || '';
+  const getSalutationId = (salutationName: string): string => {
+    const salutation = salutations.find(
+      (s: any) =>
+        s.name.toLowerCase().replace(".", "") === salutationName.toLowerCase()
+    );
+    return salutation ? salutation.id.toString() : "";
   };
 
   const registerApi = async () => {
     const data = new FormData();
-    
-    // Map form data to API expected format
-    data.append('register_type', 'patient');
-    data.append('first_name', formData.firstName);
-    data.append('last_name', formData.lastName);
-    data.append('email', formData.email);
-    data.append('father_name', formData.fatherName);
-    data.append('dob', formData.dob);
-    data.append('phone', phone);
-    data.append('emergencycontact', formData.emergencyContactPhone);
-    data.append('emergencycontact_relation', formData.emergencyContactName);
+
+    // Your original data mapping (unchanged)
+    data.append("register_type", "patient");
+    data.append("first_name", formData.firstName);
+    data.append("last_name", formData.lastName);
+    data.append("email", formData.email);
+    data.append("father_name", formData.fatherName);
+    data.append("dob", formData.dob);
+    data.append("phone", phone);
+    data.append("emergencycontact", formData.emergencyContactPhone);
+    data.append("emergencycontact_relation", formData.emergencyContactName);
     const genderValue = getGenderValue(formData.gender);
     if (genderValue !== null) {
-      data.append('gender', genderValue.toString());
+      data.append("gender", genderValue.toString());
     }
-    data.append('emergency_prefix_code', '91');
-    data.append('prefix_code', '91');
-    data.append('address1', formData.address);
-    data.append('address2', formData.area);
-    data.append('zip', formData.pincode);
-    data.append('city', formData.locality);
-    data.append('state', formData.state);
-    data.append('country', formData.country);
-    data.append('referrel', formData.referredBy);
-    data.append('blood_group', formData.bloodGroup);
-    data.append('salutation_id', getSalutationId(formData.salutation));
-    data.append('registration_type', formData.registrationType || '');
-    data.append('aadhar_number', formData.aadhaarNumber);
-    data.append('pan_number', formData.panNumber);
-    data.append('passport_number', formData.passportNumber);
+    data.append("emergency_prefix_code", "91");
+    data.append("prefix_code", "91");
+    data.append("address1", formData.address);
+    data.append("address2", formData.area);
+    data.append("zip", formData.pincode);
+    data.append("city", formData.locality);
+    data.append("state", formData.state);
+    data.append("country", formData.country);
+    data.append("referrel", formData.referredBy);
+    data.append("blood_group", formData.bloodGroup);
+    data.append("salutation_id", getSalutationId(formData.salutation));
+    data.append("registration_type", formData.registrationType || "");
+    data.append("aadhar_number", formData.aadhaarNumber);
+    data.append("pan_number", formData.panNumber);
+    data.append("passport_number", formData.passportNumber);
 
-    // Add image if provided
     if (formData.image) {
-      data.append('image', formData.image);
+      data.append("image", formData.image);
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/confirmregistration`, {
-        method: 'POST',
-        body: data,
-        // Don't set Content-Type header - let browser set it with boundary for FormData
-      });
+      const response = await axios.post(
+        `${API_BASE_URL}/api/confirmregistration`,
+        data
+      );
+      // console.log("Registration response==>", response);
+      const result = response.data;
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Registration failed');
+      if (response.status === 201) {
+        setUser(response?.data?.user);
+        localStorage.setItem("token", response?.data?.token);
+        localStorage.setItem("user", "patient");
+        // console.log("Registration successful:", response);
+        router.push("/");
+        setLoading(false);
       }
 
-      // Store user data in sessionStorage (avoiding localStorage as per requirements)
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('indianPatient', JSON.stringify({
-          phone,
-          ...formData,
-          registrationComplete: true,
-          userData: result.data
-        }));
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error(result.message || "Registration failed");
       }
 
-      console.log('Registration successful:', result);
-      router.push('/surgical-care/search?location=India');
-      
       return result;
     } catch (error: any) {
-      console.error('Registration failed:', error);
-      
-      // Handle different types of errors
-      if (error.message) {
-        alert(error.message);
-      } else {
-        alert('Registration failed. Please try again.');
-      }
-      
-      throw error;
+      console.error("Registration failed:", error);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     // Basic validation
     if (!formData.firstName || !formData.lastName || !formData.dob) {
-      alert('Please fill in all required fields');
+      alert("Please fill in all required fields");
       return;
     }
-
-    setIsSubmitting(true);
-    
-    try {
-      await registerApi();
-    } catch (error) {
-      console.error('Registration error:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    await registerApi();
   };
 
   const inputClasses = `w-full px-4 py-2 rounded-lg border ${
     isDark
-      ? 'bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500'
-      : 'bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500'
+      ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+      : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
   } transition-colors`;
 
   const labelClasses = `block text-sm font-medium mb-1 ${
-    isDark ? 'text-gray-300' : 'text-gray-700'
+    isDark ? "text-gray-300" : "text-gray-700"
   }`;
 
-  const sectionButtonClasses = (section: string) => 
+  const sectionButtonClasses = (section: string) =>
     `px-4 py-2 rounded-md text-sm font-medium transition-colors ${
       activeSection === section
         ? isDark
-          ? 'bg-purple-700 text-white'
-          : 'bg-purple-600 text-white'
+          ? "bg-purple-700 text-white"
+          : "bg-purple-600 text-white"
         : isDark
-        ? 'text-gray-300 hover:bg-gray-700'
-        : 'text-gray-700 hover:bg-gray-100'
+        ? "text-gray-300 hover:bg-gray-700"
+        : "text-gray-700 hover:bg-gray-100"
     }`;
 
   const formSections = [
-    { id: 'personal', title: 'Personal Info' },
-    { id: 'address', title: 'Address' },
-    { id: 'emergency', title: 'Emergency Contact' },
-    { id: 'documents', title: 'Documents' },
+    { id: "personal", title: "Personal Info" },
+    { id: "address", title: "Address" },
+    { id: "emergency", title: "Emergency Contact" },
+    { id: "documents", title: "Documents" },
   ];
 
-  return (
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         className={`rounded-xl shadow-lg overflow-hidden ${
-          isDark ? 'bg-gray-800' : 'bg-white'
+          isDark ? "bg-gray-800" : "bg-white"
         }`}
       >
         {/* Form Header */}
-        <div className={`p-6 border-b ${
-          isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-gray-50'
-        }`}>
-          <h2 className={`text-2xl font-bold ${
-            isDark ? 'text-white' : 'text-gray-900'
-          }`}>
+        <div
+          className={`p-6 border-b ${
+            isDark
+              ? "border-gray-700 bg-gray-900"
+              : "border-gray-200 bg-gray-50"
+          }`}
+        >
+          <h2
+            className={`text-2xl font-bold ${
+              isDark ? "text-white" : "text-gray-900"
+            }`}
+          >
             Complete Your Profile
           </h2>
-          <p className={`mt-1 ${
-            isDark ? 'text-gray-400' : 'text-gray-600'
-          }`}>
+          <p className={`mt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
             Registered mobile: +91 {phone}
           </p>
         </div>
 
         {/* Form Navigation */}
-        <div className={`p-4 border-b ${
-          isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-100'
-        }`}>
+        <div
+          className={`p-4 border-b ${
+            isDark
+              ? "border-gray-700 bg-gray-800"
+              : "border-gray-200 bg-gray-100"
+          }`}
+        >
           <nav className="flex space-x-2 overflow-x-auto pb-1">
             {formSections.map((section) => (
               <button
@@ -251,7 +254,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Personal Information */}
             <AnimatePresence mode="wait">
-              {activeSection === 'personal' && (
+              {activeSection === "personal" && (
                 <motion.div
                   key="personal"
                   initial={{ opacity: 0, x: -20 }}
@@ -261,7 +264,9 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                   <div className="md:col-span-2">
-                    <label className={labelClasses}>Profile Picture (Optional)</label>
+                    <label className={labelClasses}>
+                      Profile Picture (Optional)
+                    </label>
                     <input
                       type="file"
                       accept="image/*"
@@ -271,24 +276,38 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   </div>
 
                   <div>
-                    <label htmlFor="salutation" className={labelClasses}>Salutation</label>
-                    <select
-                      id="salutation"
-                      name="salutation"
-                      value={formData.salutation}
-                      onChange={handleChange}
-                      className={inputClasses}
-                    >
-                      <option value="">Select</option>
-                      <option value="Mr">Mr</option>
-                      <option value="Mrs">Mrs</option>
-                      <option value="Ms">Ms</option>
-                      <option value="Dr">Dr</option>
-                    </select>
+                    <label htmlFor="salutation" className={labelClasses}>
+                      Salutation
+                    </label>
+                    {isLoadingSalutations ? (
+                      <div
+                        className={`${inputClasses} flex items-center justify-center h-10`}
+                      >
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      </div>
+                    ) : (
+                      <select
+                        id="salutation"
+                        name="salutation"
+                        value={formData.salutation}
+                        onChange={handleChange}
+                        className={inputClasses}
+                        disabled={isLoadingSalutations}
+                      >
+                        <option value="">Select</option>
+                        {salutations.map((salutation: any) => (
+                          <option key={salutation.id} value={salutation.id}>
+                            {salutation.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="gender" className={labelClasses}>Gender</label>
+                    <label htmlFor="gender" className={labelClasses}>
+                      Gender
+                    </label>
                     <select
                       id="gender"
                       name="gender"
@@ -302,9 +321,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       <option value="Other">Other</option>
                     </select>
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="firstName" className={labelClasses}>First Name*</label>
+                    <label htmlFor="firstName" className={labelClasses}>
+                      First Name*
+                    </label>
                     <input
                       type="text"
                       id="firstName"
@@ -315,9 +336,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       required
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="lastName" className={labelClasses}>Last Name*</label>
+                    <label htmlFor="lastName" className={labelClasses}>
+                      Last Name*
+                    </label>
                     <input
                       type="text"
                       id="lastName"
@@ -330,7 +353,9 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   </div>
 
                   <div>
-                    <label htmlFor="fatherName" className={labelClasses}>Father's Name</label>
+                    <label htmlFor="fatherName" className={labelClasses}>
+                      Father's Name
+                    </label>
                     <input
                       type="text"
                       id="fatherName"
@@ -340,9 +365,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       className={inputClasses}
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="email" className={labelClasses}>Email</label>
+                    <label htmlFor="email" className={labelClasses}>
+                      Email
+                    </label>
                     <input
                       type="email"
                       id="email"
@@ -352,9 +379,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       className={inputClasses}
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="dob" className={labelClasses}>Date of Birth*</label>
+                    <label htmlFor="dob" className={labelClasses}>
+                      Date of Birth*
+                    </label>
                     <input
                       type="date"
                       id="dob"
@@ -365,9 +394,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       required
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="bloodGroup" className={labelClasses}>Blood Group</label>
+                    <label htmlFor="bloodGroup" className={labelClasses}>
+                      Blood Group
+                    </label>
                     <select
                       id="bloodGroup"
                       name="bloodGroup"
@@ -388,7 +419,9 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   </div>
 
                   <div>
-                    <label htmlFor="referredBy" className={labelClasses}>Referred By (Optional)</label>
+                    <label htmlFor="referredBy" className={labelClasses}>
+                      Referred By (Optional)
+                    </label>
                     <input
                       type="text"
                       id="referredBy"
@@ -404,7 +437,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
 
             {/* Address Information */}
             <AnimatePresence mode="wait">
-              {activeSection === 'address' && (
+              {activeSection === "address" && (
                 <motion.div
                   key="address"
                   initial={{ opacity: 0, x: -20 }}
@@ -414,7 +447,9 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                   <div className="md:col-span-2">
-                    <label htmlFor="address" className={labelClasses}>Address Line 1</label>
+                    <label htmlFor="address" className={labelClasses}>
+                      Address Line 1
+                    </label>
                     <input
                       type="text"
                       id="address"
@@ -425,9 +460,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       placeholder="Enter your primary address"
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="area" className={labelClasses}>Area/Street (Address Line 2)</label>
+                    <label htmlFor="area" className={labelClasses}>
+                      Area/Street (Address Line 2)
+                    </label>
                     <input
                       type="text"
                       id="area"
@@ -437,9 +474,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       className={inputClasses}
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="locality" className={labelClasses}>City/Locality</label>
+                    <label htmlFor="locality" className={labelClasses}>
+                      City/Locality
+                    </label>
                     <input
                       type="text"
                       id="locality"
@@ -449,9 +488,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       className={inputClasses}
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="state" className={labelClasses}>State</label>
+                    <label htmlFor="state" className={labelClasses}>
+                      State
+                    </label>
                     <input
                       type="text"
                       id="state"
@@ -461,9 +502,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       className={inputClasses}
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="country" className={labelClasses}>Country</label>
+                    <label htmlFor="country" className={labelClasses}>
+                      Country
+                    </label>
                     <input
                       type="text"
                       id="country"
@@ -474,9 +517,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       disabled
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="pincode" className={labelClasses}>Pincode/ZIP</label>
+                    <label htmlFor="pincode" className={labelClasses}>
+                      Pincode/ZIP
+                    </label>
                     <input
                       type="text"
                       id="pincode"
@@ -493,7 +538,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
 
             {/* Emergency Contact */}
             <AnimatePresence mode="wait">
-              {activeSection === 'emergency' && (
+              {activeSection === "emergency" && (
                 <motion.div
                   key="emergency"
                   initial={{ opacity: 0, x: -20 }}
@@ -503,7 +548,12 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                   <div>
-                    <label htmlFor="emergencyContactName" className={labelClasses}>Emergency Contact Name</label>
+                    <label
+                      htmlFor="emergencyContactName"
+                      className={labelClasses}
+                    >
+                      Emergency Contact Name
+                    </label>
                     <input
                       type="text"
                       id="emergencyContactName"
@@ -513,9 +563,14 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       className={inputClasses}
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="emergencyContactRelation" className={labelClasses}>Relation</label>
+                    <label
+                      htmlFor="emergencyContactRelation"
+                      className={labelClasses}
+                    >
+                      Relation
+                    </label>
                     <input
                       type="text"
                       id="emergencyContactRelation"
@@ -526,15 +581,22 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       placeholder="e.g., Father, Mother, Spouse"
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="emergencyContactPhone" className={labelClasses}>Emergency Contact Phone</label>
+                    <label
+                      htmlFor="emergencyContactPhone"
+                      className={labelClasses}
+                    >
+                      Emergency Contact Phone
+                    </label>
                     <div className="flex">
-                      <span className={`inline-flex items-center px-3 rounded-l-md border border-r-0 ${
-                        isDark 
-                          ? 'bg-gray-700 border-gray-600 text-gray-300' 
-                          : 'bg-gray-100 border-gray-300 text-gray-500'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-3 rounded-l-md border border-r-0 ${
+                          isDark
+                            ? "bg-gray-700 border-gray-600 text-gray-300"
+                            : "bg-gray-100 border-gray-300 text-gray-500"
+                        }`}
+                      >
                         +91
                       </span>
                       <input
@@ -545,8 +607,8 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                         onChange={handleChange}
                         className={`flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border ${
                           isDark
-                            ? 'bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500'
-                            : 'bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500'
+                            ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+                            : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                         }`}
                         placeholder="9876543210"
                         maxLength={10}
@@ -559,7 +621,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
 
             {/* Documents */}
             <AnimatePresence mode="wait">
-              {activeSection === 'documents' && (
+              {activeSection === "documents" && (
                 <motion.div
                   key="documents"
                   initial={{ opacity: 0, x: -20 }}
@@ -569,7 +631,9 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                   <div>
-                    <label htmlFor="registrationType" className={labelClasses}>Registration Document Type</label>
+                    <label htmlFor="registrationType" className={labelClasses}>
+                      Registration Document Type
+                    </label>
                     <select
                       id="registrationType"
                       name="registrationType"
@@ -587,7 +651,9 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   <div></div>
 
                   <div>
-                    <label htmlFor="aadhaarNumber" className={labelClasses}>Aadhaar Number</label>
+                    <label htmlFor="aadhaarNumber" className={labelClasses}>
+                      Aadhaar Number
+                    </label>
                     <input
                       type="text"
                       id="aadhaarNumber"
@@ -599,9 +665,11 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       placeholder="Enter 12-digit Aadhaar number"
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="panNumber" className={labelClasses}>PAN Number</label>
+                    <label htmlFor="panNumber" className={labelClasses}>
+                      PAN Number
+                    </label>
                     <input
                       type="text"
                       id="panNumber"
@@ -611,12 +679,14 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       className={inputClasses}
                       maxLength={10}
                       placeholder="Enter PAN number"
-                      style={{ textTransform: 'uppercase' }}
+                      style={{ textTransform: "uppercase" }}
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="passportNumber" className={labelClasses}>Passport Number</label>
+                    <label htmlFor="passportNumber" className={labelClasses}>
+                      Passport Number
+                    </label>
                     <input
                       type="text"
                       id="passportNumber"
@@ -641,45 +711,49 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                     onClick={() => setActiveSection(section.id)}
                     className={`h-2 w-6 rounded-full transition-colors ${
                       activeSection === section.id
-                        ? 'bg-purple-600'
+                        ? "bg-purple-600"
                         : isDark
-                        ? 'bg-gray-600'
-                        : 'bg-gray-300'
+                        ? "bg-gray-600"
+                        : "bg-gray-300"
                     }`}
                     aria-label={`Go to ${section.title}`}
                   />
                 ))}
               </div>
-              
+
               <div className="flex space-x-3">
-                {activeSection !== 'personal' && (
+                {activeSection !== "personal" && (
                   <button
                     type="button"
                     onClick={() => {
-                      const currentIndex = formSections.findIndex(s => s.id === activeSection);
+                      const currentIndex = formSections.findIndex(
+                        (s) => s.id === activeSection
+                      );
                       setActiveSection(formSections[currentIndex - 1].id);
                     }}
                     className={`px-4 py-2 rounded-md ${
                       isDark
-                        ? 'text-gray-300 hover:bg-gray-700'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? "text-gray-300 hover:bg-gray-700"
+                        : "text-gray-700 hover:bg-gray-100"
                     } transition-colors`}
                   >
                     Back
                   </button>
                 )}
-                
-                {activeSection !== 'documents' ? (
+
+                {activeSection !== "documents" ? (
                   <button
                     type="button"
                     onClick={() => {
-                      const currentIndex = formSections.findIndex(s => s.id === activeSection);
+                      const currentIndex = formSections.findIndex(
+                        (s) => s.id === activeSection
+                      );
                       setActiveSection(formSections[currentIndex + 1].id);
                     }}
                     className={`px-6 py-2 rounded-md font-medium ${
                       isDark
-                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                        ? "bg-purple-600 hover:bg-purple-700 text-white"
+                        : "bg-purple-600 hover:bg-purple-700 text-white"
                     } transition-colors`}
                   >
                     Next
@@ -691,14 +765,14 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                     className={`px-6 py-2 rounded-md font-medium ${
                       isSubmitting
                         ? isDark
-                          ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         : isDark
-                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                        ? "bg-purple-600 hover:bg-purple-700 text-white"
+                        : "bg-purple-600 hover:bg-purple-700 text-white"
                     } transition-colors`}
                   >
-                    {isSubmitting ? 'Submitting...' : 'Complete Registration'}
+                    {isSubmitting ? "Submitting..." : "Complete Registration"}
                   </button>
                 )}
               </div>
