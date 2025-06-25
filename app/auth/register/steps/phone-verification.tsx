@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 
 interface PhoneVerificationProps {
   onVerified: (phone: string) => void;
@@ -9,25 +10,48 @@ interface PhoneVerificationProps {
 }
 
 export default function PhoneVerification({ onVerified, isDark }: PhoneVerificationProps) {
+  const { sendRegistrationOtp, verifyRegistrationOtp } = useAuth();
   const [phone, setPhone] = useState<string>('');
   const [otp, setOtp] = useState<string>('');
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSendOtp = async () => {
+    if (!phone || phone.length !== 10) return;
+
     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setOtpSent(true);
-    setIsLoading(false);
+    try {
+      const result = await sendRegistrationOtp(phone, 'patient'); 
+      if (result.success) {
+        setOtpSent(true);
+      } else {
+        // Handle error (result.error contains the error message)
+        console.error('OTP send failed:', result.error);
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) return;
+
     setIsLoading(true);
-    // Simulate verification
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    onVerified(phone);
-    setIsLoading(false);
+    try {
+      const result = await verifyRegistrationOtp(phone, otp, 'user');
+      if (result.success) {
+        onVerified(phone);
+      } else {
+        // Handle error (result.error contains the error message)
+        console.error('OTP verification failed:', result.error);
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

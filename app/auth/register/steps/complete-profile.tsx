@@ -9,10 +9,14 @@ interface CompleteProfileProps {
   isDark: boolean;
 }
 
+// API Configuration - Update this with your actual API base URL
+const API_BASE_URL = process.env.API_BASE_URL || 'https://dev.cordeliakare.com';
+
 export default function CompleteProfile({ phone, isDark }: CompleteProfileProps) {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    profilePic: null,
+    register_type: 'patient',
+    image: null as File | null,
     salutation: '',
     firstName: '',
     lastName: '',
@@ -23,6 +27,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
     bloodGroup: '',
     referredBy: '',
     address: '',
+    phone: phone,
     area: '',
     locality: '',
     state: '',
@@ -32,7 +37,9 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
     emergencyContactRelation: '',
     emergencyContactPhone: '',
     aadhaarNumber: '',
-    panNumber: ''
+    panNumber: '',
+    passportNumber: '',
+    registrationType: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState('personal');
@@ -44,28 +51,125 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData((prev:any) => ({ ...prev, profilePic: e.target.files[0] }));
+      setFormData(prev => ({ ...prev, image: e.target.files![0] }));
+    }
+  };
+
+  // Convert gender to numeric value as required by API
+  const getGenderValue = (gender: string): number | null => {
+    switch (gender) {
+      case 'Male': return 0;
+      case 'Female': return 1;
+      case 'Other': return 2;
+      default: return null;
+    }
+  };
+
+  // Convert salutation to ID as required by API
+  const getSalutationId = (salutation: string): string => {
+    const salutationMap: { [key: string]: string } = {
+      'Mr': '1',
+      'Mrs': '2', 
+      'Ms': '3',
+      'Dr': '4'
+    };
+    return salutationMap[salutation] || '';
+  };
+
+  const registerApi = async () => {
+    const data = new FormData();
+    
+    // Map form data to API expected format
+    data.append('register_type', 'patient');
+    data.append('first_name', formData.firstName);
+    data.append('last_name', formData.lastName);
+    data.append('email', formData.email);
+    data.append('father_name', formData.fatherName);
+    data.append('dob', formData.dob);
+    data.append('phone', phone);
+    data.append('emergencycontact', formData.emergencyContactPhone);
+    data.append('emergencycontact_relation', formData.emergencyContactName);
+    const genderValue = getGenderValue(formData.gender);
+    if (genderValue !== null) {
+      data.append('gender', genderValue.toString());
+    }
+    data.append('emergency_prefix_code', '91');
+    data.append('prefix_code', '91');
+    data.append('address1', formData.address);
+    data.append('address2', formData.area);
+    data.append('zip', formData.pincode);
+    data.append('city', formData.locality);
+    data.append('state', formData.state);
+    data.append('country', formData.country);
+    data.append('referrel', formData.referredBy);
+    data.append('blood_group', formData.bloodGroup);
+    data.append('salutation_id', getSalutationId(formData.salutation));
+    data.append('registration_type', formData.registrationType || '');
+    data.append('aadhar_number', formData.aadhaarNumber);
+    data.append('pan_number', formData.panNumber);
+    data.append('passport_number', formData.passportNumber);
+
+    // Add image if provided
+    if (formData.image) {
+      data.append('image', formData.image);
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/confirmregistration`, {
+        method: 'POST',
+        body: data,
+        // Don't set Content-Type header - let browser set it with boundary for FormData
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Registration failed');
+      }
+
+      // Store user data in sessionStorage (avoiding localStorage as per requirements)
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('indianPatient', JSON.stringify({
+          phone,
+          ...formData,
+          registrationComplete: true,
+          userData: result.data
+        }));
+      }
+
+      console.log('Registration successful:', result);
+      router.push('/surgical-care/search?location=India');
+      
+      return result;
+    } catch (error: any) {
+      console.error('Registration failed:', error);
+      
+      // Handle different types of errors
+      if (error.message) {
+        alert(error.message);
+      } else {
+        alert('Registration failed. Please try again.');
+      }
+      
+      throw error;
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (!formData.firstName || !formData.lastName || !formData.dob) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Store user data
-      localStorage.setItem('indianPatient', JSON.stringify({
-        phone,
-        ...formData,
-        registrationComplete: true
-      }));
-      
-      router.push('/surgical-care/search?location=India');
+      await registerApi();
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error('Registration error:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -310,7 +414,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                   <div className="md:col-span-2">
-                    <label htmlFor="address" className={labelClasses}>Location (Start typing to search)</label>
+                    <label htmlFor="address" className={labelClasses}>Address Line 1</label>
                     <input
                       type="text"
                       id="address"
@@ -318,11 +422,12 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       value={formData.address}
                       onChange={handleChange}
                       className={inputClasses}
+                      placeholder="Enter your primary address"
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="area" className={labelClasses}>Area/Street</label>
+                    <label htmlFor="area" className={labelClasses}>Area/Street (Address Line 2)</label>
                     <input
                       type="text"
                       id="area"
@@ -334,7 +439,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   </div>
                   
                   <div>
-                    <label htmlFor="locality" className={labelClasses}>Locality</label>
+                    <label htmlFor="locality" className={labelClasses}>City/Locality</label>
                     <input
                       type="text"
                       id="locality"
@@ -371,7 +476,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   </div>
                   
                   <div>
-                    <label htmlFor="pincode" className={labelClasses}>Pincode</label>
+                    <label htmlFor="pincode" className={labelClasses}>Pincode/ZIP</label>
                     <input
                       type="text"
                       id="pincode"
@@ -398,7 +503,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                   <div>
-                    <label htmlFor="emergencyContactName" className={labelClasses}>Name</label>
+                    <label htmlFor="emergencyContactName" className={labelClasses}>Emergency Contact Name</label>
                     <input
                       type="text"
                       id="emergencyContactName"
@@ -418,11 +523,12 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       value={formData.emergencyContactRelation}
                       onChange={handleChange}
                       className={inputClasses}
+                      placeholder="e.g., Father, Mother, Spouse"
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="emergencyContactPhone" className={labelClasses}>Phone Number</label>
+                    <label htmlFor="emergencyContactPhone" className={labelClasses}>Emergency Contact Phone</label>
                     <div className="flex">
                       <span className={`inline-flex items-center px-3 rounded-l-md border border-r-0 ${
                         isDark 
@@ -463,6 +569,24 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                   <div>
+                    <label htmlFor="registrationType" className={labelClasses}>Registration Document Type</label>
+                    <select
+                      id="registrationType"
+                      name="registrationType"
+                      value={formData.registrationType}
+                      onChange={handleChange}
+                      className={inputClasses}
+                    >
+                      <option value="">Select Document Type</option>
+                      <option value="aadhaar">Aadhaar Card</option>
+                      <option value="pan">PAN Card</option>
+                      <option value="passport">Passport</option>
+                    </select>
+                  </div>
+
+                  <div></div>
+
+                  <div>
                     <label htmlFor="aadhaarNumber" className={labelClasses}>Aadhaar Number</label>
                     <input
                       type="text"
@@ -472,6 +596,7 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       onChange={handleChange}
                       className={inputClasses}
                       maxLength={12}
+                      placeholder="Enter 12-digit Aadhaar number"
                     />
                   </div>
                   
@@ -485,6 +610,21 @@ export default function CompleteProfile({ phone, isDark }: CompleteProfileProps)
                       onChange={handleChange}
                       className={inputClasses}
                       maxLength={10}
+                      placeholder="Enter PAN number"
+                      style={{ textTransform: 'uppercase' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="passportNumber" className={labelClasses}>Passport Number</label>
+                    <input
+                      type="text"
+                      id="passportNumber"
+                      name="passportNumber"
+                      value={formData.passportNumber}
+                      onChange={handleChange}
+                      className={inputClasses}
+                      placeholder="Enter passport number"
                     />
                   </div>
                 </motion.div>

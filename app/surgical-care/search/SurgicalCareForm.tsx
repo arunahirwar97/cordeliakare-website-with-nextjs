@@ -80,7 +80,7 @@ export default function SurgicalCareForm() {
     }
 
     const suggestions =
-      specificSurgeries[surgeryType]?.filter((surgery) =>
+      specificSurgeries[surgeryType]?.filter((surgery:any) =>
         surgery.label.toLowerCase().includes(input.toLowerCase())
       ) || [];
     setFilteredSuggestions(suggestions);
@@ -101,7 +101,7 @@ export default function SurgicalCareForm() {
     filterSuggestions(text);
   };
 
-  const movePriorityUp = (index) => {
+  const movePriorityUp = (index:any) => {
     if (index <= 0) return;
     const newPriorities = [...priorities];
     [newPriorities[index], newPriorities[index - 1]] = [
@@ -111,7 +111,7 @@ export default function SurgicalCareForm() {
     setPriorities(newPriorities);
   };
 
-  const movePriorityDown = (index) => {
+  const movePriorityDown = (index:any) => {
     if (index >= priorities.length - 1) return;
     const newPriorities = [...priorities];
     [newPriorities[index], newPriorities[index + 1]] = [
@@ -121,7 +121,7 @@ export default function SurgicalCareForm() {
     setPriorities(newPriorities);
   };
 
-  const toggleCondition = (id) => {
+  const toggleCondition = (id:any) => {
     setHealthConditions((prevConditions) => {
       if (id === "none") {
         return prevConditions.map((condition) => ({
@@ -621,3 +621,4 @@ export default function SurgicalCareForm() {
     </div>
   );
 }
+

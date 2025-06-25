@@ -1,78 +1,80 @@
 // app/(auth)/login/page.tsx
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useTheme } from 'next-themes'
-import { Loader2 } from 'lucide-react'
-import Turnstile from 'react-turnstile'
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { Loader2 } from "lucide-react";
+import Turnstile from "react-turnstile";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
-  const [phone, setPhone] = useState('')
-  const [otp, setOtp] = useState('')
-  const [otpSent, setOtpSent] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [captchaToken, setCaptchaToken] = useState('')
-  const [mounted, setMounted] = useState(false)
-  const router = useRouter()
-  const { theme, systemTheme } = useTheme()
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+  const { theme, systemTheme } = useTheme();
+  const [loginType, setLoginType] = useState<"patient" | "doctor">("patient");
+  
+  // Use auth context
+  const {
+    otpSent,
+    otpExpired,
+    loading,
+    error,
+    sendOtp,
+    verifyOtp,
+    clearError,
+    clearOtpState
+  } = useAuth();
 
   // Cloudflare Turnstile site key (replace with your own)
-  const TURNSTILE_SITE_KEY = '1x00000000000000000000AA'
+  const TURNSTILE_SITE_KEY = "1x00000000000000000000AA";
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
-    return null // Avoid flash of incorrect theme
+    return null; // Avoid flash of incorrect theme
   }
 
   // Determine the current theme (handles system preference)
-  const currentTheme = theme === 'system' ? systemTheme : theme
-  const isDark = currentTheme === 'dark'
+  const currentTheme = theme === "system" ? systemTheme : theme;
+  const isDark = currentTheme === "dark";
 
   const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!captchaToken) {
-      setError('Please complete the CAPTCHA')
-      return
-    }
-
-    setLoading(true)
-    setError('')
-    
-    try {
-      // Simulate API call to send OTP
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setOtpSent(true)
-    } catch (err) {
-      setError('Failed to send OTP. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
+    e.preventDefault();
+    clearError();
+    await sendOtp(phone, loginType);
+  };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    
-    try {
-      // Simulate OTP verification
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      router.push('/dashboard')
-    } catch (err) {
-      setError('Invalid OTP. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
+    e.preventDefault();
+    clearError();
+    await verifyOtp(phone, otp, loginType);
+  };
+
+  const handleResendOtp = async () => {
+    clearError();
+    clearOtpState();
+    await sendOtp(phone, loginType);
+  };
+
+  const handleChangeNumber = () => {
+    setOtp("");
+    clearOtpState();
+    clearError();
+  };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'} p-4`}>
+    <div
+      className={`min-h-screen flex items-center justify-center ${
+        isDark ? "bg-gray-900" : "bg-gray-50"
+      } p-4`}
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -83,28 +85,81 @@ export default function LoginPage() {
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
-          className={`rounded-xl shadow-xl overflow-hidden ${isDark ? 'bg-gray-800' : 'bg-white'}`}
+          className={`rounded-xl shadow-xl overflow-hidden ${
+            isDark ? "bg-gray-800" : "bg-white"
+          }`}
         >
           <div className="p-8">
             <div className="text-center mb-8">
-              <motion.h1 
+              <motion.h1
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className={`text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}
+                className={`text-3xl font-bold mb-2 ${
+                  isDark ? "text-white" : "text-gray-800"
+                }`}
               >
-                {otpSent ? 'Verify OTP' : 'Welcome Back'}
+                {otpSent
+                  ? "Verify OTP"
+                  : `Welcome ${loginType === "doctor" ? "Doctor" : ""}`}
               </motion.h1>
-              <p className={isDark ? 'text-gray-300' : 'text-gray-600'}>
-                {otpSent ? `Enter OTP sent to +91 ${phone}` : 'Sign in with your mobile number'}
+              <p className={isDark ? "text-gray-300" : "text-gray-600"}>
+                {otpSent
+                  ? `Enter OTP sent to +91 ${phone}`
+                  : "Sign in with your mobile number"}
               </p>
+            </div>
+
+            {/* Login type selector */}
+            <div className="flex justify-center mb-6">
+              <div
+                className={`inline-flex rounded-md shadow-sm ${
+                  isDark ? "bg-gray-700" : "bg-gray-100"
+                }`}
+                role="group"
+              >
+                <button
+                  type="button"
+                  onClick={() => setLoginType("patient")}
+                  className={`px-4 py-2 text-sm font-medium rounded-l-lg border ${
+                    loginType === "patient"
+                      ? isDark
+                        ? "bg-purple-600 text-white border-purple-600"
+                        : "bg-purple-600 text-white border-purple-600"
+                      : isDark
+                      ? "bg-transparent text-gray-300 border-gray-600 hover:bg-gray-600"
+                      : "bg-transparent text-gray-700 border-gray-300 hover:bg-gray-200"
+                  }`}
+                >
+                  Patient
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLoginType("doctor")}
+                  className={`px-4 py-2 text-sm font-medium rounded-r-lg border ${
+                    loginType === "doctor"
+                      ? isDark
+                        ? "bg-purple-600 text-white border-purple-600"
+                        : "bg-purple-600 text-white border-purple-600"
+                      : isDark
+                      ? "bg-transparent text-gray-300 border-gray-600 hover:bg-gray-600"
+                      : "bg-transparent text-gray-700 border-gray-300 hover:bg-gray-200"
+                  }`}
+                >
+                  Doctor
+                </button>
+              </div>
             </div>
 
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`p-3 rounded-md mb-4 text-sm ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'}`}
+                className={`p-3 rounded-md mb-4 text-sm ${
+                  isDark
+                    ? "bg-red-900/30 text-red-300"
+                    : "bg-red-100 text-red-700"
+                }`}
               >
                 {error}
               </motion.div>
@@ -117,26 +172,35 @@ export default function LoginPage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <label htmlFor="phone" className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label
+                    htmlFor="phone"
+                    className={`block text-sm font-medium mb-1 ${
+                      isDark ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
                     Mobile Number
                   </label>
                   <div className="flex">
-                    <span className={`inline-flex items-center px-3 rounded-l-md border border-r-0 ${
-                      isDark 
-                        ? 'bg-gray-700 border-gray-600 text-gray-300' 
-                        : 'bg-gray-100 border-gray-300 text-gray-500'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-3 rounded-l-md border border-r-0 ${
+                        isDark
+                          ? "bg-gray-700 border-gray-600 text-gray-300"
+                          : "bg-gray-100 border-gray-300 text-gray-500"
+                      }`}
+                    >
                       +91
                     </span>
                     <input
                       id="phone"
                       type="tel"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      onChange={(e) =>
+                        setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
+                      }
                       className={`flex-1 min-w-0 block w-full px-3 py-3 rounded-none rounded-r-md border ${
                         isDark
-                          ? 'bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500'
-                          : 'bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500'
+                          ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+                          : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                       }`}
                       placeholder="9876543210"
                       maxLength={10}
@@ -153,7 +217,7 @@ export default function LoginPage() {
                   <Turnstile
                     sitekey={TURNSTILE_SITE_KEY}
                     onVerify={setCaptchaToken}
-                    theme={isDark ? 'dark' : 'light'}
+                    theme={isDark ? "dark" : "light"}
                   />
                 </motion.div>
 
@@ -165,15 +229,15 @@ export default function LoginPage() {
                 >
                   <button
                     type="submit"
-                    disabled={loading || phone.length !== 10}
+                    disabled={loading || phone.length !== 10 || !captchaToken}
                     className={`w-full py-3 px-4 rounded-lg font-semibold shadow-md transition-all duration-300 flex items-center justify-center ${
-                      loading || phone.length !== 10
+                      loading || phone.length !== 10 || !captchaToken
                         ? isDark
-                          ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                          : "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : isDark
-                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                        ? "bg-purple-600 hover:bg-purple-700 text-white"
+                        : "bg-purple-600 hover:bg-purple-700 text-white"
                     }`}
                   >
                     {loading ? (
@@ -182,7 +246,7 @@ export default function LoginPage() {
                         Sending OTP...
                       </>
                     ) : (
-                      'Send OTP'
+                      "Send OTP"
                     )}
                   </button>
                 </motion.div>
@@ -194,24 +258,56 @@ export default function LoginPage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <label htmlFor="otp" className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label
+                    htmlFor="otp"
+                    className={`block text-sm font-medium mb-1 ${
+                      isDark ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
                     6-digit OTP
                   </label>
                   <input
                     id="otp"
                     type="text"
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onChange={(e) =>
+                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                    }
                     className={`w-full px-4 py-3 rounded-lg border ${
                       isDark
-                        ? 'bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500'
-                        : 'bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500'
+                        ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+                        : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                     }`}
                     placeholder="Enter 6-digit OTP"
                     maxLength={6}
                     required
                   />
                 </motion.div>
+
+                {otpExpired && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className={`p-3 rounded-md text-sm ${
+                      isDark
+                        ? "bg-yellow-900/30 text-yellow-300"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    <p>OTP expired. </p>
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      className={`mt-1 font-medium ${
+                        isDark
+                          ? "text-yellow-400 hover:text-yellow-300"
+                          : "text-yellow-700 hover:text-yellow-800"
+                      }`}
+                    >
+                      Resend OTP
+                    </button>
+                  </motion.div>
+                )}
 
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -225,11 +321,11 @@ export default function LoginPage() {
                     className={`w-full py-3 px-4 rounded-lg font-semibold shadow-md transition-all duration-300 flex items-center justify-center ${
                       loading || otp.length !== 6
                         ? isDark
-                          ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                          : "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : isDark
-                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                        ? "bg-purple-600 hover:bg-purple-700 text-white"
+                        : "bg-purple-600 hover:bg-purple-700 text-white"
                     }`}
                   >
                     {loading ? (
@@ -238,7 +334,7 @@ export default function LoginPage() {
                         Verifying...
                       </>
                     ) : (
-                      'Verify & Sign In'
+                      "Verify & Sign In"
                     )}
                   </button>
                 </motion.div>
@@ -251,11 +347,12 @@ export default function LoginPage() {
                 >
                   <button
                     type="button"
-                    onClick={() => {
-                      setOtpSent(false)
-                      setOtp('')
-                    }}
-                    className={`text-sm ${isDark ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-800'} font-medium transition-colors`}
+                    onClick={handleChangeNumber}
+                    className={`text-sm ${
+                      isDark
+                        ? "text-purple-400 hover:text-purple-300"
+                        : "text-purple-600 hover:text-purple-800"
+                    } font-medium transition-colors`}
                   >
                     Change Mobile Number
                   </button>
@@ -269,11 +366,15 @@ export default function LoginPage() {
               transition={{ delay: 0.8 }}
               className="mt-6 text-center"
             >
-              <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>
-                Don't have an account?{' '}
+              <p className={isDark ? "text-gray-400" : "text-gray-600"}>
+                Don't have an account?{" "}
                 <button
-                  onClick={() => router.push('/auth/register')}
-                  className={`font-medium transition-colors ${isDark ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-800'}`}
+                  onClick={() => router.push("/auth/register")}
+                  className={`font-medium transition-colors ${
+                    isDark
+                      ? "text-purple-400 hover:text-purple-300"
+                      : "text-purple-600 hover:text-purple-800"
+                  }`}
                 >
                   Register here
                 </button>
@@ -283,5 +384,5 @@ export default function LoginPage() {
         </motion.div>
       </motion.div>
     </div>
-  )
+  );
 }
