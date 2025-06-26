@@ -221,7 +221,7 @@ export default function Navbar() {
             <Link href="/" >
               {theme === 'dark' ? (
                 <Image
-                src="/dark3.png"
+                src="/dark5.jpg"
                 alt="Logo"
                 width={80}
                 height={45}

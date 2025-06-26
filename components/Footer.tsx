@@ -31,7 +31,7 @@ export default function Footer() {
                     className="block dark:hidden"
                   />
                   <Image
-                    src="/dark3.png"
+                    src="/dark5.jpg"
                     alt="Logo"
                     width={80}
                     height={45}
