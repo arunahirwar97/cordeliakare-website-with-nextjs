@@ -9,7 +9,7 @@ import LoadingSpinner from '../loading/LoadingComponent'
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { loading, token } = useAuth()
   const router = useRouter()
-  console.log("HERE IS TOKEN" , token)
+  // console.log("HERE IS TOKEN" , token)
   useEffect(() => {
     if (!loading && !token) {
       router.push('/auth/login')
