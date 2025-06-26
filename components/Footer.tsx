@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -9,6 +11,7 @@ import {
   FaInstagram,
   FaLinkedinIn,
 } from "react-icons/fa";
+import { useTheme } from "next-themes";
 
 export default function Footer() {
   return (
@@ -18,21 +21,30 @@ export default function Footer() {
           {/* Logo & About */}
           <div className="max-w-sm space-y-4">
             <div className="flex items-center space-x-2">
-              
               <Link href="/">
-                <Image
-                  src="/cordelia-logo.png"
-                  alt="Logo"
-                  width={200}
-                  height={70}
-                  
-                />
+                <div className="relative w-[80px] h-[45px]">
+                  <Image
+                    src="/cordelia-logo.png"
+                    alt="Logo"
+                    width={80}
+                    height={45}
+                    className="block dark:hidden"
+                  />
+                  <Image
+                    src="/dark3.png"
+                    alt="Logo"
+                    width={80}
+                    height={45}
+                    className="hidden dark:block"
+                  />
+                </div>
               </Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              Reimagine the Healthcare IT by using our SaaS product. CordeLiaKare
-              is a scalable product for all different sizes of healthcare
-              providers to manage the operations in a patient centric way.
+              Reimagine the Healthcare IT by using our SaaS product.
+              CordeLiaKare is a scalable product for all different sizes of
+              healthcare providers to manage the operations in a patient centric
+              way.
             </p>
           </div>
 
@@ -59,7 +71,8 @@ export default function Footer() {
                 <a
                   href="https://www.cordeliatech.com/contact-us/"
                   className="hover:underline"
-                  target={"_blank"}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   Contact Us
                 </a>
@@ -73,14 +86,15 @@ export default function Footer() {
             <p className="text-sm flex items-center space-x-2">
               <FaMapMarkerAlt />
               <span>
-                GF13 Ajantha Meadows, Third Cross, <br></br>AkshayaNagar,
-                Bangalore - 560068, Karnataka, India
+                GF13 Ajantha Meadows, Third Cross, <br />
+                AkshayaNagar, Bangalore - 560068, Karnataka, India
               </span>
             </p>
             <a
               className="text-sm flex items-center space-x-2 mb-11"
               href="mailto:contactus@cordeliatech.com"
-              target={"_blank"}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <FaEnvelope />
               <span> contactus@cordeliatech.com</span>
@@ -128,7 +142,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom links */}
-        <div className="mt-6 flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-8 text-sm ">
+        <div className="mt-6 flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-8 text-sm">
           <a href="/pricing" className="hover:underline">
             Pricing
           </a>
@@ -146,7 +160,7 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-6 text-center text-sm ">
+        <div className="mt-6 text-center text-sm">
           © {new Date().getFullYear()} Cordelia Technology Private Limited. All
           rights reserved.
         </div>

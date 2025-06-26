@@ -219,13 +219,23 @@ export default function Navbar() {
             onClick={()=>setIsMenuOpen(false)} 
           >
             <Link href="/" >
-              <Image
+              {theme === 'dark' ? (
+                <Image
+                src="/dark3.png"
+                alt="Logo"
+                width={80}
+                height={45}
+                className=""
+              />
+              ) : (
+                <Image
                 src="/cordelia-logo.png"
                 alt="Logo"
                 width={80}
                 height={45}
                 className=""
               />
+              )}
             </Link>
           </motion.div>
 
