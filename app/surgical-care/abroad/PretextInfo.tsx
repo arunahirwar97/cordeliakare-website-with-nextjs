@@ -1,20 +1,20 @@
 // app/surgical-care/PretextInfo.tsx
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function PretextInfo() {
-  const [userPresent, setUserPresent] = useState(false);
+  // const [userPresent, setUserPresent] = useState(false);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const {token} = useAuth()
 
   useEffect(() => {
     setMounted(true);
-    const user = localStorage.getItem("user");
-    setUserPresent(!!user);
   }, []);
 
   if (!mounted) return null;
@@ -582,7 +582,7 @@ export default function PretextInfo() {
                 : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
           >
-            {userPresent ? (
+            {token ? (
               <Link
                 href={{
                   pathname: "/surgical-care/search",

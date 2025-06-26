@@ -316,9 +316,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.setItem("user", "patient");
 
             // Redirect based on role
-            const redirectPath =
-              loginType === "doctor" ? "/doctor/dashboard" : "/";
-            router.push(redirectPath);
+            // const redirectPath =
+            //   loginType === "doctor" ? "/doctor/dashboard" : "/";
+            // router.push(redirectPath);
+            router.back()
 
             return { success: true };
           } else {
