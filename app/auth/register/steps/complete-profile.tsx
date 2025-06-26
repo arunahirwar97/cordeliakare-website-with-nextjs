@@ -25,7 +25,7 @@ export default function CompleteProfile({
   phone,
   isDark,
 }: CompleteProfileProps) {
-  const { isLoadingSalutations, salutations, setUser } = useAuth();
+  const { isLoadingSalutations, salutations, setUser, setToken } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     register_type: "patient",
@@ -136,12 +136,13 @@ export default function CompleteProfile({
         `${API_BASE_URL}/api/confirmregistration`,
         data
       );
-      // console.log("Registration response==>", response);
+      console.log("Registration response==>", response);
       const result = response.data;
 
       if (response.status === 201) {
-        setUser(response?.data?.user);
-        localStorage.setItem("token", response?.data?.token);
+        setUser(response?.data?.data.user);
+        setToken(response?.data?.data.token)
+        localStorage.setItem("token", response?.data?.data.token);
         localStorage.setItem("user", "patient");
         // console.log("Registration successful:", response);
         router.push("/");

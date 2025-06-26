@@ -197,6 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.status === 200 || response.status === 201) {
           // Clear OTP state
           setOtpSent(false);
+          
 
           // Return success with response data
           return {
