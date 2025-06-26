@@ -27,14 +27,14 @@ export default function PhoneVerification({ onVerified, isDark }: PhoneVerificat
 
     setIsLoading(true);
     try {
-      const result = await sendRegistrationOtp(phone, 'user'); 
+      const result = await sendRegistrationOtp(phone, 'patient'); 
       if (result.success) {
         setOtpSent(true);
       } else {
         // Handle error (result.error contains the error message)
         console.error('OTP send failed:', result.error);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error sending OTP:', error);
     } finally {
       setIsLoading(false);

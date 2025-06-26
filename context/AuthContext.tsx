@@ -11,6 +11,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 // User type definition
 interface User {
@@ -48,8 +49,8 @@ interface Salutation {
 // Context value type
 interface AuthContextType {
   user: User | null;
-  setUser:any;
-  setToken:any;
+  setUser: any;
+  setToken: any;
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
@@ -127,7 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setOtpExpired(false);
 
       try {
-        const formattedPhoneNumber = phone.replace(/\D/g, "");
+        const formattedPhoneNumber = phone.replace(/\s/g, "");
         const response = await axios.post<OtpResponse>(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/registrationotp`,
           {
@@ -136,15 +137,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             prefix_code: "91",
           }
         );
-
+        // console.log(response)
         if (response.status === 200) {
           setOtpSent(true);
+          toast.success(response.data.data.message);
           // console.log(response);
           return { success: true };
         } else {
           const errorMsg =
             response.data.message || "Failed to send registration OTP";
           setError(errorMsg);
+          toast.error(errorMsg);
           return { success: false, error: errorMsg };
         }
       } catch (err: any) {
@@ -153,8 +156,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (err.response?.data?.message) {
           errorMsg = err.response.data.message;
         }
-
         setError(errorMsg);
+        toast.error(errorMsg);
         return { success: false, error: errorMsg };
       } finally {
         setLoading(false);
@@ -180,8 +183,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await axios.post<VerifyOtpResponse>(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/otpverification`,
           {
-            phone: phone,
-            confirmation_type: "user",
+            phone: formattedPhone,
+            confirmation_type: "patient",
             otp: otp,
             type: "register",
             prefix_code: "91",
@@ -189,15 +192,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           {
             headers: {
               "Content-Type": "application/json",
-              'Accept': 'application/json',
+              Accept: "application/json",
             },
           }
         );
-        // console.log("RESPONSE===>", response);
+        //  console.log("RESPONSE===>", response);
         if (response.status === 200 || response.status === 201) {
           // Clear OTP state
           setOtpSent(false);
-          
+          toast.success(response.data.message!);
 
           // Return success with response data
           return {
@@ -209,6 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           response.data.message === "Your Otp Expired!!!"
         ) {
           setOtpExpired(true);
+          toast.error("OTP has expired. Please request a new OTP.");
           setError("OTP has expired. Please request a new OTP.");
           return {
             success: false,
@@ -216,6 +220,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
         } else {
           const errorMsg = response.data.message || "OTP verification failed";
+          toast.error(errorMsg);
           setError(errorMsg);
           return { success: false, error: errorMsg };
         }
@@ -230,7 +235,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else if (err.message) {
           errorMsg = err.message;
         }
-
+        toast.error(errorMsg);
         setError(errorMsg);
         return { success: false, error: errorMsg };
       } finally {
@@ -263,10 +268,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.status === 200) {
           setOtpSent(true);
           // console.log(response);
+          toast.success(response.data.data.message);
           return { success: true };
         } else {
           const errorMsg = response.data.message || "Failed to send OTP";
           setError(errorMsg);
+          toast.error(errorMsg);
           return { success: false, error: errorMsg };
         }
       } catch (err: any) {
@@ -277,7 +284,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else if (err.response?.data?.user_id) {
           errorMsg = "Account inactive. Please contact support.";
         }
-
+        toast.error(errorMsg);
         setError(errorMsg);
         return { success: false, error: errorMsg };
       } finally {
@@ -309,7 +316,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         );
         if (response.status === 200) {
-          // console.log("response", response);
+          // console.log("response---==", response);
           if (response.data.token && response.data.user) {
             setToken(response.data.token);
             setUser(response.data.user);
@@ -320,17 +327,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // const redirectPath =
             //   loginType === "doctor" ? "/doctor/dashboard" : "/";
             // router.push(redirectPath);
-            router.back()
+            toast.success(response.data.message!)
+            router.back();
 
             return { success: true };
           } else {
             const errorMsg = "Invalid response from server";
             setError(errorMsg);
+            toast.error(errorMsg)
             return { success: false, error: errorMsg };
           }
         } else {
           const errorMsg = response.data.message || "OTP verification failed";
           setError(errorMsg);
+          toast.error(errorMsg)
           return { success: false, error: errorMsg };
         }
       } catch (err: any) {
@@ -342,7 +352,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else if (err.response?.data?.message) {
           errorMsg = err.response.data.message;
         }
-
+        toast.error(errorMsg)
         setError(errorMsg);
         return { success: false, error: errorMsg };
       } finally {

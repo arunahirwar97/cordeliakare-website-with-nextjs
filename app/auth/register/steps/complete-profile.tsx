@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
 import LoadingSpinner from "@/components/loading/LoadingComponent";
+import toast from "react-hot-toast";
 
 interface Salutation {
   name: string;
@@ -141,21 +142,26 @@ export default function CompleteProfile({
 
       if (response.status === 201) {
         setUser(response?.data?.data.user);
-        setToken(response?.data?.data.token)
+        setToken(response?.data?.data.token);
         localStorage.setItem("token", response?.data?.data.token);
         localStorage.setItem("user", "patient");
+        toast.success("Account Created, Hello ", response?.data?.data.user.first_name)
         // console.log("Registration successful:", response);
-        router.push("/");
+        router.push("/profile");
         setLoading(false);
       }
 
       if (response.status !== 200 && response.status !== 201) {
+        setLoading(false);
+        toast.error("Registration failed")
         throw new Error(result.message || "Registration failed");
       }
 
       return result;
     } catch (error: any) {
       console.error("Registration failed:", error);
+      toast.error(error.message)
+      setLoading(false);
     }
   };
 
