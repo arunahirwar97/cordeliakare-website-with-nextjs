@@ -3,11 +3,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import PretextInfo from "./PretextInfo";
 
 export default function SurgicalCareAbroadPage() {
-  return (
-    <ProtectedRoute>
-      <PretextInfo />
-    </ProtectedRoute>
-  );
+  return <PretextInfo />;
 }
 
 export const metadata = {

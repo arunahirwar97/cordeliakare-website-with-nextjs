@@ -6,7 +6,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
+import { UserProvider } from "@/context/UserContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,33 +30,35 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <AuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {/* Place Toaster here, inside ThemeProvider but outside other components */}
-            <Toaster 
-              position="top-center"
-              toastOptions={{
-                className: '',
-                style: {
-                  background: 'hsl(var(--background))',
-                  color: 'hsl(var(--foreground))',
-                  border: '1px solid hsl(var(--border))',
-                },
-              }}
-            />
-            
-            <Navbar />
-            <main className="min-h-screen pt-16 pb-8">
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3">
-                {children}
-              </div>
-            </main>
-            <Footer />
-          </ThemeProvider>
+          <UserProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {/* Place Toaster here, inside ThemeProvider but outside other components */}
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  className: "",
+                  style: {
+                    background: "hsl(var(--background))",
+                    color: "hsl(var(--foreground))",
+                    border: "1px solid hsl(var(--border))",
+                  },
+                }}
+              />
+
+              <Navbar />
+              <main className="min-h-screen pt-16 pb-8">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3">
+                  {children}
+                </div>
+              </main>
+              <Footer />
+            </ThemeProvider>
+          </UserProvider>
         </AuthProvider>
       </body>
     </html>

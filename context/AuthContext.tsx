@@ -49,6 +49,7 @@ interface Salutation {
 interface AuthContextType {
   user: User | null;
   setUser:any;
+  setToken:any;
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
@@ -388,6 +389,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthContextType = {
     user,
     setUser,
+    setToken,
     token,
     isAuthenticated,
     loading,

@@ -172,17 +172,18 @@ export default function Navbar() {
   });
   const { theme, setTheme } = useTheme();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { logout, user } = useAuth();
+  const { logout, user, token, setToken } = useAuth();
 
   useEffect(() => {
     setMounted(true);
-    const token = localStorage.getItem("token");
-    if(token) {
+    if(token ||  localStorage.getItem("token")) {
       setIsLoggedIn(true);
+      setIsMenuOpen(false)
     }else{
       setIsLoggedIn(false);
+      setIsMenuOpen(false)
     }
-  }, [user]);
+  }, [user, token, setToken]);
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -197,6 +198,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
+    setToken(null)
     setIsLoggedIn(false);
     setIsMenuOpen(false)
   };
@@ -214,8 +216,9 @@ export default function Navbar() {
           <motion.div
             className="flex items-center space-x-2 mb-4"
             whileHover={{ scale: 1.05 }}
+            onClick={()=>setIsMenuOpen(false)} 
           >
-            <Link href="/">
+            <Link href="/" >
               <Image
                 src="/cordelia-logo.png"
                 alt="Logo"
@@ -430,7 +433,7 @@ export default function Navbar() {
                   size="icon"
                   className="hover:bg-muted"
                 >
-                  <Link href="/profile">
+                  <Link href="/profile" onClick={()=>setIsMenuOpen(false)} >
                     <User className="h-5 w-5" />
                   </Link>
                 </Button>
