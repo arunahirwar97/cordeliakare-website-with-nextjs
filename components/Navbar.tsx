@@ -198,6 +198,7 @@ export default function Navbar() {
   const handleLogout = () => {
     logout();
     setIsLoggedIn(false);
+    setIsMenuOpen(false)
   };
 
   if (!mounted) return null;
@@ -436,7 +437,7 @@ export default function Navbar() {
                 <Button
                   onClick={handleLogout}
                   variant="outline"
-                  className="hidden md:inline-flex bg-red-400 dark:bg-red-700"
+                  className="hidden text-white md:inline-flex mb-3 bg-red-500 dark:bg-red-700 mt-4 hover:bg-red-700 dark:hover:bg-red-500"
                 >
                   Logout
                 </Button>
@@ -743,12 +744,22 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
 
-                <Button
+              {isLoggedIn ? (
+                <Button 
+                  className="w-full bg-red-500 dark:bg-red-700 dark:text-white mt-4 hover:bg-red-700 dark:hover:bg-red-500"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              ) : (
+                <Button 
                   asChild
                   className="w-full bg-blue-600 hover:bg-blue-700 mt-4"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  <Link href="https://prod.cordeliakare.com/login">Login</Link>
+                  <Link href="/auth/login">Login</Link>
                 </Button>
+              )}
               </div>
             </motion.div>
           )}
