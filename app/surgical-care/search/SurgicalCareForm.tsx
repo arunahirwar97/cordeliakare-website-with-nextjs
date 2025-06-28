@@ -1,5 +1,9 @@
 "use client";
 
+import usePlacesAutocomplete, {
+  getGeocode,
+  getLatLng,
+} from "use-places-autocomplete";
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, ChevronUp, Calendar, MapPin, Search } from "lucide-react";
 import { motion } from "framer-motion";
@@ -7,12 +11,18 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { surgeryOptions, specificSurgeries } from "./constants";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 
 export default function SurgicalCareForm() {
+  const { userData } = useUser();
+  const initialAddress =
+    userData?.owner?.address?.address1 + ", " + userData?.owner?.address?.city;
+  const router = useRouter();
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const searchParams:any = useSearchParams();
-  const initialLocation:any = searchParams?.get('location');
+  const searchParams: any = useSearchParams();
+  const initialLocation: any = searchParams?.get("location");
   const [locationType, setLocationType] = useState(initialLocation);
   const [surgeryType, setSurgeryType] = useState("");
   const [specificSurgery, setSpecificSurgery] = useState("");
@@ -26,8 +36,7 @@ export default function SurgicalCareForm() {
   ]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [location, setLocation] = useState("New York, NY");
-  const [editingLocation, setEditingLocation] = useState(false);
+  const [location, setLocation] = useState(initialAddress);
   const [healthConditions, setHealthConditions] = useState([
     { id: "diabetes", label: "Diabetes 🩸", selected: false },
     { id: "bloodPressure", label: "High Blood Pressure 💓", selected: false },
@@ -38,12 +47,51 @@ export default function SurgicalCareForm() {
   ]);
   const [otherCondition, setOtherCondition] = useState("");
   const [showSurgeryDropdown, setShowSurgeryDropdown] = useState(false);
-
   const inputRef = useRef(null);
+  const [coordinates, setCoordinates] = useState(null);
+  const {
+    ready,
+    value,
+    suggestions: { status, data },
+    setValue,
+    clearSuggestions,
+  } = usePlacesAutocomplete({
+    requestOptions: {
+      /* Define search scope here */
+    },
+    debounce: 300,
+  });
+
+  const setInitialLocation = async () => {
+    if (ready && initialAddress) {
+      // assuming initialLocation comes from your source
+      try {
+        // Set the value in the input
+        setValue(initialAddress, false);
+        setLocation(initialAddress);
+
+        // Geocode to get coordinates
+        const results = await getGeocode({ address: initialAddress });
+        const { lat, lng } = await getLatLng(results[0]);
+
+        setCoordinates({ lat, lng });
+
+        // console.log("Initial location set:", initialAddress);
+        // console.log("Initial coordinates:", { lat, lng });
+      } catch (error) {
+        console.error("Error geocoding initial location:", error);
+        // Still set the location even if geocoding fails
+        setValue(initialAddress, false);
+        setLocation(initialAddress);
+      }
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    setInitialLocation()
+    // getUserData()
+  }, [initialAddress]);
 
   if (!mounted) return null;
 
@@ -80,7 +128,7 @@ export default function SurgicalCareForm() {
     }
 
     const suggestions =
-      specificSurgeries[surgeryType]?.filter((surgery:any) =>
+      specificSurgeries[surgeryType]?.filter((surgery: any) =>
         surgery.label.toLowerCase().includes(input.toLowerCase())
       ) || [];
     setFilteredSuggestions(suggestions);
@@ -101,7 +149,7 @@ export default function SurgicalCareForm() {
     filterSuggestions(text);
   };
 
-  const movePriorityUp = (index:any) => {
+  const movePriorityUp = (index: any) => {
     if (index <= 0) return;
     const newPriorities = [...priorities];
     [newPriorities[index], newPriorities[index - 1]] = [
@@ -111,7 +159,7 @@ export default function SurgicalCareForm() {
     setPriorities(newPriorities);
   };
 
-  const movePriorityDown = (index:any) => {
+  const movePriorityDown = (index: any) => {
     if (index >= priorities.length - 1) return;
     const newPriorities = [...priorities];
     [newPriorities[index], newPriorities[index + 1]] = [
@@ -121,7 +169,7 @@ export default function SurgicalCareForm() {
     setPriorities(newPriorities);
   };
 
-  const toggleCondition = (id:any) => {
+  const toggleCondition = (id: any) => {
     setHealthConditions((prevConditions) => {
       if (id === "none") {
         return prevConditions.map((condition) => ({
@@ -142,6 +190,26 @@ export default function SurgicalCareForm() {
     });
   };
 
+  const handlePlaceSelect = async (suggestion) => {
+    setValue(suggestion.description, false);
+    clearSuggestions();
+
+    console.log("Selected place:", suggestion); // Console log
+
+    try {
+      const results = await getGeocode({ address: suggestion.description });
+      const { lat, lng } = await getLatLng(results[0]);
+
+      console.log("Geocoded coordinates:", { lat, lng });
+
+      // Update location state
+      setLocation(suggestion.description);
+      setCoordinates({ lat, lng });
+    } catch (error) {
+      console.error("Error getting geocode:", error);
+    }
+  };
+
   const handleSearch = () => {
     if (!surgeryType) {
       alert("Please select a surgery type");
@@ -157,6 +225,12 @@ export default function SurgicalCareForm() {
       alert("Please enter your location");
       return;
     }
+    console.log("Location", location);
+    if (!coordinates) {
+      alert("Please enter your coordinates");
+      return;
+    }
+    console.log("Co-ordinates", coordinates);
 
     if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
       alert("End date must be after start date");
@@ -181,12 +255,12 @@ export default function SurgicalCareForm() {
       priorities: priorities.map((p) => p.label),
       dateRange: { start: startDate, end: endDate },
       location,
+      coordinates,
       healthConditions: selectedConditions,
     };
 
     console.log("Search Data:", searchData);
-    alert(`Search submitted for ${locationType}! Check console for data.`);
-    
+    router.push("/surgical-care/result");
   };
 
   const getSelectedSurgeryLabel = () => {
@@ -198,7 +272,9 @@ export default function SurgicalCareForm() {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-purple-100 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900`}>
+    <div
+      className={`min-h-screen bg-gradient-to-br from-purple-100 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900`}
+    >
       {/* Gradient Background */}
       <div className="absolute inset-0  z-0" />
       <motion.div
@@ -499,61 +575,68 @@ export default function SurgicalCareForm() {
                 >
                   Your Location
                 </h3>
-                {editingLocation ? (
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="text"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className={`flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+
+                <div className="relative">
+                  <input
+                    value={value}
+                    onChange={(e) => {
+                      setValue(e.target.value);
+                      console.log(
+                        "Google Places API hit with query:",
+                        e.target.value
+                      );
+                    }}
+                    disabled={!ready}
+                    placeholder="Search for your location..."
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      isDark
+                        ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                        : "bg-white border-gray-200"
+                    }`}
+                  />
+                  <MapPin
+                    className={`absolute right-3 top-3 w-4 h-4 pointer-events-none ${
+                      isDark ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  />
+
+                  {/* Suggestions dropdown */}
+                  {status === "OK" && (
+                    <div
+                      className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto ${
                         isDark
-                          ? "bg-gray-700 border-gray-600 text-white"
+                          ? "bg-gray-800 border-gray-700"
                           : "bg-white border-gray-200"
                       }`}
-                      autoFocus
-                    />
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => setEditingLocation(false)}
-                      className="px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition shadow-md"
                     >
-                      Save
-                    </motion.button>
-                  </div>
-                ) : (
-                  <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    className={`flex items-center justify-between p-3 border rounded-lg ${
-                      isDark
-                        ? "border-gray-700 bg-gray-700"
-                        : "border-gray-200 bg-white"
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <MapPin
-                        className={`w-4 h-4 ${
-                          isDark ? "text-gray-400" : "text-gray-500"
-                        }`}
-                      />
-                      <span
-                        className={isDark ? "text-gray-200" : "text-gray-700"}
-                      >
-                        {location}
-                      </span>
+                      {data.map((suggestion) => {
+                        const {
+                          place_id,
+                          structured_formatting: { main_text, secondary_text },
+                        } = suggestion;
+
+                        return (
+                          <button
+                            key={place_id}
+                            onClick={() => handlePlaceSelect(suggestion)}
+                            className={`w-full p-3 text-left transition hover:${
+                              isDark ? "bg-gray-700" : "bg-gray-50"
+                            } ${isDark ? "text-gray-200" : "text-gray-700"}`}
+                          >
+                            <div className="font-medium">{main_text}</div>
+                            <div
+                              className={`text-sm ${
+                                isDark ? "text-gray-400" : "text-gray-500"
+                              }`}
+                            >
+                              {secondary_text}
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
-                    <button
-                      onClick={() => setEditingLocation(true)}
-                      className={`px-3 py-1.5 rounded-md transition ${
-                        isDark
-                          ? "bg-gray-600 text-gray-200 hover:bg-gray-500"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      Edit
-                    </button>
-                  </motion.div>
-                )}
+                  )}
+                </div>
               </motion.div>
 
               {/* Health Conditions */}
@@ -611,7 +694,7 @@ export default function SurgicalCareForm() {
                   onClick={handleSearch}
                   className="w-full bg-blue-500 text-white text-lg font-semibold py-3 rounded-lg hover:bg-blue-600 transition shadow-md"
                 >
-                  <Link href={'/surgical-care/result'}>Find My Doctor</Link>
+                  Find My Doctor
                 </button>
               </motion.div>
             </motion.div>
@@ -621,4 +704,3 @@ export default function SurgicalCareForm() {
     </div>
   );
 }
-

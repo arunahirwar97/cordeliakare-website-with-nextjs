@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import { UserProvider } from "@/context/UserContext";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,6 +54,10 @@ export default function RootLayout({
               <Navbar />
               <main className="min-h-screen pt-16 pb-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3">
+                  <Script
+                    src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+                    strategy="beforeInteractive"
+                  />
                   {children}
                 </div>
               </main>

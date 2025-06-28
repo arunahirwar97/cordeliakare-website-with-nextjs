@@ -1,7 +1,7 @@
 // context/UserContext.tsx
 "use client";
 
-import { createContext, useContext, ReactNode, useState } from "react";
+import { createContext, useContext, ReactNode, useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -86,7 +86,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           },
         }
       );
-      // console.log(response)
+      //  console.log("USERDATA contxt===>",response)
       if (response.status === 200) {
         setUserData(response.data);
       }
@@ -209,6 +209,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    getUserData()
+  }, [])
 
   return (
     <UserContext.Provider

@@ -34,10 +34,17 @@ const LoadingSpinner = ({
       >
         <Image
           src="/cordelia-logo.png"
-          alt="CordeliaKare Logo"
+          alt="Logo"
           width={160}
           height={160}
-          className="object-contain"
+          className="block dark:hidden"
+        />
+        <Image
+          src="/dark5.jpg"
+          alt="Logo"
+          width={160}
+          height={160}
+          className="hidden dark:block"
         />
       </motion.div>
       <motion.h2
