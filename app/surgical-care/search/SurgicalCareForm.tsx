@@ -8,19 +8,17 @@ import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, ChevronUp, Calendar, MapPin, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { surgeryOptions, specificSurgeries } from "./constants";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 
 export default function SurgicalCareForm() {
-  const { userData } = useUser();
+  const { userData, getUserData } = useUser();
   const initialAddress =
     userData?.owner?.address?.address1 + ", " + userData?.owner?.address?.city;
   const router = useRouter();
   const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const searchParams: any = useSearchParams();
   const initialLocation: any = searchParams?.get("location");
   const [locationType, setLocationType] = useState(initialLocation);
@@ -64,7 +62,6 @@ export default function SurgicalCareForm() {
 
   const setInitialLocation = async () => {
     if (ready && initialAddress) {
-      // assuming initialLocation comes from your source
       try {
         // Set the value in the input
         setValue(initialAddress, false);
@@ -88,12 +85,12 @@ export default function SurgicalCareForm() {
   };
 
   useEffect(() => {
-    setMounted(true);
-    setInitialLocation()
-    // getUserData()
-  }, [initialAddress]);
+    getUserData();
+  }, []);
 
-  if (!mounted) return null;
+  useEffect(() => {
+    setInitialLocation();
+  }, [userData]);
 
   const isDark = theme === "dark";
 
@@ -194,7 +191,7 @@ export default function SurgicalCareForm() {
     setValue(suggestion.description, false);
     clearSuggestions();
 
-    console.log("Selected place:", suggestion); // Console log
+    // console.log("Selected place:", suggestion); 
 
     try {
       const results = await getGeocode({ address: suggestion.description });
