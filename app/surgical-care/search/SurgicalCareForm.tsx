@@ -138,7 +138,7 @@ export default function SurgicalCareForm() {
     setShowSuggestions(false);
   };
 
-  const handleInputChange = (text) => {
+  const handleInputChange = (text:any) => {
     setSpecificSurgeryInput(text);
     if (text.trim() === "") {
       setSpecificSurgery("");
@@ -187,7 +187,7 @@ export default function SurgicalCareForm() {
     });
   };
 
-  const handlePlaceSelect = async (suggestion) => {
+  const handlePlaceSelect = async (suggestion:any) => {
     setValue(suggestion.description, false);
     clearSuggestions();
 

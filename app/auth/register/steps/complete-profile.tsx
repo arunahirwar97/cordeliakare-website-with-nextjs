@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -58,6 +58,175 @@ export default function CompleteProfile({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
   const [loading, setLoading] = useState(false);
+  // Add these new state variables for Google Places
+  const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
+  const autocompleteService =
+    useRef<google.maps.places.AutocompleteService | null>(null);
+  const placesService = useRef<google.maps.places.PlacesService | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  //Places auto select
+  // Initialize Google Places services
+  useEffect(() => {
+    const initializeGooglePlaces = () => {
+      if (window.google && window.google.maps && window.google.maps.places) {
+        autocompleteService.current =
+          new window.google.maps.places.AutocompleteService();
+
+        // Create a hidden map for PlacesService
+        if (mapRef.current) {
+          const map = new window.google.maps.Map(mapRef.current, {
+            center: { lat: 28.6139, lng: 77.209 }, // Delhi coordinates
+            zoom: 13,
+          });
+          placesService.current = new window.google.maps.places.PlacesService(
+            map
+          );
+        }
+      }
+    };
+
+    if (window.google) {
+      initializeGooglePlaces();
+    } else {
+      // Wait for Google Maps to load
+      const checkGoogle = setInterval(() => {
+        if (window.google) {
+          initializeGooglePlaces();
+          clearInterval(checkGoogle);
+        }
+      }, 100);
+    }
+  }, []);
+
+  // Handle address input change with autocomplete
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({ ...prev, address: value }));
+
+    if (value.length > 2 && autocompleteService.current) {
+      setIsLoadingPlaces(true);
+      autocompleteService.current.getPlacePredictions(
+        {
+          input: value,
+          componentRestrictions: { country: "in" }, // Restrict to India
+          types: ["address"],
+        },
+        (predictions, status) => {
+          setIsLoadingPlaces(false);
+          if (
+            status === window.google.maps.places.PlacesServiceStatus.OK &&
+            predictions
+          ) {
+            setAddressSuggestions(predictions);
+            setShowSuggestions(true);
+          } else {
+            setAddressSuggestions([]);
+            setShowSuggestions(false);
+          }
+        }
+      );
+    } else {
+      setAddressSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  // Alternative handlePlaceSelect using Geocoding API
+  const handlePlaceSelect = async (placeId: string, description: string) => {
+    setFormData((prev) => ({ ...prev, address: description }));
+    setShowSuggestions(false);
+
+    try {
+      // Method 1: Try with Places API first
+      if (placesService.current) {
+        placesService.current.getDetails(
+          {
+            placeId: placeId,
+            fields: ["address_components", "formatted_address", "geometry"],
+          },
+          async (place, status) => {
+            console.log("=== GOOGLE PLACES API RESPONSE ===");
+            console.log("Status:", status);
+            console.log("Full place object:", place);
+            if (
+              status === window.google.maps.places.PlacesServiceStatus.OK &&
+              place?.address_components
+            ) {
+              parseAndSetAddressComponents(place.address_components);
+            } else {
+              // Method 2: Fallback to Geocoding API
+              await geocodeAddress(description);
+            }
+          }
+        );
+      } else {
+        // Method 2: Direct geocoding if Places service not available
+        await geocodeAddress(description);
+      }
+    } catch (error) {
+      console.error("Error getting place details:", error);
+    }
+  };
+
+  // Helper function to parse address components
+  const parseAndSetAddressComponents = (
+    components: google.maps.GeocoderAddressComponent[]
+  ) => {
+    let city = "",
+      state = "",
+      pincode = "",
+      area = "";
+
+    // console.log("Address components:", components);
+
+    components.forEach((component) => {
+      const types = component.types;
+      const longName = component.long_name;
+
+      if (types.includes("postal_code")) {
+        pincode = longName;
+      }
+      if (types.includes("administrative_area_level_1")) {
+        state = longName;
+      }
+      if (types.includes("locality")) {
+        city = longName;
+      } else if (types.includes("administrative_area_level_2") && !city) {
+        city = longName;
+      } else if (types.includes("administrative_area_level_3") && !city) {
+        city = longName;
+      }
+      if (types.includes("sublocality_level_1")) {
+        area = longName;
+      } else if (types.includes("sublocality") && !area) {
+        area = longName;
+      }
+    });
+
+    // console.log("Parsed data:", { city, state, pincode, area });
+
+    setFormData((prev) => ({
+      ...prev,
+      locality: city ,
+      state: state ,
+      pincode: pincode ,
+      area: area ,
+    }));
+  };
+
+  // Helper function for geocoding
+  const geocodeAddress = async (address: string) => {
+    const geocoder = new window.google.maps.Geocoder();
+
+    geocoder.geocode({ address: address }, (results, status) => {
+      if (status === "OK" && results && results[0]) {
+        parseAndSetAddressComponents(results[0].address_components);
+      }
+    });
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -145,7 +314,10 @@ export default function CompleteProfile({
         setToken(response?.data?.data.token);
         localStorage.setItem("token", response?.data?.data.token);
         localStorage.setItem("user", "patient");
-        toast.success("Account Created, Hello ", response?.data?.data.user.first_name)
+        toast.success(
+          "Account Created, Hello ",
+          response?.data?.data.user.first_name
+        );
         // console.log("Registration successful:", response);
         router.push("/profile");
         setLoading(false);
@@ -153,14 +325,14 @@ export default function CompleteProfile({
 
       if (response.status !== 200 && response.status !== 201) {
         setLoading(false);
-        toast.error("Registration failed")
+        toast.error("Registration failed");
         throw new Error(result.message || "Registration failed");
       }
 
       return result;
     } catch (error: any) {
       console.error("Registration failed:", error);
-      toast.error(error.message)
+      toast.error(error.message);
       setLoading(false);
     }
   };
@@ -453,7 +625,7 @@ export default function CompleteProfile({
                   transition={{ duration: 0.3 }}
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
-                  <div className="md:col-span-2">
+                  <div className="md:col-span-2 relative">
                     <label htmlFor="address" className={labelClasses}>
                       Address Line 1
                     </label>
@@ -462,12 +634,55 @@ export default function CompleteProfile({
                       id="address"
                       name="address"
                       value={formData.address}
-                      onChange={handleChange}
+                      onChange={handleAddressChange}
                       className={inputClasses}
                       placeholder="Enter your primary address"
+                      autoComplete="off"
                     />
-                  </div>
 
+                    {/* Suggestions dropdown */}
+                    {showSuggestions && (
+                      <div
+                        className={`absolute z-10 w-full mt-1 max-h-60 overflow-auto rounded-md border shadow-lg ${
+                          isDark
+                            ? "bg-gray-800 border-gray-700"
+                            : "bg-white border-gray-300"
+                        }`}
+                      >
+                        {isLoadingPlaces ? (
+                          <div className="flex items-center justify-center p-3">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span className="ml-2 text-sm">
+                              Loading suggestions...
+                            </span>
+                          </div>
+                        ) : (
+                          addressSuggestions.map((suggestion) => (
+                            <div
+                              key={suggestion.place_id}
+                              onClick={() =>
+                                handlePlaceSelect(
+                                  suggestion.place_id,
+                                  suggestion.description
+                                )
+                              }
+                              className={`px-4 py-3 cursor-pointer hover:${
+                                isDark ? "bg-gray-700" : "bg-gray-100"
+                              } border-b ${
+                                isDark
+                                  ? "border-gray-700 text-white"
+                                  : "border-gray-200"
+                              } last:border-b-0 text-sm`}
+                            >
+                              {suggestion.description}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {/* Hidden map div for Google Places service */}
+                  <div ref={mapRef} style={{ display: "none" }} />
                   <div>
                     <label htmlFor="area" className={labelClasses}>
                       Area/Street (Address Line 2)
