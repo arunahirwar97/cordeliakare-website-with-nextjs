@@ -40,11 +40,17 @@ export default function Footer() {
                 </div>
               </Link>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Reimagine the Healthcare IT by using our SaaS product.
-              CordeLiaKare is a scalable product for all different sizes of
-              healthcare providers to manage the operations in a patient centric
-              way.
+            <p className="text-sm text-muted-foreground text-justify">
+              CordeLiakare is a cutting-edge HealthTech platform developed by
+              Cordelia Technology Pvt. Ltd., a pioneering next-generation
+              company committed to transforming healthcare delivery. Designed to
+              empower healthcare providers, CordeLiakare bridges the gaps
+              between patients, providers, and care networks through its
+              integrated Hospital Information Management System (HIMS) and
+              mobile health (mHealth) platform. Leveraging advanced technologies
+              such as AI, data analytics, and mobile innovation, these solutions
+              ensure the delivery of reliable, efficient, and compassionate
+              healthcare services.
             </p>
           </div>
 
