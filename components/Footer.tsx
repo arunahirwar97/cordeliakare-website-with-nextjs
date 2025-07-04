@@ -2,16 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import {
-  FaMapMarkerAlt,
-  FaEnvelope,
-  FaFacebookF,
-  FaTwitter,
-  FaInstagram,
-  FaLinkedinIn,
-} from "react-icons/fa";
+
 import { useTheme } from "next-themes";
+import { Facebook, Instagram, Linkedin, Mail, MapPin, TwitterIcon } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -90,7 +83,7 @@ export default function Footer() {
           <div>
             <h2 className="text-lg font-semibold mb-4">Contact Us</h2>
             <p className="text-sm flex items-center space-x-2">
-              <FaMapMarkerAlt />
+              <MapPin />
               <span>
                 GF13 Ajantha Meadows, Third Cross, <br />
                 AkshayaNagar, Bangalore - 560068, Karnataka, India
@@ -102,7 +95,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaEnvelope />
+              <Mail />
               <span> contactus@cordeliatech.com</span>
             </a>
           </div>
@@ -117,7 +110,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="hover:text-blue-600"
               >
-                <FaFacebookF />
+                <Facebook />
               </a>
               <a
                 href="https://x.com/test?lang=en"
@@ -125,7 +118,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="hover:text-blue-400"
               >
-                <FaTwitter />
+                <TwitterIcon />
               </a>
               <a
                 href="https://www.instagram.com/p/C8JQm-ESn1q/?igsh=MTRqdXB1MjkydXZsag%3D%3D"
@@ -133,7 +126,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="hover:text-pink-500"
               >
-                <FaInstagram />
+                <Instagram />
               </a>
               <a
                 href="https://www.linkedin.com/company/cordelia-technology/posts"
@@ -141,7 +134,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="hover:text-blue-700 mb-20"
               >
-                <FaLinkedinIn />
+                <Linkedin />
               </a>
             </div>
           </div>
