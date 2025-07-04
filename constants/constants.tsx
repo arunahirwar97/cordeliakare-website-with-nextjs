@@ -1,7 +1,5 @@
-import { Activity, Baby, Bone, BookOpen, Brain, CalendarCheck, CalendarDays, Car, ClipboardCheck, ClipboardEdit, ClipboardList, Cpu, CreditCard, Database, Dna, FileText, HeartPulse, HeartPulseIcon, Languages, LineChart, Mail, MessageSquare, Pill, Plane, Shield, Stethoscope, TrendingUp, Users, Users2, Video, VideoIcon, Workflow } from "lucide-react";
-import { FaDumbbell, FaTooth } from "react-icons/fa";
-import { GiScalpel } from "react-icons/gi";
-import { MdMonitorHeart } from "react-icons/md";
+import { Activity, Baby, Bone, BookOpen, Brain, CalendarCheck, CalendarDays, Car, ClipboardCheck, ClipboardEdit, ClipboardList, Cpu, CreditCard, Database, Dna, FileText, HeartPulse, HeartPulseIcon, Languages, LineChart, Mail, MessageSquare, Pill, Plane, Shield, Smile, Stethoscope, Syringe, TrendingUp, Users, Users2, Video, VideoIcon, Weight, Workflow } from "lucide-react";
+
 
 export const patientsPointers = [
   {
@@ -16,7 +14,7 @@ export const patientsPointers = [
   },
   {
     title: "Surgical Care Coordination",
-    icon: <GiScalpel className="w-4 h-4" />,
+    icon: <Syringe className="w-4 h-4" />,
     description: "End-to-end surgical journey management"
   },
   {
@@ -55,7 +53,7 @@ export const patientsPointers = [
     },
     {
       title: "Cosmetic & Plastic Surgery",
-      icon: <GiScalpel className="w-4 h-4" />,
+      icon: <Syringe className="w-4 h-4" />,
       description: "Aesthetic and reconstructive procedures",
     },
     {
@@ -70,12 +68,12 @@ export const patientsPointers = [
     },
     {
       title: "Dental Procedures",
-      icon: <FaTooth className="w-4 h-4" />,
+      icon: <Smile className="w-4 h-4" />,
       description: "Specialized dental care and surgeries",
     },
     {
       title: "Bariatric Surgery",
-      icon: <FaDumbbell className="w-4 h-4" />,
+      icon: <Weight className="w-4 h-4" />,
       description: "Weight loss and metabolic surgery",
     },
   ];
@@ -151,7 +149,7 @@ export const hospitalPointers = [
 export const doctorsPointers = [
   {
     title: "Remote Patient Monitoring",
-    icon: <MdMonitorHeart className="w-4 h-4" />,
+    icon: <HeartPulse className="w-4 h-4" />,
     description: "Track patient vitals and health data remotely"
   },
   {
