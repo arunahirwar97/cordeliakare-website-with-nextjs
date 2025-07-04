@@ -322,7 +322,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
       setOtpExpired(false);
-
+      console.log("Verify otp called step 1")
       try {
         const response = await axios.post<VerifyOtpResponse>(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/otpverification`,

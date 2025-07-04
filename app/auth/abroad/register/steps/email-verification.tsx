@@ -47,7 +47,7 @@ export default function EmailVerification({ onVerified, isDark }: EmailVerificat
   const handleVerifyOtp = async () => {
     setIsLoading(true);
     try {
-      const result = await verifyEmailRegistrationOtp(email, otp, 'user');
+      const result = await verifyEmailRegistrationOtp(email, otp, 'patient');
       // console.log(result)
       if (result.success) {
         onVerified(email);
@@ -100,8 +100,8 @@ export default function EmailVerification({ onVerified, isDark }: EmailVerificat
                 ? 'bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500'
                 : 'bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500'
             }`}
-            placeholder="Enter 6-digit OTP"
-            maxLength={6}
+            placeholder="Enter 5-digit OTP"
+            maxLength={5}
           />
         </motion.div>
       )}
@@ -131,9 +131,9 @@ export default function EmailVerification({ onVerified, isDark }: EmailVerificat
         ) : (
           <button
             onClick={handleVerifyOtp}
-            disabled={!otp || otp.length !== 6 || isLoading}
+            disabled={!otp || otp.length !== 5 || isLoading}
             className={`w-full py-3 px-4 rounded-lg font-medium ${
-              !otp || otp.length !== 6 || isLoading
+              !otp || otp.length !== 5 || isLoading
                 ? isDark
                   ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                   : 'bg-gray-200 text-gray-500 cursor-not-allowed'

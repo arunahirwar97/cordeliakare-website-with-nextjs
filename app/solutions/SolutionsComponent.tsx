@@ -4,6 +4,13 @@ import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import {
+  clinicsPointers,
+  diagnosisPointers,
+  doctorsPointers,
+  hospitalPointers,
+  patientsPointers,
+} from "@/constants/constants";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -71,7 +78,7 @@ const iconVariants = {
 };
 
 export default function AudiencePage() {
- const { theme, systemTheme } = useTheme();
+  const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
   const section = searchParams.get("section");
@@ -128,7 +135,7 @@ export default function AudiencePage() {
   }, [section, mounted, router]);
 
   if (!mounted) {
-    return null; 
+    return null;
   }
 
   // Determine the actual theme being displayed
@@ -184,7 +191,7 @@ export default function AudiencePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            Who We Serve
+            Who We Serve?
           </motion.h1>
           <motion.p
             className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto"
@@ -245,7 +252,7 @@ export default function AudiencePage() {
             </motion.div>
             <div className="md:w-2/3">
               <p
-                className={`text-lg ${
+                className={`text-lg text-justify ${
                   isDark ? "text-gray-300" : "text-gray-700"
                 } mb-6`}
               >
@@ -254,14 +261,7 @@ export default function AudiencePage() {
                 records through mHealth.
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
-                {[
-                  "24/7 Teleconsultations",
-                  "Digital Health Records",
-                  "Surgical Care Coordination",
-                  "Medication Management",
-                  "Appointment Scheduling",
-                  "Health Monitoring",
-                ].map((feature, index) => (
+                {patientsPointers.map((feature, index) => (
                   <motion.div
                     key={index}
                     custom={index}
@@ -283,25 +283,22 @@ export default function AudiencePage() {
                       whileHover={{ rotate: 360 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      {feature.icon}
                     </motion.span>
-                    <span
-                      className={isDark ? "text-gray-200" : "text-gray-800"}
-                    >
-                      {feature}
-                    </span>
+                    <div>
+                      <span
+                        className={isDark ? "text-gray-200" : "text-gray-800"}
+                      >
+                        {feature.title}
+                      </span>
+                      <p
+                        className={`text-xs mt-1 ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        {feature.description}
+                      </p>
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -357,7 +354,7 @@ export default function AudiencePage() {
             </motion.div>
             <div className="md:w-2/3">
               <p
-                className={`text-lg ${
+                className={`text-lg text-justify ${
                   isDark ? "text-gray-300" : "text-gray-700"
                 } mb-6`}
               >
@@ -367,14 +364,7 @@ export default function AudiencePage() {
                 administrative processes.
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
-                {[
-                  "Patient Data Management",
-                  "Operational Workflow Automation",
-                  "Billing & Insurance Integration",
-                  "Resource Allocation",
-                  "Staff Management",
-                  "Reporting & Analytics",
-                ].map((feature, index) => (
+                {hospitalPointers.map((feature, index) => (
                   <motion.div
                     key={index}
                     custom={index}
@@ -396,25 +386,22 @@ export default function AudiencePage() {
                       whileHover={{ rotate: 360 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      {feature.icon}
                     </motion.span>
-                    <span
-                      className={isDark ? "text-gray-200" : "text-gray-800"}
-                    >
-                      {feature}
-                    </span>
+                    <div>
+                      <span
+                        className={isDark ? "text-gray-200" : "text-gray-800"}
+                      >
+                        {feature.title}
+                      </span>
+                      <p
+                        className={`text-xs mt-1 ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        {feature.description}
+                      </p>
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -470,7 +457,7 @@ export default function AudiencePage() {
             </motion.div>
             <div className="md:w-2/3">
               <p
-                className={`text-lg ${
+                className={`text-lg text-justify ${
                   isDark ? "text-gray-300" : "text-gray-700"
                 } mb-6`}
               >
@@ -481,14 +468,7 @@ export default function AudiencePage() {
                 interactions.
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
-                {[
-                  "Remote Patient Monitoring",
-                  "Teleconsultation Platform",
-                  "Complete Patient Records",
-                  "Prescription Management",
-                  "Diagnostic Integration",
-                  "Collaboration Tools",
-                ].map((feature, index) => (
+                {doctorsPointers.map((feature, index) => (
                   <motion.div
                     key={index}
                     custom={index}
@@ -510,25 +490,22 @@ export default function AudiencePage() {
                       whileHover={{ rotate: 360 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      {feature.icon}
                     </motion.span>
-                    <span
-                      className={isDark ? "text-gray-200" : "text-gray-800"}
-                    >
-                      {feature}
-                    </span>
+                    <div>
+                      <span
+                        className={isDark ? "text-gray-200" : "text-gray-800"}
+                      >
+                        {feature.title}
+                      </span>
+                      <p
+                        className={`text-xs mt-1 ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        {feature.description}
+                      </p>
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -584,7 +561,7 @@ export default function AudiencePage() {
             </motion.div>
             <div className="md:w-2/3">
               <p
-                className={`text-lg ${
+                className={`text-lg text-justify ${
                   isDark ? "text-gray-300" : "text-gray-700"
                 } mb-6`}
               >
@@ -594,14 +571,7 @@ export default function AudiencePage() {
                 ultimately contributes to improved health outcomes.
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
-                {[
-                  "Patient Engagement Tools",
-                  "Proactive Care Management",
-                  "Outcome Tracking",
-                  "Communication Platforms",
-                  "Preventive Care Support",
-                  "Health Education Resources",
-                ].map((feature, index) => (
+                {clinicsPointers.map((feature, index) => (
                   <motion.div
                     key={index}
                     custom={index}
@@ -623,25 +593,22 @@ export default function AudiencePage() {
                       whileHover={{ rotate: 360 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      {feature.icon}
                     </motion.span>
-                    <span
-                      className={isDark ? "text-gray-200" : "text-gray-800"}
-                    >
-                      {feature}
-                    </span>
+                    <div>
+                      <span
+                        className={isDark ? "text-gray-200" : "text-gray-800"}
+                      >
+                        {feature.title}
+                      </span>
+                      <p
+                        className={`text-xs mt-1 ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        {feature.description}
+                      </p>
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -697,7 +664,7 @@ export default function AudiencePage() {
             </motion.div>
             <div className="md:w-2/3">
               <p
-                className={`text-lg ${
+                className={`text-lg text-justify ${
                   isDark ? "text-gray-300" : "text-gray-700"
                 } mb-6`}
               >
@@ -708,14 +675,7 @@ export default function AudiencePage() {
                 effectively.
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
-                {[
-                  "Surgical Planning Tools",
-                  "Pre-op Assessment",
-                  "Post-op Monitoring",
-                  "Surgical Team Coordination",
-                  "Procedure Documentation",
-                  "Outcome Analysis",
-                ].map((feature, index) => (
+                {diagnosisPointers.map((feature, index) => (
                   <motion.div
                     key={index}
                     custom={index}
@@ -737,25 +697,22 @@ export default function AudiencePage() {
                       whileHover={{ rotate: 360 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      {feature.icon}
                     </motion.span>
-                    <span
-                      className={isDark ? "text-gray-200" : "text-gray-800"}
-                    >
-                      {feature}
-                    </span>
+                    <div>
+                      <span
+                        className={isDark ? "text-gray-200" : "text-gray-800"}
+                      >
+                        {feature.title}
+                      </span>
+                      <p
+                        className={`text-xs mt-1 ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        {feature.description}
+                      </p>
+                    </div>
                   </motion.div>
                 ))}
               </div>

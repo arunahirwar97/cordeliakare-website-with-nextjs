@@ -1,17 +1,34 @@
 // app/surgical-care/PretextInfo.tsx
 "use client";
 
+import { comprehensiveServices, treatments } from "@/constants/constants";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
+import {
+  Baby,
+  Bone,
+  Brain,
+  CalendarCheck,
+  Car,
+  Dna,
+  HeartPulse,
+  Languages,
+  Plane,
+  Stethoscope,
+  Video,
+  Weight,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { FaTooth,FaDumbbell } from "react-icons/fa";
+import { GiScalpel } from "react-icons/gi";
 
 export default function PretextInfo() {
   // const [userPresent, setUserPresent] = useState(false);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const {token} = useAuth()
+  const { token } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -131,7 +148,7 @@ export default function PretextInfo() {
           >
             <h2
               className={`text-2xl font-semibold mb-4 flex items-center ${
-                isDark ? "text-teal-300" : "text-teal-800"
+                isDark ? "text-teal-300" : "text-teal-900"
               }`}
             >
               <span
@@ -153,9 +170,13 @@ export default function PretextInfo() {
                   />
                 </svg>
               </span>
-              Who We Are
+              Who We Are?
             </h2>
-            <p className={`${isDark ? "text-gray-300" : "text-gray-700"} text-justify`}>
+            <p
+              className={`${
+                isDark ? "text-gray-300" : "text-gray-700"
+              } text-justify`}
+            >
               At the core of CordeLiakare, we deliver a seamless experience that
               addresses all your medical treatment needs and supports a swift
               recovery. We serve international patients from the SAARC region,
@@ -180,14 +201,7 @@ export default function PretextInfo() {
             Our Comprehensive Services
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              "Pre-Travel Medical Consultation",
-              "Visa Assistance and Travel Coordination",
-              "Hospital and Doctor Appointments",
-              "Translation and Interpretation Services",
-              "Local Transportation and Accommodation",
-              "Post-Treatment Follow-ups (In-person & Telehealth)",
-            ].map((service, index) => (
+            {comprehensiveServices.map((service, index) => (
               <motion.div
                 key={index}
                 whileHover={{ y: -5 }}
@@ -205,27 +219,24 @@ export default function PretextInfo() {
                         : "bg-purple-100 text-purple-600"
                     }`}
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                    {service.icon}
+                  </span>
+                  <div>
+                    <span
+                      className={`font-medium ${
+                        isDark ? "text-gray-200" : "text-gray-800"
+                      }`}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    className={`font-medium ${
-                      isDark ? "text-gray-200" : "text-gray-800"
-                    }`}
-                  >
-                    {service}
-                  </span>
+                      {service.title}
+                    </span>
+                    <p
+                      className={`text-sm mt-1 ${
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
+                      {service.description}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -242,16 +253,7 @@ export default function PretextInfo() {
             Specialized Treatments We Offer
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {[
-              "Cardiology & Cardiothoracic Surgery",
-              "Orthopedics & Joint Replacement",
-              "Oncology (Cancer Treatment)",
-              "Cosmetic & Plastic Surgery",
-              "IVF and Fertility Treatments",
-              "Neurology & Neurosurgery",
-              "Dental Procedures",
-              "Bariatric Surgery",
-            ].map((treatment, index) => (
+            {treatments.map((treatment, index) => (
               <motion.div
                 key={index}
                 whileHover={{ y: -3 }}
@@ -269,27 +271,24 @@ export default function PretextInfo() {
                         : "bg-green-100 text-green-600"
                     }`}
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                    {treatment.icon}
+                  </span>
+                  <div>
+                    <span
+                      className={`font-medium ${
+                        isDark ? "text-gray-200" : "text-gray-700"
+                      }`}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    className={`font-medium ${
-                      isDark ? "text-gray-200" : "text-gray-700"
-                    }`}
-                  >
-                    {treatment}
-                  </span>
+                      {treatment.title}
+                    </span>
+                    <p
+                      className={`text-xs mt-1 ${
+                        isDark ? "text-gray-400" : "text-gray-500"
+                      }`}
+                    >
+                      {treatment.description}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}

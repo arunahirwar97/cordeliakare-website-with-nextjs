@@ -314,7 +314,7 @@ export default function LoginPage() {
               <p className={isDark ? "text-gray-400" : "text-gray-600"}>
                 Don't have an account?{" "}
                 <button
-                  onClick={() => router.push("/auth/register")}
+                  onClick={() => router.push("/auth/abroad/register")}
                   className={`font-medium transition-colors ${
                     isDark
                       ? "text-purple-400 hover:text-purple-300"

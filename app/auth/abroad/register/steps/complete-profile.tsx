@@ -3,45 +3,76 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
+import toast from "react-hot-toast";
 
 interface CompleteProfileProps {
   email: string;
   isDark: boolean;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function CompleteProfile({
   email,
   isDark,
 }: CompleteProfileProps) {
+  const { isLoadingSalutations, salutations, setUser, setToken } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    profilePic: null,
+    register_type: "patient",
+    image: null as File | null,
     salutation: "",
     firstName: "",
     lastName: "",
+    fatherName: "",
+    email: email,
     gender: "",
     dob: "",
-    nationality: "",
-    passportNumber: "",
-    phoneNumber: "",
+    bloodGroup: "",
+    referredBy: "",
     address: "",
+    phone: "",
+    prefix_code: "",
     area: "",
-    city: "",
+    locality: "",
     state: "",
     country: "",
-    postalCode: "",
+    pincode: "",
     emergencyContactName: "",
     emergencyContactRelation: "",
     emergencyContactPhone: "",
-    phoneCountryCode: "+1",
-    emergencyContactCountryCode: "+1",
-    bloodGroup: "",
-    referredBy: "",
-    insuranceProvider: "",
-    insurancePolicyNumber: "",
+    aadhaarNumber: "",
+    panNumber: "",
+    passportNumber: "",
+    registrationType: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
+
+  const getGenderValue = (gender: string): number | null => {
+    switch (gender) {
+      case "Male":
+        return 0;
+      case "Female":
+        return 1;
+      case "Other":
+        return 2;
+      default:
+        return null;
+    }
+  };
+
+  // Convert salutation to ID as required by API
+  const getSalutationId = (salutationName: string): string => {
+    const salutation = salutations.find(
+      (s: any) =>
+        s.name.toLowerCase().replace(".", "") === salutationName.toLowerCase()
+    );
+    return salutation ? salutation.id.toString() : "";
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -52,7 +83,7 @@ export default function CompleteProfile({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData((prev) => ({ ...prev, profilePic: e.target.files[0] }));
+      setFormData((prev) => ({ ...prev, image: e.target.files![0] }));
     }
   };
 
@@ -60,10 +91,10 @@ export default function CompleteProfile({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { value } = e.target;
-    setFormData((prev) => ({ ...prev, postalCode: value }));
-
+    setFormData((prev) => ({ ...prev, pincode: value }));
+    console.log(value);
     // Only fetch if postal code has at least 3 characters AND country is entered
-    if (value.length >= 3 && formData.country.trim() !== "") {
+    if (value.length >= 3 && formData.country) {
       try {
         // Convert country name to country code (e.g., "Nigeria" → "NG")
         const countryCode = getCountryCode(formData.country);
@@ -73,12 +104,12 @@ export default function CompleteProfile({
             `http://api.geonames.org/postalCodeSearchJSON?postalcode=${value}&country=${countryCode}&maxRows=1&username=YOUR_GEONAMES_USERNAME`
           );
           const data = await response.json();
-
+          console.log(data);
           if (data.postalCodes?.[0]) {
             const { placeName, adminName1, adminName2 } = data.postalCodes[0];
             setFormData((prev) => ({
               ...prev,
-              city: placeName || prev.city,
+              city: placeName || prev.locality,
               state: adminName1 || prev.state,
               area: adminName2 || prev.area,
             }));
@@ -108,26 +139,77 @@ export default function CompleteProfile({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    const data = new FormData();
+
+    // Your original data mapping (unchanged)
+    data.append("register_type", "patient");
+    data.append("first_name", formData.firstName);
+    data.append("last_name", formData.lastName);
+    data.append("email", email);
+    data.append("father_name", formData.fatherName);
+    data.append("dob", formData.dob);
+    data.append("phone", formData.phone);
+    data.append("emergencycontact", formData.emergencyContactPhone);
+    data.append("emergencycontact_relation", formData.emergencyContactName);
+    const genderValue = getGenderValue(formData.gender);
+    if (genderValue !== null) {
+      data.append("gender", genderValue.toString());
+    }
+    data.append("emergency_prefix_code", "");
+    data.append("prefix_code", formData.prefix_code);
+    data.append("address1", formData.address);
+    data.append("address2", formData.area);
+    data.append("zip", formData.pincode);
+    data.append("city", formData.locality);
+    data.append("state", formData.state);
+    data.append("country", formData.country);
+    data.append("referrel", formData.referredBy);
+    data.append("blood_group", formData.bloodGroup);
+    data.append("salutation_id", getSalutationId(formData.salutation));
+    data.append("registration_type", "3");
+    data.append("aadhar_number", formData.aadhaarNumber);
+    data.append("pan_number", formData.panNumber);
+    data.append("passport_number", formData.passportNumber);
+
+    if (formData.image) {
+      data.append("image", formData.image);
+    }
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Store user data
-      localStorage.setItem(
-        "internationalPatient",
-        JSON.stringify({
-          email,
-          ...formData,
-          registrationComplete: true,
-        })
+      const response = await axios.post(
+        `${API_BASE_URL}/api/confirmForeignRegistration`,
+        data
       );
+      console.log("Registration response==>", response);
+      const result = response.data;
 
-      router.push("/surgical-care/search?location=Abroad");
-    } catch (error) {
-      console.error("Registration failed:", error);
-    } finally {
+      if (response.status === 201) {
+        setIsSubmitting(false);
+        setUser(response?.data?.data.user);
+        setToken(response?.data?.data.token);
+        localStorage.setItem("token", response?.data?.data.token);
+        localStorage.setItem("user", "mvt");
+        toast.success(
+          "Account Created, Hello ",
+          response?.data?.data.user.first_name
+        );
+        console.log("Registration successful:", response);
+        router.push("/profile");
+        setLoading(false);
+      }
+
+      if (response.status !== 200 && response.status !== 201) {
+        setLoading(false);
+        toast.error("Registration failed");
+        throw new Error(result.message || "Registration failed");
+      }
+
+      return result;
+    } catch (error: any) {
       setIsSubmitting(false);
+      console.error("Registration failed:", error);
+      toast.error(error.message);
+      setLoading(false);
     }
   };
 
@@ -156,7 +238,7 @@ export default function CompleteProfile({
     { id: "personal", title: "Personal Info" },
     { id: "address", title: "Address" },
     { id: "emergency", title: "Emergency Contact" },
-    { id: "health", title: "Health Info" },
+    { id: "documents", title: "Documents" },
   ];
 
   return (
@@ -317,63 +399,69 @@ export default function CompleteProfile({
                       required
                     />
                   </div>
+                  <div className="mb-4">
+                    <label htmlFor="phone" className={labelClasses}>
+                      Phone Number*
+                    </label>
+                    <div className="flex gap-2">
+                      {/* Prefix Code Input */}
+                      <div className="relative w-24">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                          <span
+                            className={
+                              isDark ? "text-gray-400" : "text-gray-500"
+                            }
+                          >
+                            +
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          name="prefix_code"
+                          value={formData.prefix_code.replace("+", "")}
+                          onChange={(e) => {
+                            // Allow only numbers and limit length
+                            const value = e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 3);
+                            setFormData((prev) => ({
+                              ...prev,
+                              prefix_code: value ? `+${value}` : "+",
+                            }));
+                          }}
+                          className={`w-full pl-8 py-2 rounded-md ${
+                            isDark
+                              ? "bg-gray-700 border-gray-600 text-white"
+                              : "bg-gray-100 border-gray-300 text-gray-700"
+                          }`}
+                          placeholder="1"
+                          maxLength={3}
+                        />
+                      </div>
 
-                  <div>
-                    <label htmlFor="nationality" className={labelClasses}>
-                      Nationality
-                    </label>
-                    <input
-                      type="text"
-                      id="nationality"
-                      name="nationality"
-                      value={formData.nationality}
-                      onChange={handleChange}
-                      className={inputClasses}
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="passportNumber" className={labelClasses}>
-                      Passport Number
-                    </label>
-                    <input
-                      type="text"
-                      id="passportNumber"
-                      name="passportNumber"
-                      value={formData.passportNumber}
-                      onChange={handleChange}
-                      className={inputClasses}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="phoneNumber" className={labelClasses}>
-                      Phone Number
-                    </label>
-                    <div className="flex">
-                      <select
-                        name="phoneCountryCode"
-                        value={formData.phoneCountryCode}
-                        onChange={handleChange}
-                        className={`w-16 sm:w-24 px-1 sm:px-2 text-xs sm:text-sm rounded-l-md border-r-0 ${
-                          isDark
-                            ? "bg-gray-700 border-gray-600 text-white"
-                            : "bg-gray-100 border-gray-300 text-gray-700"
-                        }`}
-                      >
-                        <option value="+1">+1 (US)</option>
-                        <option value="+91">+91 (IN)</option>
-                        <option value="+44">+44 (UK)</option>
-                        {/* Add more country codes as needed */}
-                      </select>
+                      {/* Phone Number Input */}
                       <input
                         type="tel"
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
+                        name="phone"
+                        value={formData.phone}
                         onChange={handleChange}
-                        className={inputClasses}
+                        className={`flex-1 ${
+                          isDark
+                            ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+                            : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+                        } rounded-md px-3 py-2`}
+                        placeholder="Phone number"
+                        required
+                        maxLength={12}
                       />
                     </div>
+                    <p
+                      className={`text-xs mt-1 ${
+                        isDark ? "text-gray-400" : "text-gray-500"
+                      }`}
+                    >
+                      Example: 1 (US), 44 (UK), 91 (IN), 234 (NG)
+                    </p>
                   </div>
                 </motion.div>
               )}
@@ -414,11 +502,12 @@ export default function CompleteProfile({
                   <input
                     type="text"
                     id="postalCode"
-                    name="postalCode"
-                    value={formData.postalCode}
-                    onChange={handlePostalCodeChange}
+                    name="pincode"
+                    value={formData.pincode}
+                    onChange={handleChange}
                     className={inputClasses}
                     placeholder="Enter to auto-fill address"
+                    maxLength={10}
                   />
                   <p
                     className={`text-xs mt-1 ${
@@ -437,8 +526,8 @@ export default function CompleteProfile({
                   <input
                     type="text"
                     id="city"
-                    name="city"
-                    value={formData.city}
+                    name="locality"
+                    value={formData.locality}
                     onChange={handleChange}
                     className={inputClasses}
                   />
@@ -561,11 +650,11 @@ export default function CompleteProfile({
               )}
             </AnimatePresence>
 
-            {/* Health Information */}
+            {/* Documents */}
             <AnimatePresence mode="wait">
-              {activeSection === "health" && (
+              {activeSection === "documents" && (
                 <motion.div
-                  key="health"
+                  key="documents"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
@@ -573,70 +662,34 @@ export default function CompleteProfile({
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                   <div>
-                    <label htmlFor="bloodGroup" className={labelClasses}>
-                      Blood Group
+                    <label htmlFor="registrationType" className={labelClasses}>
+                      Registration Document Type
                     </label>
                     <select
-                      id="bloodGroup"
-                      name="bloodGroup"
-                      value={formData.bloodGroup}
+                      id="registrationType"
+                      name="registrationType"
+                      value={formData.registrationType}
                       onChange={handleChange}
                       className={inputClasses}
                     >
-                      <option value="">Select</option>
-                      <option value="A+">A+</option>
-                      <option value="A-">A-</option>
-                      <option value="B+">B+</option>
-                      <option value="B-">B-</option>
-                      <option value="AB+">AB+</option>
-                      <option value="AB-">AB-</option>
-                      <option value="O+">O+</option>
-                      <option value="O-">O-</option>
+                      <option value="">Select Document Type</option>
+                      <option value="passport">Passport</option>
                     </select>
                   </div>
-
+                  <div></div>
                   <div>
-                    <label htmlFor="referredBy" className={labelClasses}>
-                      Referred By (Optional)
+                    <label htmlFor="passportNumber" className={labelClasses}>
+                      Passport Number
                     </label>
                     <input
                       type="text"
-                      id="referredBy"
-                      name="referredBy"
-                      value={formData.referredBy}
+                      id="passportNumber"
+                      name="passportNumber"
+                      value={formData.passportNumber}
                       onChange={handleChange}
                       className={inputClasses}
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="insuranceProvider" className={labelClasses}>
-                      Health Insurance Provider
-                    </label>
-                    <input
-                      type="text"
-                      id="insuranceProvider"
-                      name="insuranceProvider"
-                      value={formData.insuranceProvider}
-                      onChange={handleChange}
-                      className={inputClasses}
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="insurancePolicyNumber"
-                      className={labelClasses}
-                    >
-                      Policy Number
-                    </label>
-                    <input
-                      type="text"
-                      id="insurancePolicyNumber"
-                      name="insurancePolicyNumber"
-                      value={formData.insurancePolicyNumber}
-                      onChange={handleChange}
-                      className={inputClasses}
+                      placeholder="Enter passport number"
+                      maxLength={10}
                     />
                   </div>
                 </motion.div>
@@ -683,10 +736,11 @@ export default function CompleteProfile({
                   </button>
                 )}
 
-                {activeSection !== "health" ? (
+                {activeSection !== "documents" ? (
                   <button
-                    type="button"
-                    onClick={() => {
+                    type="button" // Ensure this is always type="button"
+                    onClick={(e) => {
+                      e.preventDefault(); // Prevent form submission
                       const currentIndex = formSections.findIndex(
                         (s) => s.id === activeSection
                       );

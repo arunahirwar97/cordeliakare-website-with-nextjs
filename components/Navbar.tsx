@@ -247,16 +247,16 @@ export default function Navbar() {
                 <Image
                   src="/dark5.jpg"
                   alt="Logo"
-                  width={80}
-                  height={45}
+                  width={95}
+                  height={55}
                   className=""
                 />
               ) : (
                 <Image
                   src="/cordelia-logo.png"
                   alt="Logo"
-                  width={80}
-                  height={45}
+                  width={95}
+                  height={55}
                   className=""
                 />
               )}
