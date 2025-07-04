@@ -78,7 +78,7 @@ const ProfileComponent = () => {
     country: "",
   });
   const [selectedImage, setSelectedImage] = useState(null);
-  // console.log(userData);
+  console.log(userData);
 
   useEffect(() => {
     if (token || localStorage.getItem("token")) {

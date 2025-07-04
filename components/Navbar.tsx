@@ -1,10 +1,11 @@
 "use client";
 
-import { LogOut, User } from "lucide-react";
+import { AlertCircle, LogOut, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import {
   Users,
   Building2,
@@ -28,6 +29,7 @@ import {
   Hospital,
   PackageSearch,
   Sliders,
+  Smartphone,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -42,33 +44,7 @@ const headersolutions = [
     icon: UserPlus,
     color: "bg-blue-500",
     image_name: "/images/rem/patients.png",
-  },
-  {
-    id: "Specialist",
-    title: "Specialist",
-    description:
-      "Solutions for payers focused on cost management, analytics, and improving member engagement.",
-    icon: Stethoscope,
-    color: "bg-green-500",
-    image_name: "/images/rem/specialist.png",
-  },
-  {
-    id: "Clinics",
-    title: "Clinics",
-    description:
-      "Our platform supports providers with patient engagement, workflow optimization, and seamless integrations.",
-    icon: BuildingHospital,
-    color: "bg-purple-500",
-    image_name: "/images/rem/clinics.png",
-  },
-  {
-    id: "Diagnosis_centre",
-    title: "Diagnosis Centre",
-    description:
-      "Our platform supports providers with patient engagement, workflow optimization, and seamless integrations.",
-    icon: Microscope,
-    color: "bg-red-500",
-    image_name: "/images/rem/diagnosis.png",
+    s_id: 1,
   },
   {
     id: "network_hospitals",
@@ -78,23 +54,70 @@ const headersolutions = [
     icon: NetworkIcon,
     color: "bg-yellow-500",
     image_name: "/images/rem/hospitals.png",
+    s_id: 2,
+  },
+  {
+    id: "Specialist",
+    title: "Specialist",
+    description:
+      "Solutions for payers focused on cost management, analytics, and improving member engagement.",
+    icon: Stethoscope,
+    color: "bg-green-500",
+    image_name: "/images/rem/specialist.png",
+    s_id: 3,
+  },
+  {
+    id: "Clinics",
+    title: "Clinics",
+    description:
+      "Our platform supports providers with patient engagement, workflow optimization, and seamless integrations.",
+    icon: BuildingHospital,
+    color: "bg-purple-500",
+    image_name: "/images/rem/clinics.png",
+    s_id: 4,
+  },
+
+  {
+    id: "Diagnosis_centre",
+    title: "Diagnosis Centre",
+    description:
+      "Our platform supports providers with patient engagement, workflow optimization, and seamless integrations.",
+    icon: Microscope,
+    color: "bg-red-500",
+    image_name: "/images/rem/diagnosis.png",
+    s_id: 5,
   },
 ];
 
 const plateforms = [
   {
-    title: "Product",
+    id: 1,
+    title: "Patient mHealth App",
     description:
-      "We provide comprehensive tools tailored for hospitals and health systems to improve care coordination and patient outcomes.",
-    icon: PackageSearch,
+      "Personalized healthcare access for patients anytime, anywhere",
+    icon: Smartphone,
+    color: "bg-blue-500",
+  },
+  {
+    id: 2,
+    title: "Doctor mHealth App",
+    description: "Comprehensive practice management for medical professionals",
+    icon: Stethoscope,
+    color: "bg-purple-500",
+  },
+  {
+    id: 3,
+    title: "Hospital Management System",
+    description: "End-to-end digital solution for hospital administration",
+    icon: Hospital,
     color: "bg-teal-500",
   },
   {
-    title: "Features",
-    description:
-      "Solutions for payers focused on cost management, analytics, and improving member engagement.",
-    icon: Sliders,
-    color: "bg-pink-500",
+    id: 4,
+    title: "Emergency SOS Services",
+    description: "Immediate medical assistance with real-time tracking",
+    icon: AlertCircle,
+    color: "bg-red-500",
   },
 ];
 
@@ -144,7 +167,7 @@ const hospitals = [
     url: "https://prod.cordeliakare.com/hospitals",
   },
   {
-    title: "Hospital With Surgical Cacilities",
+    title: "Hospital With Surgical Facilities",
     description:
       "Solutions for payers focused on cost management, analytics, and improving member engagement.",
     icon: ScissorsSquareDashedBottom,
@@ -173,15 +196,16 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { logout, user, token, setToken } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
-    if(token ||  localStorage.getItem("token")) {
+    if (token || localStorage.getItem("token")) {
       setIsLoggedIn(true);
-      setIsMenuOpen(false)
-    }else{
+      setIsMenuOpen(false);
+    } else {
       setIsLoggedIn(false);
-      setIsMenuOpen(false)
+      setIsMenuOpen(false);
     }
   }, [user, token, setToken]);
 
@@ -198,9 +222,9 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    setToken(null)
+    setToken(null);
     setIsLoggedIn(false);
-    setIsMenuOpen(false)
+    setIsMenuOpen(false);
   };
 
   if (!mounted) return null;
@@ -216,25 +240,25 @@ export default function Navbar() {
           <motion.div
             className="flex items-center space-x-2 mb-4"
             whileHover={{ scale: 1.05 }}
-            onClick={()=>setIsMenuOpen(false)} 
+            onClick={() => setIsMenuOpen(false)}
           >
-            <Link href="/" >
-              {theme === 'dark' ? (
+            <Link href="/">
+              {theme === "dark" ? (
                 <Image
-                src="/dark5.jpg"
-                alt="Logo"
-                width={80}
-                height={45}
-                className=""
-              />
+                  src="/dark5.jpg"
+                  alt="Logo"
+                  width={80}
+                  height={45}
+                  className=""
+                />
               ) : (
                 <Image
-                src="/cordelia-logo.png"
-                alt="Logo"
-                width={80}
-                height={45}
-                className=""
-              />
+                  src="/cordelia-logo.png"
+                  alt="Logo"
+                  width={80}
+                  height={45}
+                  className=""
+                />
               )}
             </Link>
           </motion.div>
@@ -250,6 +274,9 @@ export default function Navbar() {
                   <div
                     key={index}
                     className="p-3 hover:bg-muted rounded-lg cursor-pointer"
+                    onClick={() =>
+                      router.push(`/solutions?section=${solution.s_id}`)
+                    }
                   >
                     <div className="flex items-center space-x-3">
                       <div
@@ -280,6 +307,9 @@ export default function Navbar() {
                   <div
                     key={index}
                     className="p-3 hover:bg-muted rounded-lg cursor-pointer"
+                    onClick={() =>
+                      router.push(`/platform?section=${solution.id}`)
+                    }
                   >
                     <div className="flex items-center space-x-3">
                       <div
@@ -443,7 +473,7 @@ export default function Navbar() {
                   size="icon"
                   className="hover:bg-muted"
                 >
-                  <Link href="/profile" onClick={()=>setIsMenuOpen(false)} >
+                  <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
                     <User className="h-5 w-5" />
                   </Link>
                 </Button>
@@ -515,7 +545,14 @@ export default function Navbar() {
                             className="p-2 hover:bg-muted rounded-lg cursor-pointer"
                             onClick={() => setIsMenuOpen(false)}
                           >
-                            <div className="flex items-center space-x-3">
+                            <div
+                              className="flex items-center space-x-3"
+                              onClick={() =>
+                                router.push(
+                                  `/solutions?section=${solution.s_id}`
+                                )
+                              }
+                            >
                               <div
                                 className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}
                               >
@@ -562,7 +599,10 @@ export default function Navbar() {
                           <div
                             key={index}
                             className="p-2 hover:bg-muted rounded-lg cursor-pointer"
-                            onClick={() => setIsMenuOpen(false)}
+                            onClick={() => {
+                              setIsMenuOpen(false);
+                              router.push(`/platform?section=${solution.id}`);
+                            }}
                           >
                             <div className="flex items-center space-x-3">
                               <div
@@ -757,22 +797,22 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
 
-              {isLoggedIn ? (
-                <Button 
-                  className="w-full bg-red-500 dark:bg-red-700 dark:text-white mt-4 hover:bg-red-700 dark:hover:bg-red-500"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              ) : (
-                <Button 
-                  asChild
-                  className="w-full bg-blue-600 hover:bg-blue-700 mt-4"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Link href="/auth/login">Login</Link>
-                </Button>
-              )}
+                {isLoggedIn ? (
+                  <Button
+                    className="w-full bg-red-500 dark:bg-red-700 dark:text-white mt-4 hover:bg-red-700 dark:hover:bg-red-500"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    className="w-full bg-blue-600 hover:bg-blue-700 mt-4"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Link href="/auth/login">Login</Link>
+                  </Button>
+                )}
               </div>
             </motion.div>
           )}

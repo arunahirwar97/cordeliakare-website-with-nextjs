@@ -57,12 +57,23 @@ interface AuthContextType {
   error: string | null;
   otpSent: boolean;
   otpExpired: boolean;
+  salutations:any;
+  isLoadingSalutations:any;
   sendOtp: (
     phone: string,
     loginType: string
   ) => Promise<{ success: boolean; error?: string }>;
+  sendEmailOtp: (
+    email: string,
+    loginType: string
+  ) => Promise<{ success: boolean; error?: string }>;
   verifyOtp: (
     phone: string,
+    otp: string,
+    loginType: string
+  ) => Promise<{ success: boolean; error?: string }>;
+  verifyEmailOtp: (
+    email: string,
     otp: string,
     loginType: string
   ) => Promise<{ success: boolean; error?: string }>;
@@ -73,8 +84,17 @@ interface AuthContextType {
     phone: string,
     role: string
   ) => Promise<{ success: boolean; error?: string }>;
+  sendEmailRegistrationOtp: (
+    email: string,
+    role: string
+  ) => Promise<{ success: boolean; error?: string }>;
   verifyRegistrationOtp: (
     phone: string,
+    otp: string,
+    role: string
+  ) => Promise<{ success: boolean; error?: string; data?: any }>;
+  verifyEmailRegistrationOtp: (
+    email: string,
     otp: string,
     role: string
   ) => Promise<{ success: boolean; error?: string; data?: any }>;
@@ -141,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.status === 200) {
           setOtpSent(true);
           toast.success(response.data.data.message);
-           console.log(response);
+          console.log(response);
           return { success: true };
         } else {
           const errorMsg =
@@ -188,6 +208,130 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             otp: otp,
             type: "register",
             prefix_code: "91",
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
+        //  console.log("RESPONSE===>", response);
+        if (response.status === 200 || response.status === 201) {
+          // Clear OTP state
+          setOtpSent(false);
+          toast.success(response.data.message!);
+
+          // Return success with response data
+          return {
+            success: true,
+            data: response.data,
+          };
+        } else if (
+          response.status === 400 &&
+          response.data.message === "Your Otp Expired!!!"
+        ) {
+          setOtpExpired(true);
+          toast.error("OTP has expired. Please request a new OTP.");
+          setError("OTP has expired. Please request a new OTP.");
+          return {
+            success: false,
+            error: "OTP has expired. Please request a new OTP.",
+          };
+        } else {
+          const errorMsg = response.data.message || "OTP verification failed";
+          toast.error(errorMsg);
+          setError(errorMsg);
+          return { success: false, error: errorMsg };
+        }
+      } catch (err: any) {
+        let errorMsg = "Invalid OTP";
+
+        if (err.response?.data?.message === "Your Otp Expired!!!") {
+          setOtpExpired(true);
+          errorMsg = "OTP expired. Please request a new one.";
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        toast.error(errorMsg);
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  const sendEmailRegistrationOtp = useCallback(
+    async (
+      email: string,
+      role: string
+    ): Promise<{ success: boolean; error?: string }> => {
+      setLoading(true);
+      setError(null);
+      setOtpSent(false);
+      setOtpExpired(false);
+
+      try {
+        const response = await axios.post<OtpResponse>(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/registrationotp`,
+          {
+            email: email,
+            login_type: role,
+            login_method: "email",
+          }
+        );
+        // console.log(response)
+        if (response.status === 200) {
+          setOtpSent(true);
+          toast.success(response.data.data.message);
+          console.log(response);
+          return { success: true };
+        } else {
+          const errorMsg =
+            response.data.message || "Failed to send registration OTP";
+          setError(errorMsg);
+          toast.error(errorMsg);
+          return { success: false, error: errorMsg };
+        }
+      } catch (err: any) {
+        let errorMsg = "Failed to send registration OTP";
+
+        if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        }
+        setError(errorMsg);
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg };
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  const verifyEmailRegistrationOtp = useCallback(
+    async (
+      email: string,
+      otp: string,
+      role: string
+    ): Promise<{ success: boolean; error?: string; data?: any }> => {
+      setLoading(true);
+      setError(null);
+      setOtpExpired(false);
+
+      try {
+        const response = await axios.post<VerifyOtpResponse>(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/otpverification`,
+          {
+            email: email,
+            confirmation_type: role,
+            otp: otp,
+            type: "register",
+            login_method: "email",
           },
           {
             headers: {
@@ -294,6 +438,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const sendEmailOtp = useCallback(
+    async (
+      email: string,
+      loginType: string
+    ): Promise<{ success: boolean; error?: string }> => {
+      setLoading(true);
+      setError(null);
+      setOtpSent(false);
+      setOtpExpired(false);
+
+      try {
+        const response = await axios.post<OtpResponse>(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/login`,
+          {
+            email: email,
+            login_type: loginType,
+            login_method: "email",
+          }
+        );
+
+        if (response.status === 200) {
+          setOtpSent(true);
+          // console.log(response);
+          toast.success(response.data.data.message);
+          return { success: true };
+        } else {
+          const errorMsg = response.data.message || "Failed to send OTP";
+          setError(errorMsg);
+          toast.error(errorMsg);
+          return { success: false, error: errorMsg };
+        }
+      } catch (err: any) {
+        let errorMsg = "Failed to send OTP";
+
+        if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.response?.data?.user_id) {
+          errorMsg = "Account inactive. Please contact support.";
+        }
+        toast.error(errorMsg);
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
   const verifyOtp = useCallback(
     async (
       phone: string,
@@ -327,20 +520,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // const redirectPath =
             //   loginType === "doctor" ? "/doctor/dashboard" : "/";
             // router.push(redirectPath);
-            toast.success(response.data.message!)
+            toast.success(response.data.message!);
             router.back();
 
             return { success: true };
           } else {
             const errorMsg = "Invalid response from server";
             setError(errorMsg);
-            toast.error(errorMsg)
+            toast.error(errorMsg);
             return { success: false, error: errorMsg };
           }
         } else {
           const errorMsg = response.data.message || "OTP verification failed";
           setError(errorMsg);
-          toast.error(errorMsg)
+          toast.error(errorMsg);
           return { success: false, error: errorMsg };
         }
       } catch (err: any) {
@@ -352,7 +545,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else if (err.response?.data?.message) {
           errorMsg = err.response.data.message;
         }
-        toast.error(errorMsg)
+        toast.error(errorMsg);
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [router]
+  );
+
+  const verifyEmailOtp = useCallback(
+    async (
+      email: string,
+      otp: string,
+      loginType: string
+    ): Promise<{ success: boolean; error?: string }> => {
+      setLoading(true);
+      setError(null);
+      setOtpExpired(false);
+
+      try {
+        const response = await axios.post<VerifyOtpResponse>(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/otpverification`,
+          {
+            email: email,
+            confirmation_type: loginType,
+            otp: otp,
+            type: "login",
+            login_method: "email",
+          }
+        );
+        if (response.status === 200) {
+          // console.log("response---==", response);
+          if (response.data.token && response.data.user) {
+            setToken(response.data.token);
+            setUser(response.data.user);
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("user", "patient");
+
+            // Redirect based on role
+            // const redirectPath =
+            //   loginType === "doctor" ? "/doctor/dashboard" : "/";
+            // router.push(redirectPath);
+            toast.success(response.data.message!);
+            router.back();
+
+            return { success: true };
+          } else {
+            const errorMsg = "Invalid response from server";
+            setError(errorMsg);
+            toast.error(errorMsg);
+            return { success: false, error: errorMsg };
+          }
+        } else {
+          const errorMsg = response.data.message || "OTP verification failed";
+          setError(errorMsg);
+          toast.error(errorMsg);
+          return { success: false, error: errorMsg };
+        }
+      } catch (err: any) {
+        let errorMsg = "Invalid OTP";
+
+        if (err.response?.data?.message === "Your Otp Expired!!!") {
+          setOtpExpired(true);
+          errorMsg = "OTP expired. Please request a new one.";
+        } else if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        }
+        toast.error(errorMsg);
         setError(errorMsg);
         return { success: false, error: errorMsg };
       } finally {
@@ -417,6 +678,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     verifyRegistrationOtp,
     salutations,
     isLoadingSalutations,
+    sendEmailOtp,
+    verifyEmailOtp,
+    sendEmailRegistrationOtp,
+    verifyEmailRegistrationOtp
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

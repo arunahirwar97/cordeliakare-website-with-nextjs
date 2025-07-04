@@ -461,7 +461,7 @@ export default function CordeliakarePage() {
           >
             {/* Text Content */}
             <div className="space-y-6">
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <p className="text-lg text-muted-foreground leading-relaxed text-justify">
                 Welcome to Cordeliakare - Transforming Healthcare with
                 Innovation. In the ever-evolving world of digital health,
                 Cordeliakare stands as a beacon of innovation, bringing together
@@ -825,7 +825,7 @@ export default function CordeliakarePage() {
             {/* Text Content */}
             <div className="space-y-6 max-w-full">
               <h3 className="text-2xl font-bold">{name}</h3>
-              <p className="text-lg text-muted-foreground">{description}</p>
+              <p className="text-lg text-muted-foreground text-justify">{description}</p>
 
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
                 {buttons.map(

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
 
 interface EmailVerificationProps {
   onVerified: (email: string) => void;
@@ -14,6 +15,7 @@ export default function EmailVerification({ onVerified, isDark }: EmailVerificat
   const [otp, setOtp] = useState<string>('');
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const {sendEmailRegistrationOtp, verifyEmailRegistrationOtp} = useAuth()
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,12 +30,15 @@ export default function EmailVerification({ onVerified, isDark }: EmailVerificat
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setOtpSent(true);
-      toast.success('OTP sent successfully!');
-    } catch (error) {
-      toast.error('Failed to send OTP. Please try again.');
+      const result = await sendEmailRegistrationOtp(email, 'patient'); 
+      if (result.success) {
+        setOtpSent(true);
+      } else {
+        // Handle error (result.error contains the error message)
+        console.error('OTP send failed:', result.error);
+      }
+    } catch (error:any) {
+      console.error('Error sending OTP:', error);
     } finally {
       setIsLoading(false);
     }
@@ -42,12 +47,13 @@ export default function EmailVerification({ onVerified, isDark }: EmailVerificat
   const handleVerifyOtp = async () => {
     setIsLoading(true);
     try {
-      // Simulate verification
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      onVerified(email);
-      toast.success('Email verified successfully!');
+      const result = await verifyEmailRegistrationOtp(email, otp, 'user');
+      // console.log(result)
+      if (result.success) {
+        onVerified(email);
+      } 
     } catch (error) {
-      toast.error('OTP verification failed. Please try again.');
+      console.error('Error verifying OTP:', error);
     } finally {
       setIsLoading(false);
     }
