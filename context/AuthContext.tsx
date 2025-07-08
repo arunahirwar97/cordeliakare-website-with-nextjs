@@ -288,7 +288,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.status === 200) {
           setOtpSent(true);
           toast.success(response.data.data.message);
-          console.log(response);
+          // console.log(response);
           return { success: true };
         } else {
           const errorMsg =

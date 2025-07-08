@@ -3,15 +3,14 @@
 import { Suspense } from "react";
 import SurgicalCareForm from "./SurgicalCareForm";
 import LoadingSpinner from "@/components/loading/LoadingComponent";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function SurgicalCareSearchPage() {
   return (
-    <ProtectedRoute>
+    
       <Suspense fallback={<LoadingSpinner />}>
         <SurgicalCareForm />
       </Suspense>
-    </ProtectedRoute>
+    
   );
 }
 

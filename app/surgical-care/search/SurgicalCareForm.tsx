@@ -12,8 +12,10 @@ import { useSearchParams } from "next/navigation";
 import { surgeryOptions, specificSurgeries } from "./constants";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
+import toast from "react-hot-toast";
 
 export default function SurgicalCareForm() {
+  const [mounted, setMounted] = useState(false);
   const { userData, getUserData } = useUser();
   const initialAddress =
     userData?.owner?.address?.address1 + ", " + userData?.owner?.address?.city;
@@ -59,6 +61,10 @@ export default function SurgicalCareForm() {
     },
     debounce: 300,
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const setInitialLocation = async () => {
     if (ready && initialAddress) {
@@ -138,7 +144,7 @@ export default function SurgicalCareForm() {
     setShowSuggestions(false);
   };
 
-  const handleInputChange = (text:any) => {
+  const handleInputChange = (text: any) => {
     setSpecificSurgeryInput(text);
     if (text.trim() === "") {
       setSpecificSurgery("");
@@ -187,11 +193,11 @@ export default function SurgicalCareForm() {
     });
   };
 
-  const handlePlaceSelect = async (suggestion:any) => {
+  const handlePlaceSelect = async (suggestion: any) => {
     setValue(suggestion.description, false);
     clearSuggestions();
 
-    // console.log("Selected place:", suggestion); 
+    // console.log("Selected place:", suggestion);
 
     try {
       const results = await getGeocode({ address: suggestion.description });
@@ -208,32 +214,42 @@ export default function SurgicalCareForm() {
   };
 
   const handleSearch = () => {
+    // Check for required fields and show toast notifications
+
     if (!surgeryType) {
-      alert("Please select a surgery type");
+      toast.error("Please select a surgery type");
       return;
     }
 
     if (!specificSurgery && !specificSurgeryInput.trim()) {
-      alert("Please enter a specific surgery");
+      toast.error("Please enter a specific surgery");
       return;
     }
 
-    if (!location) {
-      alert("Please enter your location");
+    if (!startDate || !endDate) {
+      toast.error("Please select both start and end dates");
       return;
-    }
-    console.log("Location", location);
-    if (!coordinates) {
-      alert("Please enter your coordinates");
-      return;
-    }
-    console.log("Co-ordinates", coordinates);
-
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      alert("End date must be after start date");
+    } else if (new Date(startDate) > new Date(endDate)) {
+      toast.error("End date must be after start date");
       return;
     }
 
+    if (!location || location.trim() === "" || location.includes("undefined")) {
+      toast.error("Please enter a valid location");
+      return;
+    }
+
+    // Check for optional fields (just show warning toasts)
+    const hasHealthConditions = healthConditions.some(
+      (condition) => condition.selected
+    );
+    if (!hasHealthConditions) {
+      toast("Consider adding health conditions for better recommendations", {
+        icon: "ℹ️",
+      });
+    }
+
+    // Proceed with search if all required fields are filled
     const selectedConditions = healthConditions
       .filter((condition) => condition.selected && condition.id !== "other")
       .map((condition) => condition.label);
@@ -259,7 +275,6 @@ export default function SurgicalCareForm() {
     console.log("Search Data:", searchData);
     router.push("/surgical-care/result");
   };
-
   const getSelectedSurgeryLabel = () => {
     if (!surgeryType) return "Select surgery type...";
     const selectedOption = surgeryOptions.find(
@@ -268,12 +283,14 @@ export default function SurgicalCareForm() {
     return selectedOption ? selectedOption.label : "Select surgery type...";
   };
 
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <div
-      className={`min-h-screen bg-gradient-to-br from-purple-100 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900`}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900">
       {/* Gradient Background */}
-      <div className="absolute inset-0  z-0" />
+      <div className="absolute inset-0 z-0" />
       <motion.div
         initial="hidden"
         animate="visible"
@@ -283,27 +300,15 @@ export default function SurgicalCareForm() {
         {/* Hero Section */}
         <motion.section
           variants={itemVariants}
-          className={`relative py-8 border-b ${
-            isDark
-              ? "bg-gradient-to-r from-gray-800 to-blue-900 border-gray-700"
-              : "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-100"
-          }`}
+          className="relative py-8 border-b bg-gradient-to-r from-blue-50 to-purple-50 border-blue-100 dark:from-gray-800 dark:to-blue-900 dark:border-gray-700"
         >
           <div className="max-w-4xl mx-auto text-center px-4 mt-4">
-            <h1
-              className={`text-3xl md:text-4xl font-bold mb-4 ${
-                isDark ? "text-white" : "text-gray-900"
-              }`}
-            >
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
               {locationType === "Abroad"
                 ? "Surgical Care for International Patients"
                 : "Surgical Care for Indian Patients"}
             </h1>
-            <p
-              className={`text-base md:text-lg max-w-2xl mx-auto ${
-                isDark ? "text-blue-300" : "text-blue-600"
-              }`}
-            >
+            <p className="text-base md:text-lg max-w-2xl mx-auto text-blue-600 dark:text-blue-300">
               Tell us your surgical needs and we'll match you with the perfect
               specialist
             </p>
@@ -315,17 +320,11 @@ export default function SurgicalCareForm() {
           <div className="max-w-4xl mx-auto px-4">
             <motion.div
               whileHover={{ scale: 1.005 }}
-              className={`rounded-lg p-6 space-y-6 ${
-                isDark ? "bg-gray-800 shadow-lg" : "bg-white shadow-md"
-              }`}
+              className="rounded-lg p-6 space-y-6 bg-white shadow-md dark:bg-gray-800 dark:shadow-lg"
             >
               {/* Surgery Type Selection */}
               <motion.div variants={itemVariants} className="space-y-4">
-                <h3
-                  className={`text-xl font-semibold ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Select Surgery Type
                 </h3>
                 <div className="relative">
@@ -333,21 +332,15 @@ export default function SurgicalCareForm() {
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => setShowSurgeryDropdown(!showSurgeryDropdown)}
-                    className={`w-full p-3 text-left border rounded-lg transition flex items-center justify-between ${
-                      isDark
-                        ? "border-gray-700 bg-gray-700 hover:border-gray-600"
-                        : "border-gray-200 bg-white hover:border-gray-300"
-                    }`}
+                    className="w-full p-3 text-left border rounded-lg transition flex items-center justify-between border-gray-200 bg-white hover:border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:hover:border-gray-600"
                   >
-                    <span
-                      className={isDark ? "text-gray-200" : "text-gray-700"}
-                    >
+                    <span className="text-gray-700 dark:text-gray-200">
                       {getSelectedSurgeryLabel()}
                     </span>
                     <ChevronDown
                       className={`w-5 h-5 transition-transform ${
                         showSurgeryDropdown ? "rotate-180" : ""
-                      } ${isDark ? "text-gray-400" : "text-gray-500"}`}
+                      } text-gray-500 dark:text-gray-400`}
                     />
                   </motion.button>
 
@@ -355,17 +348,14 @@ export default function SurgicalCareForm() {
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-10 ${
-                        isDark
-                          ? "bg-gray-800 border-gray-700"
-                          : "bg-white border-gray-200"
-                      }`}
+                      className="absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-10 bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700"
                     >
                       {surgeryOptions.map((option) => (
                         <motion.button
                           key={option.value}
                           whileHover={{
-                            backgroundColor: isDark ? "#374151" : "#f9fafb",
+                            backgroundColor:
+                              mounted && isDark ? "#374151" : "#f9fafb",
                           }}
                           onClick={() => {
                             setSurgeryType(option.value);
@@ -373,9 +363,7 @@ export default function SurgicalCareForm() {
                             setSpecificSurgery("");
                             setSpecificSurgeryInput("");
                           }}
-                          className={`w-full p-3 text-left transition first:rounded-t-lg last:rounded-b-lg ${
-                            isDark ? "text-gray-200" : "text-gray-700"
-                          }`}
+                          className="w-full p-3 text-left transition first:rounded-t-lg last:rounded-b-lg text-gray-700 dark:text-gray-200"
                         >
                           {option.label}
                         </motion.button>
@@ -392,11 +380,7 @@ export default function SurgicalCareForm() {
                     transition={{ duration: 0.3 }}
                     className="space-y-4"
                   >
-                    <h3
-                      className={`text-xl font-semibold ${
-                        isDark ? "text-white" : "text-gray-900"
-                      }`}
-                    >
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                       Enter Specific Surgery
                     </h3>
                     <div className="relative">
@@ -407,38 +391,25 @@ export default function SurgicalCareForm() {
                         onChange={(e) => handleInputChange(e.target.value)}
                         onFocus={() => setShowSuggestions(true)}
                         placeholder="Type to search for specific surgery..."
-                        className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                          isDark
-                            ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                            : "bg-white border-gray-200"
-                        }`}
+                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       />
-                      <Search
-                        className={`absolute right-3 top-3 w-5 h-5 ${
-                          isDark ? "text-gray-400" : "text-gray-500"
-                        }`}
-                      />
+                      <Search className="absolute right-3 top-3 w-5 h-5 text-gray-500 dark:text-gray-400" />
 
                       {showSuggestions && filteredSuggestions.length > 0 && (
                         <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto ${
-                            isDark
-                              ? "bg-gray-800 border-gray-700"
-                              : "bg-white border-gray-200"
-                          }`}
+                          className="absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700"
                         >
                           {filteredSuggestions.map((suggestion, index) => (
                             <motion.button
                               key={index}
                               whileHover={{
-                                backgroundColor: isDark ? "#374151" : "#f9fafb",
+                                backgroundColor:
+                                  mounted && isDark ? "#374151" : "#f9fafb",
                               }}
                               onClick={() => handleSuggestionSelect(suggestion)}
-                              className={`w-full p-3 text-left transition first:rounded-t-lg last:rounded-b-lg ${
-                                isDark ? "text-gray-200" : "text-gray-700"
-                              }`}
+                              className="w-full p-3 text-left transition first:rounded-t-lg last:rounded-b-lg text-gray-700 dark:text-gray-200"
                             >
                               {suggestion.label}
                             </motion.button>
@@ -452,31 +423,17 @@ export default function SurgicalCareForm() {
 
               {/* Priority Ranking */}
               <motion.div variants={itemVariants} className="space-y-4">
-                <h3
-                  className={`text-xl font-semibold ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Rank Your Priorities
                 </h3>
-                <div
-                  className={`rounded-lg overflow-hidden ${
-                    isDark ? "bg-gray-700" : "bg-gray-50"
-                  }`}
-                >
+                <div className="rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-700">
                   {priorities.map((priority, index) => (
                     <motion.div
                       key={priority.id}
                       whileHover={{ scale: 1.01 }}
-                      className={`flex items-center justify-between p-3 border-b transition ${
-                        isDark
-                          ? "border-gray-600 bg-gray-800"
-                          : "border-gray-200 bg-white"
-                      } last:border-b-0`}
+                      className="flex items-center justify-between p-3 border-b transition bg-white border-gray-200 dark:border-gray-600 dark:bg-gray-800 last:border-b-0"
                     >
-                      <span
-                        className={isDark ? "text-gray-200" : "text-gray-700"}
-                      >
+                      <span className="text-gray-700 dark:text-gray-200">
                         {priority.icon} {priority.label}
                       </span>
                       <div className="flex items-center space-x-2">
@@ -485,12 +442,8 @@ export default function SurgicalCareForm() {
                           disabled={index === 0}
                           className={`p-1.5 rounded-md transition ${
                             index === 0
-                              ? isDark
-                                ? "text-gray-500 cursor-not-allowed"
-                                : "text-gray-300 cursor-not-allowed"
-                              : isDark
-                              ? "text-teal-400 hover:bg-gray-700"
-                              : "text-teal-600 hover:bg-teal-50"
+                              ? "text-gray-300 cursor-not-allowed dark:text-gray-500"
+                              : "text-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:hover:bg-gray-700"
                           }`}
                         >
                           <ChevronUp className="w-4 h-4" />
@@ -500,12 +453,8 @@ export default function SurgicalCareForm() {
                           disabled={index === priorities.length - 1}
                           className={`p-1.5 rounded-md transition ${
                             index === priorities.length - 1
-                              ? isDark
-                                ? "text-gray-500 cursor-not-allowed"
-                                : "text-gray-300 cursor-not-allowed"
-                              : isDark
-                              ? "text-teal-400 hover:bg-gray-700"
-                              : "text-teal-600 hover:bg-teal-50"
+                              ? "text-gray-300 cursor-not-allowed dark:text-gray-500"
+                              : "text-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:hover:bg-gray-700"
                           }`}
                         >
                           <ChevronDown className="w-4 h-4" />
@@ -518,11 +467,7 @@ export default function SurgicalCareForm() {
 
               {/* Date Range */}
               <motion.div variants={itemVariants} className="space-y-4">
-                <h3
-                  className={`text-xl font-semibold ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Preferred Date Range
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -531,45 +476,25 @@ export default function SurgicalCareForm() {
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        isDark
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-white border-gray-200"
-                      }`}
+                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
-                    <Calendar
-                      className={`absolute right-3 top-3 w-4 h-4 pointer-events-none ${
-                        isDark ? "text-gray-400" : "text-gray-500"
-                      }`}
-                    />
+                    <Calendar className="absolute right-3 top-3 w-4 h-4 pointer-events-none text-gray-500 dark:text-gray-400" />
                   </div>
                   <div className="relative">
                     <input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        isDark
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-white border-gray-200"
-                      }`}
+                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
-                    <Calendar
-                      className={`absolute right-3 top-3 w-4 h-4 pointer-events-none ${
-                        isDark ? "text-gray-400" : "text-gray-500"
-                      }`}
-                    />
+                    <Calendar className="absolute right-3 top-3 w-4 h-4 pointer-events-none text-gray-500 dark:text-gray-400" />
                   </div>
                 </div>
               </motion.div>
 
               {/* Location */}
               <motion.div variants={itemVariants} className="space-y-4">
-                <h3
-                  className={`text-xl font-semibold ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Your Location
                 </h3>
 
@@ -585,27 +510,13 @@ export default function SurgicalCareForm() {
                     }}
                     disabled={!ready}
                     placeholder="Search for your location..."
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                        : "bg-white border-gray-200"
-                    }`}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                   />
-                  <MapPin
-                    className={`absolute right-3 top-3 w-4 h-4 pointer-events-none ${
-                      isDark ? "text-gray-400" : "text-gray-500"
-                    }`}
-                  />
+                  <MapPin className="absolute right-3 top-3 w-4 h-4 pointer-events-none text-gray-500 dark:text-gray-400" />
 
                   {/* Suggestions dropdown */}
                   {status === "OK" && (
-                    <div
-                      className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto ${
-                        isDark
-                          ? "bg-gray-800 border-gray-700"
-                          : "bg-white border-gray-200"
-                      }`}
-                    >
+                    <div className="absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                       {data.map((suggestion) => {
                         const {
                           place_id,
@@ -616,16 +527,10 @@ export default function SurgicalCareForm() {
                           <button
                             key={place_id}
                             onClick={() => handlePlaceSelect(suggestion)}
-                            className={`w-full p-3 text-left transition hover:${
-                              isDark ? "bg-gray-700" : "bg-gray-50"
-                            } ${isDark ? "text-gray-200" : "text-gray-700"}`}
+                            className="w-full p-3 text-left transition hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
                           >
                             <div className="font-medium">{main_text}</div>
-                            <div
-                              className={`text-sm ${
-                                isDark ? "text-gray-400" : "text-gray-500"
-                              }`}
-                            >
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
                               {secondary_text}
                             </div>
                           </button>
@@ -638,11 +543,7 @@ export default function SurgicalCareForm() {
 
               {/* Health Conditions */}
               <motion.div variants={itemVariants} className="space-y-4">
-                <h3
-                  className={`text-xl font-semibold ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Select Health Conditions (Optional)
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -655,9 +556,7 @@ export default function SurgicalCareForm() {
                       className={`px-3 py-1.5 rounded-full border transition ${
                         condition.selected
                           ? "bg-blue-500 text-white border-blue-500"
-                          : isDark
-                          ? "bg-gray-700 text-gray-200 border-gray-600 hover:border-gray-500"
-                          : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+                          : "bg-white text-gray-700 border-gray-200 hover:border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:border-gray-500"
                       }`}
                     >
                       {condition.label}
@@ -671,11 +570,7 @@ export default function SurgicalCareForm() {
                     value={otherCondition}
                     onChange={(e) => setOtherCondition(e.target.value)}
                     placeholder="Specify other condition"
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                        : "bg-white border-gray-200"
-                    }`}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                   />
                 )}
               </motion.div>

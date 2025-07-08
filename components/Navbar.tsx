@@ -34,6 +34,7 @@ import {
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 const headersolutions = [
   {
@@ -124,7 +125,7 @@ const plateforms = [
 const mvts = [
   {
     title: "Patient in India",
-    slug: "india",
+    slug: "search?location=India",
     description:
       "Our platform that helps patients discover top-rated surgeons and hospitals, receive expert consultations and case reviews, and get clear cost estimates—empowering timely and informed decisions.",
     icon: Flag,
@@ -147,6 +148,7 @@ const appointments = [
       "We provide comprehensive tools tailored for hospitals and health systems to improve care coordination and patient outcomes.",
     icon: Video,
     color: "bg-indigo-500",
+    url: () => toast("Not available now.", { icon: "ℹ️" }),
   },
   {
     title: "Hospital Appointments",
@@ -154,6 +156,7 @@ const appointments = [
       "Solutions for payers focused on cost management, analytics, and improving member engagement.",
     icon: Calendar,
     color: "bg-cyan-500",
+    url: () => toast("Not available now.", { icon: "ℹ️" }),
   },
 ];
 
@@ -164,7 +167,7 @@ const hospitals = [
       "We provide comprehensive tools tailored for hospitals and health systems to improve care coordination and patient outcomes.",
     icon: Hospital,
     color: "bg-rose-500",
-    url: "https://prod.cordeliakare.com/hospitals",
+    url: () => toast("Not available now.", { icon: "ℹ️" }),
   },
   {
     title: "Hospital With Surgical Facilities",
@@ -172,6 +175,7 @@ const hospitals = [
       "Solutions for payers focused on cost management, analytics, and improving member engagement.",
     icon: ScissorsSquareDashedBottom,
     color: "bg-amber-500",
+    url: () => toast("Not available now.", { icon: "ℹ️" }),
   },
   {
     title: "Gallery",
@@ -179,12 +183,28 @@ const hospitals = [
       "Solutions for payers focused on cost management, analytics, and improving member engagement.",
     icon: ImageIcon,
     color: "bg-lime-500",
-    url: "https://prod.cordeliakare.com/gallery",
+    url: () => toast("Not available now.", { icon: "ℹ️" }),
+  },
+];
+
+const loginOptions = [
+  {
+    title: "Indian User",
+    url: "/auth/login",
+    icon: Flag,
+    color: "bg-orange-500",
+  },
+  {
+    title: "Abroad User",
+    url: "/auth/abroad/login",
+    icon: Globe,
+    color: "bg-blue-500",
   },
 ];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [mobileDropdowns, setMobileDropdowns] = useState({
     solutions: false,
@@ -213,8 +233,8 @@ export default function Navbar() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const toggleMobileDropdown = (dropdown) => {
-    setMobileDropdowns((prev) => ({
+  const toggleMobileDropdown = (dropdown: any) => {
+    setMobileDropdowns((prev: any) => ({
       ...prev,
       [dropdown]: !prev[dropdown],
     }));
@@ -381,6 +401,7 @@ export default function Navbar() {
                 {appointments.map((solution, index) => (
                   <div
                     key={index}
+                    onClick={solution.url}
                     className="p-3 hover:bg-muted rounded-lg cursor-pointer"
                   >
                     <div className="flex items-center space-x-3">
@@ -409,39 +430,33 @@ export default function Navbar() {
               </button>
               <div className="absolute top-full left-0 mt-2 w-64 bg-background border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 {hospitals.map((solution, index) => {
-                  const Wrapper = solution.url ? "a" : "div";
                   return (
-                    <Wrapper
+                    <div
                       key={index}
-                      href={solution.url || undefined}
-                      target={solution.url ? "_blank" : undefined}
-                      rel={solution.url ? "noopener noreferrer" : undefined}
-                      className="block"
+                      className="p-3 hover:bg-muted rounded-lg cursor-pointer"
+                      onClick={solution.url}
                     >
-                      <div className="p-3 hover:bg-muted rounded-lg cursor-pointer">
-                        <div className="flex items-center space-x-3">
-                          <div
-                            className={`w-8 h-8 ${solution.color} rounded-lg flex items-center justify-center`}
-                          >
-                            <solution.icon className="h-4 w-4 text-white" />
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className={`w-8 h-8 ${solution.color} rounded-lg flex items-center justify-center`}
+                        >
+                          <solution.icon className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">
+                            {solution.title}
                           </div>
-                          <div>
-                            <div className="font-medium text-sm">
-                              {solution.title}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {solution.description}
-                            </div>
+                          <div className="text-xs text-muted-foreground">
+                            {solution.description}
                           </div>
                         </div>
                       </div>
-                    </Wrapper>
+                    </div>
                   );
                 })}
               </div>
             </div>
           </div>
-
           <div className="flex items-center space-x-4 mb-2">
             {/* Theme Toggle */}
             <motion.button
@@ -486,12 +501,42 @@ export default function Navbar() {
                 </Button>
               </div>
             ) : (
-              <Button
-                asChild
-                className="hidden md:inline-flex bg-blue-600 hover:bg-blue-700"
-              >
-                <Link href="/auth/login">Login</Link>
-              </Button>
+              <div className="relative group hidden md:block">
+                {/* Desktop Login Button & Dropdown */}
+                <Button
+                  asChild
+                  className="bg-blue-600 hover:bg-blue-700 transition-all"
+                >
+                  <Link
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                    className="flex items-center gap-1"
+                  >
+                    Login{" "}
+                    <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                  </Link>
+                </Button>
+
+                {/* Desktop Dropdown - Hover-based */}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 w-48 bg-background border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
+                  {loginOptions.map((option) => (
+                    <Link
+                      key={option.title}
+                      href={option.url}
+                      className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors border-b last:border-b-0"
+                    >
+                      <div
+                        className={`p-2 ${option.color} rounded-lg flex-shrink-0`}
+                      >
+                        <option.icon className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{option.title}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Mobile menu button */}
@@ -537,7 +582,7 @@ export default function Navbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="ml-4 mt-2 space-y-2"
+                        className="ml-4 mt-2 space-y-2 max-h-64 overflow-y-auto"
                       >
                         {headersolutions.map((solution, index) => (
                           <div
@@ -712,7 +757,10 @@ export default function Navbar() {
                           <div
                             key={index}
                             className="p-2 hover:bg-muted rounded-lg cursor-pointer"
-                            onClick={() => setIsMenuOpen(false)}
+                            onClick={() => {
+                              setIsMenuOpen(false);
+                              solution.url();
+                            }}
                           >
                             <div className="flex items-center space-x-3">
                               <div
@@ -758,38 +806,31 @@ export default function Navbar() {
                         className="ml-4 mt-2 space-y-2"
                       >
                         {hospitals.map((solution, index) => {
-                          const Wrapper = solution.url ? "a" : "div";
                           return (
-                            <Wrapper
+                            <div
                               key={index}
-                              href={solution.url || undefined}
-                              target={solution.url ? "_blank" : undefined}
-                              rel={
-                                solution.url ? "noopener noreferrer" : undefined
-                              }
-                              className="block"
+                              onClick={() => {
+                                setIsMenuOpen(false);
+                                solution.url();
+                              }}
+                              className="p-2 hover:bg-muted rounded-lg cursor-pointer"
                             >
-                              <div
-                                onClick={() => setIsMenuOpen(false)}
-                                className="p-2 hover:bg-muted rounded-lg cursor-pointer"
-                              >
-                                <div className="flex items-center space-x-3">
-                                  <div
-                                    className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}
-                                  >
-                                    <solution.icon className="h-3 w-3 text-white" />
+                              <div className="flex items-center space-x-3">
+                                <div
+                                  className={`w-6 h-6 ${solution.color} rounded-lg flex items-center justify-center`}
+                                >
+                                  <solution.icon className="h-3 w-3 text-white" />
+                                </div>
+                                <div>
+                                  <div className="font-medium text-xs">
+                                    {solution.title}
                                   </div>
-                                  <div>
-                                    <div className="font-medium text-xs">
-                                      {solution.title}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
-                                      {solution.description}
-                                    </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {solution.description}
                                   </div>
                                 </div>
                               </div>
-                            </Wrapper>
+                            </div>
                           );
                         })}
                       </motion.div>
@@ -805,13 +846,41 @@ export default function Navbar() {
                     Logout
                   </Button>
                 ) : (
-                  <Button
-                    asChild
-                    className="w-full bg-blue-600 hover:bg-blue-700 mt-4"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Link href="/auth/login">Login</Link>
-                  </Button>
+                  <div className="space-y-2">
+                    <Button
+                      className="w-full text-white bg-blue-600 hover:bg-blue-700 justify-center"
+                      onClick={() => setIsLoginMenuOpen(!isLoginMenuOpen)}
+                    >
+                      Login
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform ${
+                          isLoginMenuOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </Button>
+
+                    {/* Login options dropdown */}
+                    {isLoginMenuOpen && (
+                      <div className="mt-2 space-y-2 pl-4 border-l-2 border-muted">
+                        {loginOptions.map((option) => (
+                          <Link
+                            key={option.title}
+                            href={option.url}
+                            onClick={() => {
+                              setIsLoginMenuOpen(false);
+                              setIsMenuOpen(false);
+                            }}
+                            className="flex items-center gap-3 p-2 hover:bg-muted/50 rounded-lg transition-colors"
+                          >
+                            <div className={`p-1.5 ${option.color} rounded-md`}>
+                              <option.icon className="h-4 w-4 text-white" />
+                            </div>
+                            <span className="text-sm">{option.title}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </motion.div>

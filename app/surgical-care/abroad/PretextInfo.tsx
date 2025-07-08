@@ -2,37 +2,35 @@
 "use client";
 
 import { comprehensiveServices, treatments } from "@/constants/constants";
-import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
-import {
-  Baby,
-  Bone,
-  Brain,
-  CalendarCheck,
-  Car,
-  Dna,
-  HeartPulse,
-  Languages,
-  Plane,
-  Stethoscope,
-  Video,
-  Weight,
-} from "lucide-react";
 import { useTheme } from "next-themes";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaTooth,FaDumbbell } from "react-icons/fa";
-import { GiScalpel } from "react-icons/gi";
 
 export default function PretextInfo() {
-  // const [userPresent, setUserPresent] = useState(false);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const { token } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleNavigation = async () => {
+    setIsLoading(true);
+
+    try {
+      await router.push("/surgical-care/search?location=Abroad");
+
+      // Scroll to top after navigation
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      console.error("Navigation error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!mounted) return null;
 
@@ -344,7 +342,6 @@ export default function PretextInfo() {
                   </svg>
                 ),
               },
-
               {
                 title: "Upload Medical Records",
                 description: "Secure digital transfer of your medical history",
@@ -566,7 +563,6 @@ export default function PretextInfo() {
             ))}
           </div>
         </motion.div>
-
         {/* CTA Button */}
         <motion.div
           variants={itemVariants}
@@ -574,32 +570,180 @@ export default function PretextInfo() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <button
+          <motion.button
+            onClick={handleNavigation}
+            disabled={isLoading}
             className={`py-3 px-8 rounded-lg text-lg font-semibold shadow-lg transition-all ${
               isDark
                 ? "bg-purple-600 hover:bg-purple-700 text-white"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
+            } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            {token ? (
-              <Link
-                href={{
-                  pathname: "/surgical-care/search",
-                  query: { location: "Abroad" },
-                }}
-              >
-                Start Your Medical Journey Now
-              </Link>
+            {isLoading ? (
+              <span className="flex items-center">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Loading...
+              </span>
             ) : (
-              <Link
-                href={{
-                  pathname: "/auth/abroad/login",
-                }}
-              >
-                Start Your Medical Journey Now
-              </Link>
+              "Start Your Medical Journey Now"
             )}
-          </button>
+          </motion.button>
+        </motion.div>
+
+        {/* Contact Section */}
+        <motion.div
+          variants={itemVariants}
+          className={`rounded-xl p-8 mb-12 mt-6 ${
+            isDark
+              ? "bg-gray-800"
+              : "bg-gradient-to-r from-blue-50 to-purple-50"
+          }`}
+        >
+          <div className="text-center mb-6">
+            <h2
+              className={`text-2xl font-bold mb-2 ${
+                isDark ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Need Help? We're Here for You
+            </h2>
+            <p
+              className={`text-lg ${
+                isDark ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
+              Contact our medical experts for personalized assistance
+            </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+            {/* Contact Button */}
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className={`group relative overflow-hidden px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 ${
+                isDark
+                  ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                  : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              } shadow-lg hover:shadow-xl`}
+            >
+              <span className="relative z-10 flex items-center">
+                <svg
+                  className="w-5 h-5 mr-2 transition-transform group-hover:scale-110"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                  />
+                </svg>
+                Contact Us
+                <motion.div
+                  className="ml-2"
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                >
+                  →
+                </motion.div>
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -skew-x-12 group-hover:animate-pulse" />
+            </motion.button>
+
+            {/* Contact Info */}
+            <div className="flex flex-col md:flex-row gap-4">
+              {/* Phone */}
+              {/* <motion.div
+                whileHover={{ scale: 1.05 }}
+                className={`flex items-center px-6 py-3 rounded-lg transition-all ${
+                  isDark
+                    ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
+                    : "bg-white hover:bg-gray-50 text-gray-800 border border-gray-200"
+                } shadow-sm hover:shadow-md`}
+              >
+                <div
+                  className={`p-2 rounded-full mr-3 ${
+                    isDark
+                      ? "bg-green-900 text-green-300"
+                      : "bg-green-100 text-green-600"
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Call Us</p>
+                  <p className="text-lg font-semibold">+91 89XXXX1111</p>
+                </div>
+              </motion.div> */}
+
+              {/* Email */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className={`flex items-center px-6 py-3 rounded-lg transition-all ${
+                  isDark
+                    ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
+                    : "bg-white hover:bg-gray-50 text-gray-800 border border-gray-200"
+                } shadow-sm hover:shadow-md`}
+              >
+                <div
+                  className={`p-2 rounded-full mr-3 ${
+                    isDark
+                      ? "bg-blue-900 text-blue-300"
+                      : "bg-blue-100 text-blue-600"
+                  }`}
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Email Us</p>
+                  <p className="text-lg font-semibold">
+                    contactus@cordeliatech.com
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
         </motion.div>
       </motion.div>
     </div>

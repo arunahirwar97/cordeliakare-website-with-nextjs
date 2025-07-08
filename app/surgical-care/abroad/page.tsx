@@ -1,5 +1,5 @@
 // app/surgical-care/abroad/page.tsx
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 import PretextInfo from "./PretextInfo";
 
 export default function SurgicalCareAbroadPage() {

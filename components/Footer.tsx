@@ -8,14 +8,15 @@ import { Facebook, Instagram, Linkedin, Mail, MapPin, TwitterIcon } from "lucide
 
 export default function Footer() {
   return (
-    <footer className="py-12 bg-background border-t">
+    <footer className="py-8 md:py-12 bg-background border-t">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-10 md:space-y-0">
+        {/* Main Footer Content */}
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-8 lg:gap-12">
           {/* Logo & About */}
-          <div className="max-w-sm space-y-4">
-            <div className="flex items-center space-x-2">
+          <div className="flex-1 lg:max-w-md xl:max-w-lg">
+            <div className="flex items-center mb-4">
               <Link href="/">
-                <div className="relative w-[80px] h-[45px]">
+                <div className="relative w-[60px] h-[34px] md:w-[80px] md:h-[45px]">
                   <Image
                     src="/cordelia-logo.png"
                     alt="Logo"
@@ -33,7 +34,7 @@ export default function Footer() {
                 </div>
               </Link>
             </div>
-            <p className="text-sm text-muted-foreground text-justify">
+            <p className="text-sm text-muted-foreground text-justify leading-relaxed">
               CordeLiakare is a cutting-edge HealthTech platform developed by
               Cordelia Technology Pvt. Ltd., a pioneering next-generation
               company committed to transforming healthcare delivery. Designed to
@@ -47,121 +48,131 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Menu */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Menu</h2>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="#" className="hover:underline">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="#about" className="hover:underline">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#services" className="hover:underline">
-                  Services
-                </a>
-              </li>
-              <li>
+          {/* Right Side - Menu, Contact, Social */}
+          <div className="flex flex-col md:flex-row lg:flex-row gap-8 md:gap-12 lg:gap-16">
+            {/* Menu */}
+            <div className="flex-shrink-0">
+              <h2 className="text-lg font-semibold mb-4">Menu</h2>
+              <ul className="space-y-3">
+                <li>
+                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a href="#about" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
+                    About Us
+                  </a>
+                </li>
+                <li>
+                  <a href="#services" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
+                    Services
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.cordeliatech.com/contact-us/"
+                    className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Contact Us
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div className="flex-shrink-0">
+              <h2 className="text-lg font-semibold mb-4">Contact Us</h2>
+              <div className="space-y-3">
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm text-muted-foreground leading-relaxed">
+                    GF13 Ajantha Meadows, Third Cross,<br />
+                    AkshayaNagar, Bangalore - 560068,<br />
+                    Karnataka, India
+                  </span>
+                </div>
                 <a
-                  href="https://www.cordeliatech.com/contact-us/"
-                  className="hover:underline"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  href="mailto:contactus@cordeliatech.com"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Contact Us
+                  <Mail className="w-4 h-4 flex-shrink-0" />
+                  <span>contactus@cordeliatech.com</span>
                 </a>
-              </li>
-            </ul>
-          </div>
+              </div>
+            </div>
 
-          {/* Contact */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Contact Us</h2>
-            <p className="text-sm flex items-center space-x-2">
-              <MapPin />
-              <span>
-                GF13 Ajantha Meadows, Third Cross, <br />
-                AkshayaNagar, Bangalore - 560068, Karnataka, India
-              </span>
-            </p>
-            <a
-              className="text-sm flex items-center space-x-2 mb-11"
-              href="mailto:contactus@cordeliatech.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Mail />
-              <span> contactus@cordeliatech.com</span>
-            </a>
-          </div>
-
-          {/* Social */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Follow Us</h2>
-            <div className="flex space-x-4 text-xl text-muted-foreground">
-              <a
-                href="https://www.facebook.com/profile.php?id=61550846105323"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-blue-600"
-              >
-                <Facebook />
-              </a>
-              <a
-                href="https://x.com/test?lang=en"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-blue-400"
-              >
-                <TwitterIcon />
-              </a>
-              <a
-                href="https://www.instagram.com/p/C8JQm-ESn1q/?igsh=MTRqdXB1MjkydXZsag%3D%3D"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-pink-500"
-              >
-                <Instagram />
-              </a>
-              <a
-                href="https://www.linkedin.com/company/cordelia-technology/posts"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-blue-700 mb-20"
-              >
-                <Linkedin />
-              </a>
+            {/* Social */}
+            <div className="flex-shrink-0">
+              <h2 className="text-lg font-semibold mb-4">Follow Us</h2>
+              <div className="flex gap-4">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61550846105323"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-blue-600 transition-colors"
+                >
+                  <Facebook className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://x.com/test?lang=en"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-blue-400 transition-colors"
+                >
+                  <TwitterIcon className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://www.instagram.com/p/C8JQm-ESn1q/?igsh=MTRqdXB1MjkydXZsag%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-pink-500 transition-colors"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/cordelia-technology/posts"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-blue-700 transition-colors"
+                >
+                  <Linkedin className="w-5 h-5" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom links */}
-        <div className="mt-6 flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-8 text-sm">
-          <a href="/pricing" className="hover:underline">
-            Pricing
-          </a>
-          <a
-            href="https://prod.cordeliakare.com/hospitals"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            Our Customers
-          </a>
-          <a href="/partner" className="hover:underline">
-            Be a Partner
-          </a>
-        </div>
+        {/* Bottom Section */}
+        <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-border/40">
+          {/* Bottom Links */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-4">
+            <a href="/pricing" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
+              Pricing
+            </a>
+            <a
+              href="https://prod.cordeliakare.com/hospitals"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+            >
+              Our Customers
+            </a>
+            <a href="/partner" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
+              Be a Partner
+            </a>
+          </div>
 
-        {/* Copyright */}
-        <div className="mt-6 text-center text-sm">
-          © {new Date().getFullYear()} Cordelia Technology Private Limited. All
-          rights reserved.
+          {/* Copyright */}
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Cordelia Technology Private Limited. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
