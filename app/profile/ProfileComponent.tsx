@@ -120,7 +120,7 @@ const ProfileComponent = () => {
       subtitle: "Read our refund policy",
       bgColor: "bg-yellow-100 dark:bg-yellow-900/30",
       iconColor: "text-yellow-600 dark:text-yellow-400",
-      onClick: ()=>window.location.href = "https://prod.cordeliakare.com/privacy-policy"
+      onClick: ()=>router.push('/privacy')
     },
     {
       icon: HelpCircle,
@@ -128,7 +128,7 @@ const ProfileComponent = () => {
       subtitle: "Click view Cordiakare support info",
       bgColor: "bg-red-100 dark:bg-red-900/30",
       iconColor: "text-red-600 dark:text-red-400",
-      onClick: ()=>router.push('/profile/support')
+      onClick: ()=>router.push('/support')
     },
     {
       icon: LogOut,

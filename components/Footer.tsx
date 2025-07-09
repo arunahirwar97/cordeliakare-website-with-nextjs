@@ -4,7 +4,15 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { useTheme } from "next-themes";
-import { Facebook, Instagram, Linkedin, Mail, MapPin, TwitterIcon } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  TwitterIcon,
+} from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function Footer() {
   return (
@@ -55,17 +63,23 @@ export default function Footer() {
               <h2 className="text-lg font-semibold mb-4">Menu</h2>
               <ul className="space-y-3">
                 <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
+                  <a
+                    href="/"
+                    className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                  >
                     Home
                   </a>
                 </li>
                 <li>
-                  <a href="#about" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
+                  <a
+                    href="https://prod.cordeliakare.com/about-us"
+                    className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                  >
                     About Us
                   </a>
                 </li>
-                <li>
-                  <a href="#services" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
+                <li onClick={() => toast("Not available now.", { icon: "ℹ️" })}>
+                  <a className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
                     Services
                   </a>
                 </li>
@@ -73,8 +87,6 @@ export default function Footer() {
                   <a
                     href="https://www.cordeliatech.com/contact-us/"
                     className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
-                    target="_blank"
-                    rel="noopener noreferrer"
                   >
                     Contact Us
                   </a>
@@ -89,8 +101,10 @@ export default function Footer() {
                 <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                   <span className="text-sm text-muted-foreground leading-relaxed">
-                    GF13 Ajantha Meadows, Third Cross,<br />
-                    AkshayaNagar, Bangalore - 560068,<br />
+                    GF13 Ajantha Meadows, Third Cross,
+                    <br />
+                    AkshayaNagar, Bangalore - 560068,
+                    <br />
                     Karnataka, India
                   </span>
                 </div>
@@ -151,26 +165,32 @@ export default function Footer() {
         <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-border/40">
           {/* Bottom Links */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-4">
-            <a href="/pricing" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
-              Pricing
+            <a
+              href="/privacy"
+              className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+            >
+              Privacy Policy
             </a>
             <a
               href="https://prod.cordeliakare.com/hospitals"
-              target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
             >
               Our Customers
             </a>
-            <a href="/partner" className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors">
-              Be a Partner
+            <a
+              href="/terms"
+              className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+            >
+              Terms & Conditions
             </a>
           </div>
 
           {/* Copyright */}
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Cordelia Technology Private Limited. All rights reserved.
+              © {new Date().getFullYear()} Cordelia Technology Private Limited.
+              All rights reserved.
             </p>
           </div>
         </div>

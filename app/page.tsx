@@ -593,21 +593,37 @@ export default function CordeliakarePage() {
 
         {/* Popup Modal */}
         {popupData && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
-            <div className="bg-white dark:bg-gray-900 rounded-xl p-6 max-w-3xl w-full relative shadow-lg">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-1">
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-4 max-w-sm lg:max-w-xl md:max-w-xl w-full relative shadow-lg">
               <button
                 onClick={closePopup}
-                className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+                className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-1 z-10 hover:bg-red-600 transition"
               >
-                ✕
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
               </button>
-              <Image
-                src="/images/qr_code_image.jpg"
-                alt="Dr. Nadeem Vaidya Testimonial"
-                width={300}
-                height={100}
-                className="rounded-lg w-full object-contain mb-4"
-              />
+              <div className="p-0">
+                <Image
+                  src="/images/qr_code_image.jpg"
+                  alt="Online Consultation QR Code"
+                  width={250}
+                  height={250}
+                  className="rounded-lg w-auto h-auto object-contain"
+                />
+                <p className="text-center mt-2 text-sm text-gray-600 dark:text-gray-300">
+                  Scan for online consultation
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -825,7 +841,9 @@ export default function CordeliakarePage() {
             {/* Text Content */}
             <div className="space-y-6 max-w-full">
               <h3 className="text-2xl font-bold">{name}</h3>
-              <p className="text-lg text-muted-foreground text-justify">{description}</p>
+              <p className="text-lg text-muted-foreground text-justify">
+                {description}
+              </p>
 
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
                 {buttons.map(
@@ -907,7 +925,7 @@ export default function CordeliakarePage() {
                 className="px-8 py-6 text-lg"
               >
                 <Link
-                  href="https://prod.cordeliakare.com/login"
+                  href="#"
                   className="flex items-center"
                 >
                   Request A Demo

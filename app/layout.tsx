@@ -9,6 +9,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import { UserProvider } from "@/context/UserContext";
 import Script from "next/script";
+import ScrollToTop from "@/components/ScrollTop";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -58,6 +59,7 @@ export default function RootLayout({
                     src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
                     strategy="beforeInteractive"
                   />
+                  <ScrollToTop />
                   {children}
                 </div>
               </main>

@@ -167,7 +167,7 @@ const hospitals = [
       "We provide comprehensive tools tailored for hospitals and health systems to improve care coordination and patient outcomes.",
     icon: Hospital,
     color: "bg-rose-500",
-    url: () => toast("Not available now.", { icon: "ℹ️" }),
+    url: () => window.location.href = "https://prod.cordeliakare.com/hospitals",
   },
   {
     title: "Hospital With Surgical Facilities",
@@ -183,7 +183,7 @@ const hospitals = [
       "Solutions for payers focused on cost management, analytics, and improving member engagement.",
     icon: ImageIcon,
     color: "bg-lime-500",
-    url: () => toast("Not available now.", { icon: "ℹ️" }),
+    url: () => window.location.href = "https://prod.cordeliakare.com/gallery",
   },
 ];
 
