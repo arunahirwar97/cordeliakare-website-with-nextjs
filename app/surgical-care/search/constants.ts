@@ -1,5 +1,4 @@
 export const surgeryOptions = [
-  {label: '❤️ Cardiac', value: 'cardi'},
   {label: '🚺 Cancer', value: 'cancer'},
   {label: '🦴 Orthopedic', value: 'ortho'},
   {label: '✨ Cosmetic', value: 'cosmetic'},
@@ -7,9 +6,10 @@ export const surgeryOptions = [
   {label: '👁️ Ophthalmology', value: 'ophtha'},
   {label: '🩺 General', value: 'surg'},
   {label: '👶 Pediatric', value: 'pediat'},
-  {label: '🩸 Vascular', value: 'vascular'},
-  {label: '🚹 Urology', value: 'urology'},
-  {label: '🚺 Gynecology', value: 'g'},
+  {label: '🩸 Vascular', value: 'vascu'},
+  {label: '🚹 Urology', value: 'urolo'},
+  {label: '🚺 Gynecology', value: 'gynae'},
+  {label: '❤️ Cardiac', value: 'cardi'},
 ];
 
 export const specificSurgeries = {

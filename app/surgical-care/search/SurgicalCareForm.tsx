@@ -221,10 +221,10 @@ export default function SurgicalCareForm() {
       return;
     }
 
-    if (!specificSurgery && !specificSurgeryInput.trim()) {
-      toast.error("Please enter a specific surgery");
-      return;
-    }
+    // if (!specificSurgery && !specificSurgeryInput.trim()) {
+    //   toast.error("Please enter a specific surgery");
+    //   return;
+    // }
 
     if (!startDate || !endDate) {
       toast.error("Please select both start and end dates");
@@ -374,7 +374,7 @@ export default function SurgicalCareForm() {
                 </div>
 
                 {/* Specific Surgery Input */}
-                {surgeryType && (
+                {/* {surgeryType && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
@@ -419,7 +419,7 @@ export default function SurgicalCareForm() {
                       )}
                     </div>
                   </motion.div>
-                )}
+                )} */}
               </motion.div>
 
               {/* Priority Ranking */}

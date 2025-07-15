@@ -207,7 +207,7 @@ const BookingComponent = () => {
     setLoading(true);
     try {
       const response = await getGalleryImages(Number(doctorId));
-
+      
     } catch (error) {
       console.error("Error fetching gallery images:", error);
     } finally {
@@ -260,7 +260,7 @@ const BookingComponent = () => {
 
     console.log("Booking Data:", finalBookingData);
     toast.error("Not available at this moments");
-     router.push("/surgical-care/status/1");
+    // router.push("/surgical-care/status/1");
   };
 
   const handleVirtualConsult = () => {
