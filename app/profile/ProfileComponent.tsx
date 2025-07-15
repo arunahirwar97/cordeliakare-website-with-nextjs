@@ -53,7 +53,7 @@ const dashboardItems = [
     title: "Appointments",
     bgColor: "bg-teal-500",
     cardBg: "bg-teal-50 dark:bg-teal-900/30",
-    route: '/profile/appointments'
+    route: "/profile/appointments",
   },
 ];
 
@@ -120,7 +120,7 @@ const ProfileComponent = () => {
       subtitle: "Read our refund policy",
       bgColor: "bg-yellow-100 dark:bg-yellow-900/30",
       iconColor: "text-yellow-600 dark:text-yellow-400",
-      onClick: ()=>router.push('/privacy')
+      onClick: () => router.push("/privacy"),
     },
     {
       icon: HelpCircle,
@@ -128,7 +128,7 @@ const ProfileComponent = () => {
       subtitle: "Click view Cordiakare support info",
       bgColor: "bg-red-100 dark:bg-red-900/30",
       iconColor: "text-red-600 dark:text-red-400",
-      onClick: ()=>router.push('/support')
+      onClick: () => router.push("/support"),
     },
     {
       icon: LogOut,
@@ -320,7 +320,7 @@ const ProfileComponent = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {dashboardItems.map((item, index) => (
               <motion.div
-                onClick={()=>router.push(item.route!)}
+                onClick={() => router.push(item.route!)}
                 key={index}
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
@@ -434,7 +434,7 @@ const ProfileComponent = () => {
                 ? "text-red-400 hover:bg-red-900/30"
                 : "text-red-600 hover:bg-red-50"
             }`}
-            onClick={()=>toast.error("Unable to process your request!")}
+            onClick={() => toast.error("Unable to process your request!")}
           >
             <Trash2 className="w-5 h-5" />
             <span className="font-medium">Delete Account</span>
@@ -530,9 +530,13 @@ const ProfileComponent = () => {
                     <input
                       type="text"
                       value={formData.firstName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, firstName: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^[a-zA-Z ]*$/.test(value) && value.length <= 30) {
+                          // Only letters and spaces, max 30 chars
+                          setFormData({ ...formData, firstName: value });
+                        }
+                      }}
                       className={`w-full p-2 rounded-lg border ${
                         isDark
                           ? "bg-gray-700 border-gray-600"
@@ -551,9 +555,13 @@ const ProfileComponent = () => {
                     <input
                       type="text"
                       value={formData.lastName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, lastName: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^[a-zA-Z ]*$/.test(value) && value.length <= 30) {
+                          // Only letters and spaces, max 30 chars
+                          setFormData({ ...formData, lastName: value });
+                        }
+                      }}
                       className={`w-full p-2 rounded-lg border ${
                         isDark
                           ? "bg-gray-700 border-gray-600"
@@ -574,9 +582,13 @@ const ProfileComponent = () => {
                   <input
                     type="email"
                     value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value.length <= 50) {
+                        // Max 50 chars
+                        setFormData({ ...formData, email: value });
+                      }
+                    }}
                     className={`w-full p-2 rounded-lg border ${
                       isDark
                         ? "bg-gray-700 border-gray-600"
@@ -617,9 +629,15 @@ const ProfileComponent = () => {
                   <input
                     type="text"
                     value={formData.premises}
-                    onChange={(e) =>
-                      setFormData({ ...formData, premises: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (
+                        /^[a-zA-Z0-9\s,.-]*$/.test(value) &&
+                        value.length <= 100
+                      ) {
+                        setFormData({ ...formData, premises: value });
+                      }
+                    }}
                     className={`w-full p-2 rounded-lg border ${
                       isDark
                         ? "bg-gray-700 border-gray-600"
@@ -640,9 +658,12 @@ const ProfileComponent = () => {
                     <input
                       type="text"
                       value={formData.zipCode}
-                      onChange={(e) =>
-                        setFormData({ ...formData, zipCode: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^\d*$/.test(value) && value.length <= 6) {
+                          setFormData({ ...formData, zipCode: value });
+                        }
+                      }}
                       className={`w-full p-2 rounded-lg border ${
                         isDark
                           ? "bg-gray-700 border-gray-600"
@@ -661,9 +682,15 @@ const ProfileComponent = () => {
                     <input
                       type="text"
                       value={formData.locality}
-                      onChange={(e) =>
-                        setFormData({ ...formData, locality: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (
+                          /^[a-zA-Z0-9\s]*$/.test(value) &&
+                          value.length <= 50
+                        ) {
+                          setFormData({ ...formData, locality: value });
+                        }
+                      }}
                       className={`w-full p-2 rounded-lg border ${
                         isDark
                           ? "bg-gray-700 border-gray-600"
@@ -685,9 +712,12 @@ const ProfileComponent = () => {
                     <input
                       type="text"
                       value={formData.state}
-                      onChange={(e) =>
-                        setFormData({ ...formData, state: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^[a-zA-Z\s]*$/.test(value) && value.length <= 50) {
+                          setFormData({ ...formData, state: value });
+                        }
+                      }}
                       className={`w-full p-2 rounded-lg border ${
                         isDark
                           ? "bg-gray-700 border-gray-600"

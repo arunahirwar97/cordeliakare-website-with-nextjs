@@ -1,14 +1,15 @@
 export const surgeryOptions = [
-  {label: '❤️ Cardiac', value: 'cardiac'},
-  {label: '🦴 Orthopedic', value: 'orthopedic'},
+  {label: '❤️ Cardiac', value: 'cardi'},
+  {label: '🚺 Cancer', value: 'cancer'},
+  {label: '🦴 Orthopedic', value: 'ortho'},
   {label: '✨ Cosmetic', value: 'cosmetic'},
-  {label: '🧠 Neurological', value: 'neurological'},
-  {label: '👁️ Ophthalmology', value: 'ophthalmology'},
-  {label: '🩺 General', value: 'general'},
-  {label: '👶 Pediatric', value: 'pediatric'},
+  {label: '🧠 Neurological', value: 'neuro'},
+  {label: '👁️ Ophthalmology', value: 'ophtha'},
+  {label: '🩺 General', value: 'surg'},
+  {label: '👶 Pediatric', value: 'pediat'},
   {label: '🩸 Vascular', value: 'vascular'},
   {label: '🚹 Urology', value: 'urology'},
-  {label: '🚺 Gynecology', value: 'gynecology'},
+  {label: '🚺 Gynecology', value: 'g'},
 ];
 
 export const specificSurgeries = {

@@ -12,6 +12,39 @@ export type Doctor = {
   languages: string[];
 };
 
+export type SearchData = {
+  surgeryType?: string;
+  priorities?: string[];
+  dateRange?: { start: Date; end: Date };
+  location?: string;
+  healthConditions?: string[];
+  coordinates?: { lat: number; lng: number };
+};
+
+export type PackageWithDistance = {
+  surgery: {
+    id: string;
+    title: string;
+    price: string;
+  };
+  department: {
+    department_name: string;
+  };
+  packages: Array<{
+    id: string;
+    name: string;
+    total_amount: number;
+  }>;
+  hospital: {
+    name: string;
+    tenant_id: string;
+    address: string;
+    working_days: string;
+    working_time: string;
+  };
+  distance?: number;
+};
+
 export const demoDoctors: Doctor[] = [
   {
     id: "1",
@@ -118,3 +151,133 @@ export const demoDoctors: Doctor[] = [
     languages: ["English", "Korean"],
   },
 ];
+
+
+export const testMvtPackages = {
+  "success": true,
+  "hospitals": [
+    {
+      "hospital": {
+        "name": "Daffodil Hospital",
+        "tenant_id": "4a3ce364-0a45-4ec8-ac98-09a96616d1a9",
+        "address": "PLOT NO-388/2240, 1st Floor, AIIMS Road, Patrapada.",
+        "working_days": "Mon to Sun",
+        "working_time": "24x7"
+      },
+      "packages": [
+        {
+          "surgery": {
+            "id": 101,
+            "title": "Tonsillectomy",
+            "price": 4500
+          },
+          "department": {
+            "id": 1,
+            "department_name": "ENT"
+          },
+          "packages": [
+            {
+              "id": 501,
+              "name": "Basic Tonsillectomy",
+              "total_amount": 4500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "hospital": {
+        "name": "Sunrise Medical Centre",
+        "tenant_id": "9b2ce244-1b33-4be9-bc98-89b200ae3347",
+        "address": "45 Sunrise Ave, Bhubaneswar, Odisha",
+        "working_days": "Mon to Fri",
+        "working_time": "9am - 6pm"
+      },
+      "packages": [
+        {
+          "surgery": {
+            "id": 102,
+            "title": "Appendectomy",
+            "price": 12000
+          },
+          "department": {
+            "id": 2,
+            "department_name": "General Surgery"
+          },
+          "packages": [
+            {
+              "id": 502,
+              "name": "Laparoscopic Appendectomy",
+              "total_amount": 12000
+            }
+          ]
+        },
+        {
+          "surgery": {
+            "id": 103,
+            "title": "Hernia Repair",
+            "price": 15000
+          },
+          "department": {
+            "id": 2,
+            "department_name": "General Surgery"
+          },
+          "packages": [
+            {
+              "id": 503,
+              "name": "Mesh Hernioplasty",
+              "total_amount": 15000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "hospital": {
+        "name": "Green Valley Hospital",
+        "tenant_id": "11aab678-22cd-44f1-af32-bb15e2a65db9",
+        "address": "Sector 5, Green Valley Complex, Cuttack",
+        "working_days": "Tue to Sun",
+        "working_time": "10am - 8pm"
+      },
+      "packages": [
+        {
+          "surgery": {
+            "id": 104,
+            "title": "Cataract Surgery",
+            "price": 8000
+          },
+          "department": {
+            "id": 3,
+            "department_name": "Ophthalmology"
+          },
+          "packages": [
+            {
+              "id": 504,
+              "name": "Phacoemulsification with Lens Implant",
+              "total_amount": 8000
+            }
+          ]
+        },
+        {
+          "surgery": {
+            "id": 105,
+            "title": "LASIK Eye Surgery",
+            "price": 20000
+          },
+          "department": {
+            "id": 3,
+            "department_name": "Ophthalmology"
+          },
+          "packages": [
+            {
+              "id": 505,
+              "name": "Custom LASIK Package",
+              "total_amount": 20000
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

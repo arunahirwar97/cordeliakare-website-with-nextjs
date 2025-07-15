@@ -271,10 +271,11 @@ export default function SurgicalCareForm() {
       coordinates,
       healthConditions: selectedConditions,
     };
-
+    sessionStorage.setItem('surgicalSearchData', JSON.stringify(searchData));
     console.log("Search Data:", searchData);
     router.push("/surgical-care/result");
   };
+
   const getSelectedSurgeryLabel = () => {
     if (!surgeryType) return "Select surgery type...";
     const selectedOption = surgeryOptions.find(

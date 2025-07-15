@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { FaXTwitter } from "react-icons/fa6";
 
 import { useTheme } from "next-themes";
 import {
@@ -125,7 +126,7 @@ export default function Footer() {
               <h2 className="text-lg font-semibold mb-4">Follow Us</h2>
               <div className="flex gap-4">
                 <a
-                  href="https://www.facebook.com/profile.php?id=61550846105323"
+                  href="https://www.facebook.com/people/Cordelia-Technology/61550846105323/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-blue-600 transition-colors"
@@ -138,10 +139,10 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-blue-400 transition-colors"
                 >
-                  <TwitterIcon className="w-5 h-5" />
+                  <FaXTwitter className="w-5 h-5" />
                 </a>
                 <a
-                  href="https://www.instagram.com/p/C8JQm-ESn1q/?igsh=MTRqdXB1MjkydXZsag%3D%3D"
+                  href="https://www.instagram.com/cordelia_technology/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-pink-500 transition-colors"

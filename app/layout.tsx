@@ -10,6 +10,7 @@ import { Toaster } from "react-hot-toast";
 import { UserProvider } from "@/context/UserContext";
 import Script from "next/script";
 import ScrollToTop from "@/components/ScrollTop";
+import { MVTProvider } from "@/context/MVT_Context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,38 +34,40 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <UserProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {/* Place Toaster here, inside ThemeProvider but outside other components */}
-              <Toaster
-                position="top-center"
-                toastOptions={{
-                  className: "",
-                  style: {
-                    background: "hsl(var(--background))",
-                    color: "hsl(var(--foreground))",
-                    border: "1px solid hsl(var(--border))",
-                  },
-                }}
-              />
+            <MVTProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {/* Place Toaster here, inside ThemeProvider but outside other components */}
+                <Toaster
+                  position="top-center"
+                  toastOptions={{
+                    className: "",
+                    style: {
+                      background: "hsl(var(--background))",
+                      color: "hsl(var(--foreground))",
+                      border: "1px solid hsl(var(--border))",
+                    },
+                  }}
+                />
 
-              <Navbar />
-              <main className="min-h-screen pt-16 pb-8">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3">
-                  <Script
-                    src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-                    strategy="beforeInteractive"
-                  />
-                  <ScrollToTop />
-                  {children}
-                </div>
-              </main>
-              <Footer />
-            </ThemeProvider>
+                <Navbar />
+                <main className="min-h-screen pt-16 pb-8">
+                  <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3">
+                    <Script
+                      src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+                      strategy="beforeInteractive"
+                    />
+                    <ScrollToTop />
+                    {children}
+                  </div>
+                </main>
+                <Footer />
+              </ThemeProvider>
+            </MVTProvider>
           </UserProvider>
         </AuthProvider>
       </body>
