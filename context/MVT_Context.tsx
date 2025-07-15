@@ -82,6 +82,7 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
   const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
 
   const getMvtPackages = async (departmentName: string) => {
+    setMvtPackages([]);
     try {
       setLoading(true);
       setError(null);
