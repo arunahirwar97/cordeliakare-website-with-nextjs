@@ -1,8 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import LoadingSpinner from "@/components/loading/LoadingComponent";
 import toast from "react-hot-toast";
@@ -19,14 +25,58 @@ declare global {
 
 const DoctorResults = () => {
   const router = useRouter();
+  const searchParams: any = useSearchParams();
+  const initialLocation: any = searchParams?.get("location");
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [searchData, setSearchData] = useState<SearchData | null>(null);
   const [packagesWithDistance, setPackagesWithDistance] = useState<
     PackageWithDistance[]
   >([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const { getMvtPackages, mvtPackages, error, loading: apiLoading } = useMVT();
+  const [filterText, setFilterText] = useState("");
+  const [showFilter, setShowFilter] = useState(false);
 
-  // const mvtPackages = testMvtPackages
+  // Sort packages based on search relevance instead of filtering
+  const sortedPackages = useMemo(() => {
+    if (!filterText.trim()) {
+      return packagesWithDistance;
+    }
+
+    const searchTerm = filterText.toLowerCase();
+
+    return [...packagesWithDistance].sort((a, b) => {
+      const aTitle = a.surgery.title.toLowerCase();
+      const bTitle = b.surgery.title.toLowerCase();
+
+      const aMatches = aTitle.includes(searchTerm);
+      const bMatches = bTitle.includes(searchTerm);
+
+      // If only one matches, prioritize it
+      if (aMatches && !bMatches) return -1;
+      if (bMatches && !aMatches) return 1;
+
+      // If both match, sort by relevance
+      if (aMatches && bMatches) {
+        // Exact match comes first
+        if (aTitle === searchTerm && bTitle !== searchTerm) return -1;
+        if (bTitle === searchTerm && aTitle !== searchTerm) return 1;
+
+        // Starts with search term
+        if (aTitle.startsWith(searchTerm) && !bTitle.startsWith(searchTerm))
+          return -1;
+        if (bTitle.startsWith(searchTerm) && !aTitle.startsWith(searchTerm))
+          return 1;
+
+        // Sort by position of match
+        return aTitle.indexOf(searchTerm) - bTitle.indexOf(searchTerm);
+      }
+
+      // If neither matches, maintain original order
+      return 0;
+    });
+  }, [packagesWithDistance, filterText, setFilterText]);
 
   // Use refs to prevent unnecessary re-renders
   const hasInitialized = useRef(false);
@@ -246,6 +296,23 @@ const DoctorResults = () => {
     []
   );
 
+  const handleBookNow = useCallback(
+    (packageId: string) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setSelectedPackage(packageId);
+        if (initialLocation === "Abroad") {
+          router.push(`/auth/abroad/login`);
+        } else {
+          router.push(`/auth/login`);
+        }
+      } else {
+        router.push(`/surgical-care/booking/${packageId}`);
+      }
+    },
+    [router]
+  );
+
   // Initialize data only once
   useEffect(() => {
     if (hasInitialized.current) return;
@@ -316,16 +383,19 @@ const DoctorResults = () => {
       hasProcessedPackages.current = true;
 
       console.log("🔄 Starting optimized package processing...");
-      console.log("🏥 Total hospitals to process:", mvtPackages.hospitals.length);
+      console.log(
+        "🏥 Total hospitals to process:",
+        mvtPackages.hospitals.length
+      );
       console.log("🗺️ User coordinates available:", !!searchData.coordinates);
 
       try {
         // Step 1: Calculate distances for unique hospitals only
         const hospitalDistances = new Map<string, number | undefined>();
-        
+
         if (searchData.coordinates) {
           console.log("📍 User location coordinates:", searchData.coordinates);
-          
+
           // Get unique hospitals
           const uniqueHospitals = new Map<string, any>();
           mvtPackages.hospitals.forEach((hospitalData: any) => {
@@ -355,7 +425,9 @@ const DoctorResults = () => {
               continue;
             }
 
-            const hospitalCoords = await geocodeHospitalAddress(hospitalAddress);
+            const hospitalCoords = await geocodeHospitalAddress(
+              hospitalAddress
+            );
             if (!hospitalCoords) {
               console.warn("⚠️ Failed to geocode hospital address");
               hospitalDistances.set(tenantId, undefined);
@@ -410,19 +482,19 @@ const DoctorResults = () => {
 
         // Step 2: Flatten packages and apply hospital distances
         const flattenedPackages: PackageWithDistance[] = [];
-        
+
         mvtPackages.hospitals.forEach((hospitalData: any) => {
           const hospital = hospitalData.hospital;
           const packages = hospitalData.packages;
           const hospitalDistance = hospitalDistances.get(hospital.tenant_id);
-          
+
           packages.forEach((packageData: any) => {
             flattenedPackages.push({
               surgery: packageData.surgery,
               department: packageData.department,
               packages: packageData.packages,
               hospital: hospital,
-              distance: hospitalDistance
+              distance: hospitalDistance,
             });
           });
         });
@@ -449,25 +521,25 @@ const DoctorResults = () => {
         setPackagesWithDistance(sortedPackages);
       } catch (error) {
         console.error("❌ Error processing packages:", error);
-        
+
         // Fallback to packages without distance
         const flattenedPackages: PackageWithDistance[] = [];
-        
+
         mvtPackages.hospitals.forEach((hospitalData: any) => {
           const hospital = hospitalData.hospital;
           const packages = hospitalData.packages;
-          
+
           packages.forEach((packageData: any) => {
             flattenedPackages.push({
               surgery: packageData.surgery,
               department: packageData.department,
               packages: packageData.packages,
               hospital: hospital,
-              distance: undefined
+              distance: undefined,
             });
           });
         });
-        
+
         setPackagesWithDistance(flattenedPackages);
       } finally {
         setIsProcessing(false);
@@ -533,24 +605,24 @@ const DoctorResults = () => {
               <div className="flex items-center">
                 <span className="mr-2 text-green-500">💰</span>
                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                  ₹{item.surgery.price}
+                  ₹{item.surgery.price} (Estimated)
                 </span>
               </div>
               <div className="flex items-center">
                 <span className="mr-2 text-purple-500">📅</span>
                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                  {item.hospital.working_time}
+                  {item.hospital.working_time} Open
                 </span>
               </div>
             </div>
           </div>
 
-          <Link
-            href={`/surgical-care/booking/${item.packages[0]?.id || ""}`}
+          <button
+            onClick={() => handleBookNow(item.packages[0]?.id || "")}
             className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600 text-white text-center py-3 px-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
           >
             <span>Book Now</span>
-          </Link>
+          </button>
         </div>
       </motion.div>
     ),
@@ -558,7 +630,9 @@ const DoctorResults = () => {
   );
 
   const isLoading = apiLoading || isProcessing;
-  const showResults = packagesWithDistance.length > 0 || (mvtPackages?.hospitals?.length > 0 && !isProcessing);
+  const showResults =
+    packagesWithDistance.length > 0 ||
+    (mvtPackages?.hospitals?.length > 0 && !isProcessing);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -592,28 +666,80 @@ const DoctorResults = () => {
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-8"
+          className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Available Packages
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            {showResults ? (
-              <>
-                {packagesWithDistance.length}{" "}
-                {packagesWithDistance.length === 1 ? "package" : "packages"}{" "}
-                found
-                {searchData?.location && ` near ${searchData.location}`}
-              </>
-            ) : (
-              "Loading packages..."
-            )}
-          </p>
+          {/* Header Row - Title + Filter Button */}
+          <div className="flex justify-between items-center mb-4">
+            {/* Empty div for balance (pushes title to center) */}
+            <div className="w-10"></div>
+
+            {/* Responsive Title */}
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white text-center flex-grow">
+              Available Packages
+            </h1>
+
+            {/* Responsive Filter Button */}
+            <button
+              onClick={() => setShowFilter(!showFilter)}
+              className="flex items-center justify-center p-2 sm:px-4 sm:py-2 
+             bg-sky-500 hover:bg-sky-600 
+             dark:bg-sky-600 dark:hover:bg-sky-700 
+             text-white dark:text-sky-50 
+             rounded-lg transition-colors 
+             focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 
+             dark:focus:ring-sky-300 dark:focus:ring-offset-gray-800
+             shadow-sm hover:shadow-md"
+            >
+              <span>🔍</span>
+              <span className="hidden sm:inline ml-2">Filter</span>
+            </button>
+          </div>
+
+          {showFilter && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 flex justify-center"
+            >
+              <div className="relative w-full max-w-md">
+                <input
+                  type="text"
+                  placeholder="Search surgery name..."
+                  value={filterText}
+                  onChange={(e) => setFilterText(e.target.value)}
+                  className="w-full px-4 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                />
+                <button
+                  onClick={() => {
+                    setShowFilter(false);
+                    setFilterText("");
+                  }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  ✕
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          <div className="text-center">
+            <p className="text-gray-600 dark:text-gray-300">
+              {showResults ? (
+                <>
+                  {sortedPackages.length}{" "}
+                  {sortedPackages.length === 1 ? "package" : "packages"} found
+                  {searchData?.location && ` near ${searchData.location}`}
+                </>
+              ) : (
+                "Loading packages..."
+              )}
+            </p>
+          </div>
         </motion.div>
 
         {showResults ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center">
-            {packagesWithDistance.map((pkg, index) => (
+            {sortedPackages.map((pkg, index) => (
               <motion.div
                 key={`${pkg.surgery.id}-${pkg.hospital.tenant_id}`}
                 initial={{ opacity: 0, y: 20 }}
