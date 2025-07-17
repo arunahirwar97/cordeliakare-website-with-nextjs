@@ -61,7 +61,7 @@ export default function SurgicalCareForm() {
     },
     debounce: 300,
   });
-
+  console.log("Search Params", initialLocation)
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -273,7 +273,7 @@ export default function SurgicalCareForm() {
     };
     sessionStorage.setItem('surgicalSearchData', JSON.stringify(searchData));
     console.log("Search Data:", searchData);
-    router.push("/surgical-care/result");
+    router.push(`/surgical-care/result?location=${initialLocation}`);
   };
 
   const getSelectedSurgeryLabel = () => {
