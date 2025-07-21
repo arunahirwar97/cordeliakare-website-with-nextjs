@@ -32,6 +32,7 @@ import {
   Instagram,
   Linkedin,
   Clipboard,
+  Package,
 } from "lucide-react";
 import LoadingSpinner from "@/components/loading/LoadingComponent";
 import { motion } from "framer-motion";
@@ -49,8 +50,20 @@ import toast from "react-hot-toast";
 import DoctorCard from "./DoctorCard";
 import ContactButton from "@/components/ContactButton";
 import HospitalGallery from "./HospitalGallery";
+import { useUser } from "@/context/UserContext";
+import NotesModal from "./NotesModal";
+import SuccessModal from "./SuccessModal";
+import BookingLoadingModal from "./BookingLoadingModal";
 
 const BookingComponent = () => {
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showNotesModal, setShowNotesModal] = useState(false);
+  const [pendingBookingType, setPendingBookingType] = useState<
+    "virtual" | "surgery" | null
+  >(null);
+  const [sessionData, setSessionData] = useState({});
+  const { getUserData, userData } = useUser();
   const [expandedDepartments, setExpandedDepartments] = useState<
     Record<string, boolean>
   >({});
@@ -60,6 +73,8 @@ const BookingComponent = () => {
     getDoctorsByTenant,
     getGalleryImages,
     galleryImages,
+    notifyBooking,
+    loading: apiLoading,
   } = useMVT();
   const params: any = useParams();
   const doctorId = params.doctorId as string;
@@ -207,7 +222,6 @@ const BookingComponent = () => {
     setLoading(true);
     try {
       const response = await getGalleryImages(Number(doctorId));
-      
     } catch (error) {
       console.error("Error fetching gallery images:", error);
     } finally {
@@ -215,13 +229,86 @@ const BookingComponent = () => {
     }
   };
 
+  const handleBookingNotification = async (userNotes: string = "") => {
+    try {
+      setShowLoadingModal(true);
+      const notifyBookingData = {
+        Enquiry_Type: bookingData.bookingType,
+        User_Type: localStorage.getItem("user"),
+        User_Full_Name: userData?.full_name,
+        User_Id: userData?.id,
+        User_Email: userData?.email,
+        User_Phone: userData?.phone,
+        User_Age: userData?.age,
+        User_DOB: userData?.dob,
+        User_Gender: userData?.gender === 0 ? "male" : "female",
+        Enquiry_Coordinates: sessionData.coordinates,
+        Enquiry_Location: sessionData.location,
+        Enquiry_Location_Type: sessionData.locationType,
+        Enquiry_Date_Range: sessionData.dateRange,
+        Enquiry_Health_Conditions: sessionData.healthConditions,
+        Enquiry_Surgery_Type: sessionData.surgeryType,
+        Package_Id: packageDetails?.package_id,
+        Package_Name: packageDetails?.package_name,
+        Package_Total_Amount: packageDetails?.total_amount,
+        Hospital_Name: hospital?.hospital_name,
+        Hospital_Email: hospital?.hospital_email,
+        Hospital_Phone: hospital?.hospital_phone,
+        Notes: userNotes || "No notes given",
+      };
+      
+      console.log("INITIATE BOOKING===>", notifyBookingData);
+      const result = await notifyBooking(notifyBookingData);
+      setShowLoadingModal(false);
+      toast.success(result.message);
+      console.log(result.message);
+      setShowSuccessModal(true);
+    } catch (error) {
+      setShowLoadingModal(false);
+      console.error("Notification failed:", error);
+      toast.error("Booking failed");
+    }
+  };
+
+  const handleNavigateHome = () => {
+    setShowSuccessModal(false);
+    router.push("/"); // Adjust the home route as needed
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+  };
+
+  const handleNotesSubmit = async (notes: string) => {
+    setShowNotesModal(false);
+    setPendingBookingType(null);
+    await handleBookingNotification(notes);
+  };
+
+  const handleNotesSkip = async () => {
+    setShowNotesModal(false);
+    setPendingBookingType(null);
+    await handleBookingNotification("");
+  };
+
+  const handleNotesCancel = () => {
+    setShowNotesModal(false);
+    setPendingBookingType(null);
+    setShowLoadingModal(false);
+    // No API call happens
+  };
   useEffect(() => {
     fetchHospitalData();
     fetchPackageDetails();
     fetchDoctorsData();
     fetchGalleryImages();
+    getUserData();
+    const data = sessionStorage.getItem("surgicalSearchData");
+    if (data) {
+      setSessionData(JSON.parse(data));
+    }
   }, []);
-
+  // console.log("SESSION DATA", hospital);
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
@@ -246,21 +333,6 @@ const BookingComponent = () => {
       documents: prev.documents.filter((_, i) => i !== index),
     }));
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleBookingConfirmation = () => {
-    if (!bookingType || !selectedDoctor) return;
-
-    const finalBookingData = {
-      doctorId: selectedDoctor.id,
-      bookingType,
-      query: bookingData.query,
-      documents: bookingData.documents,
-    };
-
-    console.log("Booking Data:", finalBookingData);
-    toast.error("Not available at this moments");
-    // router.push("/surgical-care/status/1");
   };
 
   const handleVirtualConsult = () => {
@@ -764,9 +836,9 @@ const BookingComponent = () => {
             transition={{ delay: 0.2 }}
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
           >
-            <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            {/* <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Schedule with {selectedDoctor.name}
-            </h2>
+            </h2> */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <motion.button
@@ -895,21 +967,35 @@ const BookingComponent = () => {
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 text-center"
           >
             <motion.button
-              whileHover={bookingType ? { scale: 1.02 } : {}}
-              whileTap={bookingType ? { scale: 0.98 } : {}}
-              onClick={handleBookingConfirmation}
-              disabled={!bookingType}
+              whileHover={bookingType && !apiLoading ? { scale: 1.02 } : {}}
+              whileTap={bookingType && !apiLoading ? { scale: 0.98 } : {}}
+              onClick={() => {
+                if (bookingType && !apiLoading) {
+                  setPendingBookingType(bookingType);
+                  setShowNotesModal(true);
+                }
+              }}
+              disabled={!bookingType || apiLoading}
               className={`w-full py-4 px-8 rounded-xl text-white font-bold text-base md:text-lg transition-colors ${
-                bookingType
+                bookingType && !apiLoading
                   ? "bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
                   : "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
               }`}
             >
-              {bookingType === "virtual"
-                ? "BOOK VIRTUAL CONSULTATION"
-                : bookingType === "surgery"
-                ? "SCHEDULE SURGERY ENQUIRY"
-                : "SELECT BOOKING TYPE"}
+              {apiLoading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Processing...</span>
+                </div>
+              ) : (
+                <>
+                  {bookingType === "virtual"
+                    ? "BOOK VIRTUAL CONSULTATION"
+                    : bookingType === "surgery"
+                    ? "SCHEDULE SURGERY ENQUIRY"
+                    : "SELECT BOOKING TYPE"}
+                </>
+              )}
             </motion.button>
 
             <motion.div
@@ -981,6 +1067,29 @@ const BookingComponent = () => {
           </motion.div>
         </motion.div>
       )}
+
+      {/* Notes Modal */}
+      <NotesModal
+        isOpen={showNotesModal}
+        onClose={handleNotesCancel}
+        onSubmit={handleNotesSubmit}
+        onSkip={handleNotesSkip}
+        bookingType={pendingBookingType}
+      />
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        onNavigateHome={handleNavigateHome}
+        bookingType={bookingData.bookingType}
+      />
+
+      {/* Loading Modal */}
+      <BookingLoadingModal
+        isOpen={showLoadingModal}
+        bookingType={bookingData.bookingType}
+      />
     </motion.div>
   );
 };

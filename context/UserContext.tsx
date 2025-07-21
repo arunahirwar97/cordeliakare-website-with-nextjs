@@ -13,6 +13,7 @@ interface User {
   phone: string;
   dob: string;
   gender?: number;
+  full_name: string;
   owner?: {
     address?: {
       zip?: string;

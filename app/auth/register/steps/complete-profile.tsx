@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
 import LoadingSpinner from "@/components/loading/LoadingComponent";
@@ -19,7 +19,6 @@ interface CompleteProfileProps {
   isDark: boolean;
 }
 
-// API Configuration - Update this with your actual API base URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function CompleteProfile({
@@ -28,6 +27,8 @@ export default function CompleteProfile({
 }: CompleteProfileProps) {
   const { isLoadingSalutations, salutations, setUser, setToken } = useAuth();
   const router = useRouter();
+  const searchParams: any = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
   const [formData, setFormData] = useState({
     register_type: "patient",
     image: null as File | null,
@@ -66,6 +67,7 @@ export default function CompleteProfile({
     useRef<google.maps.places.AutocompleteService | null>(null);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
+  const [isConfirm, setIsConfirm] = useState(false);
 
   //Places auto select
   // Initialize Google Places services
@@ -210,10 +212,10 @@ export default function CompleteProfile({
 
     setFormData((prev) => ({
       ...prev,
-      locality: city ,
-      state: state ,
-      pincode: pincode ,
-      area: area ,
+      locality: city,
+      state: state,
+      pincode: pincode,
+      area: area,
     }));
   };
 
@@ -265,10 +267,13 @@ export default function CompleteProfile({
   };
 
   const registerApi = async () => {
+    if (!isConfirm) return;
+
     const data = new FormData();
+    setIsSubmitting(true);
 
     // Your original data mapping (unchanged)
-    data.append("register_type", "patient");
+    data.append("register_type", "user");
     data.append("first_name", formData.firstName);
     data.append("last_name", formData.lastName);
     data.append("email", formData.email);
@@ -312,14 +317,19 @@ export default function CompleteProfile({
       if (response.status === 201) {
         setUser(response?.data?.data.user);
         setToken(response?.data?.data.token);
+        setIsSubmitting(false);
         localStorage.setItem("token", response?.data?.data.token);
-        localStorage.setItem("user", "patient");
+        localStorage.setItem("user", "indian_patient");
         toast.success(
           "Account Created, Hello ",
           response?.data?.data.user.first_name
         );
         // console.log("Registration successful:", response);
-        router.push("/profile");
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        } else {
+          router.push("/profile");
+        }
         setLoading(false);
       }
 
@@ -334,6 +344,7 @@ export default function CompleteProfile({
       console.error("Registration failed:", error);
       toast.error(error.message);
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -347,10 +358,16 @@ export default function CompleteProfile({
     await registerApi();
   };
 
+  const maxDate = new Date(
+    new Date().setFullYear(new Date().getFullYear() - 18)
+  )
+    .toISOString()
+    .split("T")[0];
+
   const inputClasses = `w-full px-4 py-2 rounded-lg border ${
     isDark
-      ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
-      : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+      ? "bg-gray-800 border-gray-500 text-white focus:ring-purple-500 focus:border-purple-500"
+      : "bg-white  border-gray-500 focus:ring-purple-500 focus:border-purple-500"
   } transition-colors`;
 
   const labelClasses = `block text-sm font-medium mb-1 ${
@@ -374,6 +391,10 @@ export default function CompleteProfile({
     { id: "emergency", title: "Emergency Contact" },
     { id: "documents", title: "Documents" },
   ];
+
+  if (isSubmitting) {
+    return <LoadingSpinner />;
+  }
 
   return loading ? (
     <LoadingSpinner />
@@ -418,6 +439,7 @@ export default function CompleteProfile({
           <nav className="flex space-x-2 overflow-x-auto pb-1">
             {formSections.map((section) => (
               <button
+                type="button"
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
                 className={sectionButtonClasses(section.id)}
@@ -513,6 +535,7 @@ export default function CompleteProfile({
                       onChange={handleChange}
                       className={inputClasses}
                       required
+                      maxLength={40}
                     />
                   </div>
 
@@ -528,6 +551,7 @@ export default function CompleteProfile({
                       onChange={handleChange}
                       className={inputClasses}
                       required
+                      maxLength={30}
                     />
                   </div>
 
@@ -542,6 +566,7 @@ export default function CompleteProfile({
                       value={formData.fatherName}
                       onChange={handleChange}
                       className={inputClasses}
+                      maxLength={50}
                     />
                   </div>
 
@@ -556,6 +581,7 @@ export default function CompleteProfile({
                       value={formData.email}
                       onChange={handleChange}
                       className={inputClasses}
+                      maxLength={50}
                     />
                   </div>
 
@@ -571,6 +597,7 @@ export default function CompleteProfile({
                       onChange={handleChange}
                       className={inputClasses}
                       required
+                      max={maxDate}
                     />
                   </div>
 
@@ -584,6 +611,7 @@ export default function CompleteProfile({
                       value={formData.bloodGroup}
                       onChange={handleChange}
                       className={inputClasses}
+                      required
                     >
                       <option value="">Select</option>
                       <option value="A+">A+</option>
@@ -842,6 +870,7 @@ export default function CompleteProfile({
             </AnimatePresence>
 
             {/* Documents */}
+            {/* Documents */}
             <AnimatePresence mode="wait">
               {activeSection === "documents" && (
                 <motion.div
@@ -852,6 +881,7 @@ export default function CompleteProfile({
                   transition={{ duration: 0.3 }}
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
+                  {/* Document Type Dropdown (This stays the same) */}
                   <div>
                     <label htmlFor="registrationType" className={labelClasses}>
                       Registration Document Type
@@ -866,58 +896,62 @@ export default function CompleteProfile({
                       <option value="">Select Document Type</option>
                       <option value="aadhaar">Aadhaar Card</option>
                       <option value="pan">PAN Card</option>
-                      <option value="passport">Passport</option>
                     </select>
                   </div>
-
+                  {/* This empty div is for layout, so we keep it */}
                   <div></div>
+                  <div className="md:col-span-2">
+                    <AnimatePresence mode="wait">
+                      {formData.registrationType === "aadhaar" && (
+                        <motion.div
+                          key="aadhaar"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                        >
+                          <label
+                            htmlFor="aadhaarNumber"
+                            className={labelClasses}
+                          >
+                            Aadhaar Number
+                          </label>
+                          <input
+                            type="text"
+                            id="aadhaarNumber"
+                            name="aadhaarNumber"
+                            value={formData.aadhaarNumber}
+                            onChange={handleChange}
+                            className={inputClasses}
+                            maxLength={12}
+                            placeholder="Enter 12-digit Aadhaar number"
+                          />
+                        </motion.div>
+                      )}
 
-                  <div>
-                    <label htmlFor="aadhaarNumber" className={labelClasses}>
-                      Aadhaar Number
-                    </label>
-                    <input
-                      type="text"
-                      id="aadhaarNumber"
-                      name="aadhaarNumber"
-                      value={formData.aadhaarNumber}
-                      onChange={handleChange}
-                      className={inputClasses}
-                      maxLength={12}
-                      placeholder="Enter 12-digit Aadhaar number"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="panNumber" className={labelClasses}>
-                      PAN Number
-                    </label>
-                    <input
-                      type="text"
-                      id="panNumber"
-                      name="panNumber"
-                      value={formData.panNumber}
-                      onChange={handleChange}
-                      className={inputClasses}
-                      maxLength={10}
-                      placeholder="Enter PAN number"
-                      style={{ textTransform: "uppercase" }}
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="passportNumber" className={labelClasses}>
-                      Passport Number
-                    </label>
-                    <input
-                      type="text"
-                      id="passportNumber"
-                      name="passportNumber"
-                      value={formData.passportNumber}
-                      onChange={handleChange}
-                      className={inputClasses}
-                      placeholder="Enter passport number"
-                    />
+                      {formData.registrationType === "pan" && (
+                        <motion.div
+                          key="pan"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                        >
+                          <label htmlFor="panNumber" className={labelClasses}>
+                            PAN Number
+                          </label>
+                          <input
+                            type="text"
+                            id="panNumber"
+                            name="panNumber"
+                            value={formData.panNumber}
+                            onChange={handleChange}
+                            className={inputClasses}
+                            maxLength={10}
+                            placeholder="Enter PAN number"
+                            style={{ textTransform: "uppercase" }}
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </motion.div>
               )}
@@ -981,21 +1015,23 @@ export default function CompleteProfile({
                     Next
                   </button>
                 ) : (
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`px-6 py-2 rounded-md font-medium ${
-                      isSubmitting
-                        ? isDark
-                          ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : isDark
-                        ? "bg-purple-600 hover:bg-purple-700 text-white"
-                        : "bg-purple-600 hover:bg-purple-700 text-white"
-                    } transition-colors`}
-                  >
-                    {isSubmitting ? "Submitting..." : "Complete Registration"}
-                  </button>
+                  <div onClick={() => setIsConfirm(true)}>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`px-6 py-2 rounded-md font-medium ${
+                        isSubmitting
+                          ? isDark
+                            ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          : isDark
+                          ? "bg-purple-600 hover:bg-purple-700 text-white"
+                          : "bg-purple-600 hover:bg-purple-700 text-white"
+                      } transition-colors`}
+                    >
+                      {isSubmitting ? "Submitting..." : "Complete Registration"}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

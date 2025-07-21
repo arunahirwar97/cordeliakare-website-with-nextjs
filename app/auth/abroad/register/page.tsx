@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import EmailVerification from './steps/email-verification';
 import CompleteProfile from './steps/complete-profile';
 import { motion } from 'framer-motion';

@@ -13,8 +13,10 @@ import { surgeryOptions, specificSurgeries } from "./constants";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import toast from "react-hot-toast";
+import { useMVT } from "@/context/MVT_Context";
 
 export default function SurgicalCareForm() {
+  const { surgeryOptions } = useMVT();
   const [mounted, setMounted] = useState(false);
   const { userData, getUserData } = useUser();
   const initialAddress =
@@ -61,7 +63,7 @@ export default function SurgicalCareForm() {
     },
     debounce: 300,
   });
-  console.log("Search Params", initialLocation)
+  console.log("Search Params", initialLocation);
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -271,7 +273,7 @@ export default function SurgicalCareForm() {
       coordinates,
       healthConditions: selectedConditions,
     };
-    sessionStorage.setItem('surgicalSearchData', JSON.stringify(searchData));
+    sessionStorage.setItem("surgicalSearchData", JSON.stringify(searchData));
     console.log("Search Data:", searchData);
     router.push(`/surgical-care/result?location=${initialLocation}`);
   };
@@ -282,6 +284,28 @@ export default function SurgicalCareForm() {
       (opt) => opt.value === surgeryType
     );
     return selectedOption ? selectedOption.label : "Select surgery type...";
+  };
+
+  // Date Range Validation
+  const getMinStartDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+  const getMaxStartDate = () => {
+    const today = new Date();
+    const oneYearLater = new Date(today.setFullYear(today.getFullYear() + 1));
+    return oneYearLater.toISOString().split("T")[0];
+  };
+  const getMinEndDate = (startDate: string) => {
+    if (!startDate) return "";
+    const start = new Date(startDate);
+    return start.toISOString().split("T")[0];
+  };
+  const getMaxEndDate = (startDate: string) => {
+    if (!startDate) return "";
+    const start = new Date(startDate);
+    const ninetyDaysLater = new Date(start.setDate(start.getDate() + 90));
+    return ninetyDaysLater.toISOString().split("T")[0];
   };
 
   if (!mounted) {
@@ -472,21 +496,40 @@ export default function SurgicalCareForm() {
                   Preferred Date Range
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Start Date Input */}
                   <div className="relative">
                     <input
                       type="date"
                       value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
+                      onChange={(e) => {
+                        const selectedDate = e.target.value;
+                        // Reset end date if the new start date is after current end date
+                        if (
+                          endDate &&
+                          new Date(selectedDate) > new Date(endDate)
+                        ) {
+                          setEndDate("");
+                        }
+                        setStartDate(selectedDate);
+                      }}
+                      min={getMinStartDate()}
+                      max={getMaxStartDate()}
                       className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                     <Calendar className="absolute right-3 top-3 w-4 h-4 pointer-events-none text-gray-500 dark:text-gray-400" />
                   </div>
+                  {/* End Date Input */}
                   <div className="relative">
                     <input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      min={getMinEndDate(startDate)}
+                      max={getMaxEndDate(startDate)}
+                      disabled={!startDate}
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
+                        !startDate ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     />
                     <Calendar className="absolute right-3 top-3 w-4 h-4 pointer-events-none text-gray-500 dark:text-gray-400" />
                   </div>

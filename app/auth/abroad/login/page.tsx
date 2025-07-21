@@ -3,13 +3,16 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Loader2 } from "lucide-react";
 import Turnstile from "react-turnstile";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter, useSearchParams } from "next/navigation";
+import LoadingSpinner from "@/components/loading/LoadingComponent";
 
 export default function LoginPage() {
+  const searchParams: any = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [captchaToken, setCaptchaToken] = useState("");
@@ -17,17 +20,18 @@ export default function LoginPage() {
   const router = useRouter();
   const { theme, systemTheme } = useTheme();
   const [loginType, setLoginType] = useState("patient");
-  
+  const [timer, setTimer] = useState(60);
+
   // Use auth context
   const {
-    otpSent,
+    emailOtpSent,
     otpExpired,
     loading,
     error,
     sendEmailOtp,
     verifyEmailOtp,
     clearError,
-    clearOtpState
+    clearOtpState,
   } = useAuth();
 
   // Cloudflare Turnstile site key (replace with your own)
@@ -37,8 +41,19 @@ export default function LoginPage() {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (emailOtpSent && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    }
+    // Cleanup the interval when the component unmounts or timer reaches 0
+    return () => clearInterval(interval);
+  }, [emailOtpSent, timer]);
+
   if (!mounted) {
-    return null; 
+    return null;
   }
 
   // Determine the current theme (handles system preference)
@@ -54,12 +69,29 @@ export default function LoginPage() {
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
-    await verifyEmailOtp(email, otp, loginType);
+    const response = await verifyEmailOtp(email, otp, loginType);
+    if (response.success) {
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        router.back();
+      }
+    }
+  };
+
+  const handleRegisterRedirect = () => {
+    const baseRegisterUrl = "/auth/abroad/register";
+    if (redirectUrl) {
+      router.push(`${baseRegisterUrl}?redirect=${redirectUrl}`);
+    } else {
+      router.push(baseRegisterUrl);
+    }
   };
 
   const handleResendOtp = async () => {
     clearError();
-    clearOtpState();
+    // clearOtpState();
+    setTimer(60);
     await sendEmailOtp(email, loginType);
   };
 
@@ -68,6 +100,10 @@ export default function LoginPage() {
     clearOtpState();
     clearError();
   };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div
@@ -99,12 +135,12 @@ export default function LoginPage() {
                   isDark ? "text-white" : "text-gray-800"
                 }`}
               >
-                {otpSent
+                {emailOtpSent
                   ? "Verify OTP"
                   : `Welcome ${loginType === "doctor" ? "Doctor" : ""}`}
               </motion.h1>
               <p className={isDark ? "text-gray-300" : "text-gray-600"}>
-                {otpSent
+                {emailOtpSent
                   ? `Enter OTP sent to ${email}`
                   : "Sign in with your email address"}
               </p>
@@ -124,7 +160,7 @@ export default function LoginPage() {
               </motion.div>
             )}
 
-            {!otpSent ? (
+            {!emailOtpSent ? (
               <form onSubmit={handleSendOtp} className="space-y-6">
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
@@ -255,6 +291,47 @@ export default function LoginPage() {
                 )}
 
                 <motion.div
+                  className="text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {otpExpired && (
+                    <p
+                      className={`text-sm mb-2 ${
+                        isDark ? "text-yellow-300" : "text-yellow-700"
+                      }`}
+                    >
+                      The previous OTP has expired.
+                    </p>
+                  )}
+                  {timer > 0 ? (
+                    <p
+                      className={`text-sm ${
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
+                      Resend OTP in{" "}
+                      <span className="font-medium">{timer}s</span>
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      disabled={loading}
+                      className={`font-medium transition-colors ${
+                        loading
+                          ? "text-gray-500 cursor-not-allowed"
+                          : isDark
+                          ? "text-purple-400 hover:text-purple-300"
+                          : "text-purple-600 hover:text-purple-800"
+                      }`}
+                    >
+                      {loading ? "Sending..." : "Resend OTP"}
+                    </button>
+                  )}
+                </motion.div>
+
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
@@ -314,7 +391,7 @@ export default function LoginPage() {
               <p className={isDark ? "text-gray-400" : "text-gray-600"}>
                 Don't have an account?{" "}
                 <button
-                  onClick={() => router.push("/auth/abroad/register")}
+                  onClick={handleRegisterRedirect}
                   className={`font-medium transition-colors ${
                     isDark
                       ? "text-purple-400 hover:text-purple-300"

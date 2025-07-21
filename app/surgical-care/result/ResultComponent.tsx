@@ -302,9 +302,9 @@ const DoctorResults = () => {
       if (!token) {
         setSelectedPackage(packageId);
         if (initialLocation === "Abroad") {
-          router.push(`/auth/abroad/login`);
+          router.push(`/auth/abroad/login?redirect=/surgical-care/search`);
         } else {
-          router.push(`/auth/login`);
+          router.push(`/auth/login?redirect=/surgical-care/search`);
         }
       } else {
         router.push(`/surgical-care/booking/${packageId}`);
@@ -741,7 +741,7 @@ const DoctorResults = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center">
             {sortedPackages.map((pkg, index) => (
               <motion.div
-                key={`${pkg.surgery.id}-${pkg.hospital.tenant_id}`}
+                key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}

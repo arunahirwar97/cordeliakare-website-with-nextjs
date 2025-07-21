@@ -271,7 +271,15 @@ const ProfileComponent = () => {
                     }`}
                   />
                   <span className={isDark ? "text-gray-400" : "text-gray-600"}>
-                    {userData?.city}
+                    {[
+                      userData?.owner?.address?.address1,
+                      userData?.owner?.address?.address2,
+                      userData?.owner?.address?.city,
+                      userData?.owner?.address?.state, 
+                      userData?.owner?.address?.country, 
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
                   </span>
                 </div>
               </div>

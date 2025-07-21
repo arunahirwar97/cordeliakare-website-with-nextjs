@@ -3,11 +3,12 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Loader2 } from "lucide-react";
 import Turnstile from "react-turnstile";
 import { useAuth } from "@/context/AuthContext";
+import LoadingSpinner from "@/components/loading/LoadingComponent";
 
 export default function LoginPage() {
   const [phone, setPhone] = useState("");
@@ -17,7 +18,11 @@ export default function LoginPage() {
   const router = useRouter();
   const { theme, systemTheme } = useTheme();
   const [loginType, setLoginType] = useState("patient");
-  
+  const searchParams: any = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
+  const [timer, setTimer] = useState(6);
+
+
   // Use auth context
   const {
     otpSent,
@@ -27,7 +32,7 @@ export default function LoginPage() {
     sendOtp,
     verifyOtp,
     clearError,
-    clearOtpState
+    clearOtpState,
   } = useAuth();
 
   // Cloudflare Turnstile site key (replace with your own)
@@ -35,7 +40,19 @@ export default function LoginPage() {
 
   useEffect(() => {
     setMounted(true);
+    clearOtpState()
   }, []);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (otpSent && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    }
+    // Cleanup the interval when the component unmounts or timer reaches 0
+    return () => clearInterval(interval);
+  }, [otpSent, timer]);
 
   if (!mounted) {
     return null; // Avoid flash of incorrect theme
@@ -54,12 +71,29 @@ export default function LoginPage() {
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
-    await verifyOtp(phone, otp, loginType);
+    const response = await verifyOtp(phone, otp, loginType);
+    if (response.success) {
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        router.back();
+      }
+    }
+  };
+
+  const handleRegisterRedirect = () => {
+    const baseRegisterUrl = "/auth/register";
+    if (redirectUrl) {
+      router.push(`${baseRegisterUrl}?redirect=${redirectUrl}`);
+    } else {
+      router.push(baseRegisterUrl);
+    }
   };
 
   const handleResendOtp = async () => {
     clearError();
-    clearOtpState();
+    // clearOtpState();
+    setTimer(6);
     await sendOtp(phone, loginType);
   };
 
@@ -68,6 +102,10 @@ export default function LoginPage() {
     clearOtpState();
     clearError();
   };
+
+   if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div
@@ -312,6 +350,47 @@ export default function LoginPage() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="text-center mt-4 mb-2"
+                >
+                  {otpExpired && !loading && (
+                    <p
+                      className={`text-sm mb-2 ${
+                        isDark ? "text-yellow-300" : "text-yellow-700"
+                      }`}
+                    >
+                      OTP has expired.
+                    </p>
+                  )}
+                  {timer > 0 ? (
+                    <p className={isDark ? "text-gray-400" : "text-gray-600"}>
+                      Resend OTP in{" "}
+                      <span className="font-medium">
+                        {String(Math.floor(timer / 60)).padStart(2, "0")}:
+                        {String(timer % 60).padStart(2, "0")}s
+                      </span>
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      disabled={loading}
+                      className={`font-medium transition-colors ${
+                        loading
+                          ? "text-gray-500 cursor-not-allowed"
+                          : isDark
+                          ? "text-purple-400 hover:text-purple-300"
+                          : "text-purple-600 hover:text-purple-800"
+                      }`}
+                    >
+                      {loading ? "Sending..." : "Resend OTP"}
+                    </button>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
                   className="pt-2"
                 >
@@ -369,7 +448,7 @@ export default function LoginPage() {
               <p className={isDark ? "text-gray-400" : "text-gray-600"}>
                 Don't have an account?{" "}
                 <button
-                  onClick={() => router.push("/auth/register")}
+                  onClick={handleRegisterRedirect}
                   className={`font-medium transition-colors ${
                     isDark
                       ? "text-purple-400 hover:text-purple-300"

@@ -1,12 +1,17 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import axios from "axios";
 
 // Types (could also be in a separate types.ts file)
 type MvtApiResponse = {
   success: boolean;
   data: any;
+};
+
+type SurgeryOption = {
+  label: string;
+  value: string;
 };
 
 type Doctor = {
@@ -37,16 +42,32 @@ type DoctorsByTenantResponse = {
   message?: string;
 };
 
+type ServiceDepartment = {
+  id: number;
+  department_name: string;
+};
+
+type ServiceDepartmentsResponse = {
+  success: boolean;
+  data: ServiceDepartment[];
+  message?: string;
+};
+
 type MVTContextType = {
   loading: boolean;
   error: string | null;
   mvtPackages: any;
   galleryImages: GalleryItem[];
+  surgeryOptions: SurgeryOption[];
   getMvtPackages: (departmentName: string) => Promise<void>;
   getHospitalByPackage: (packageId: any) => Promise<any>;
-  getPackageAmount: (packageId: number) => Promise<any>; // Add this line
+  getPackageAmount: (packageId: number) => Promise<any>;
   getDoctorsByTenant: (packageId: number) => Promise<DoctorsByTenantResponse>;
   getGalleryImages: (packageId: number) => Promise<GalleryResponse>;
+  getServiceDepartments: () => Promise<ServiceDepartmentsResponse>;
+  notifyBooking: (
+    bookingData: BookingNotificationData
+  ) => Promise<NotifyBookingResponse>;
 };
 
 type GalleryItem = {
@@ -73,13 +94,60 @@ type GalleryResponse = {
   message?: string;
 };
 
+type NotifyBookingResponse = {
+  success: boolean;
+  message: string;
+  data?: any;
+};
+
+type BookingNotificationData = {
+  [key: string]: any;
+};
+
 const MVTContext = createContext<MVTContextType | undefined>(undefined);
+
+const emojiMap: { [key: string]: string } = {
+  cancer: "🚺",
+  oncology: "🚺",
+  ortho: "🦴",
+  cosmetic: "✨",
+  neuro: "🧠",
+  ophtha: "👁️",
+  general: "🩺",
+  pediatric: "👶",
+  vascular: "🩸",
+  urolo: "🚹",
+  gynae: "🚺",
+  cardiac: "❤️",
+  ent: "👂",
+  breast: "🌸",
+  burn: "🔥",
+};
+
+const getEmoji = (name: string): string => {
+  const lowerCaseName = name.toLowerCase();
+  for (const key in emojiMap) {
+    if (lowerCaseName.includes(key)) {
+      return `${emojiMap[key]} `;
+    }
+  }
+  return "⚕️ ";
+};
+
+const formatDepartmentName = (name: string): string => {
+  if (!name) return "";
+  return name
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};
 
 export const MVTProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [mvtPackages, setMvtPackages] = useState<any>([]);
   const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
+  const [surgeryOptions, setSurgeryOptions] = useState<SurgeryOption[]>([]);
 
   const getMvtPackages = async (departmentName: string) => {
     setMvtPackages([]);
@@ -118,7 +186,6 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
 
-      // Ensure packageId is properly converted to number
       const numericPackageId =
         typeof packageId === "string" ? parseInt(packageId, 10) : packageId;
 
@@ -277,7 +344,88 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const getServiceDepartments =
+    async (): Promise<ServiceDepartmentsResponse> => {
+      // This function remains available if you need the raw data elsewhere
+      try {
+        const response = await axios.get<ServiceDepartmentsResponse>(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/surgeries/with-packages`
+        );
+        if (response.data.success) {
+          return response.data;
+        } else {
+          throw new Error(
+            response.data.message || "Failed to fetch service departments"
+          );
+        }
+      } catch (err) {
+        console.error("Error in getServiceDepartments:", err);
+        throw err;
+      }
+    };
+
+  useEffect(() => {
+    const fetchAndFormatOptions = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getServiceDepartments();
+        
+        const formattedOptions = response.data.map((department) => ({
+          label: getEmoji(department.department_name) + formatDepartmentName(department.department_name),
+          value: department.department_name, 
+        }));
+
+        setSurgeryOptions(formattedOptions);
+
+      } catch (err) {
+        console.error("Failed to initialize surgery options:", err);
+        setError("Could not load initial department data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAndFormatOptions();
+  }, []); 
+console.log("Suergery Options", surgeryOptions)
+  const notifyBooking = async (
+    bookingData: BookingNotificationData
+  ): Promise<NotifyBookingResponse> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await axios.post<NotifyBookingResponse>(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/surgeries/notify-bookings`,
+        bookingData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        return response.data;
+      } else {
+        throw new Error(response.data.message || "Failed to notify booking");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(
+        axios.isAxiosError(err)
+          ? err.response?.data?.message || err.message
+          : "Failed to notify booking"
+      );
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value: MVTContextType = {
+    surgeryOptions,
     loading,
     error,
     mvtPackages,
@@ -287,6 +435,8 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
     getDoctorsByTenant,
     galleryImages,
     getGalleryImages,
+    getServiceDepartments, 
+    notifyBooking,
   };
 
   return <MVTContext.Provider value={value}>{children}</MVTContext.Provider>;

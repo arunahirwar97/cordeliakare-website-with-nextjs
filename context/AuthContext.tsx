@@ -56,6 +56,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   otpSent: boolean;
+  emailOtpSent: boolean;
   otpExpired: boolean;
   salutations:any;
   isLoadingSalutations:any;
@@ -111,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [otpSent, setOtpSent] = useState<boolean>(false);
+  const [emailOtpSent, setEmailOtpSent] = useState<boolean>(false);
   const [otpExpired, setOtpExpired] = useState<boolean>(false);
   const router = useRouter();
 
@@ -144,7 +146,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ): Promise<{ success: boolean; error?: string }> => {
       setLoading(true);
       setError(null);
-      setOtpSent(false);
       setOtpExpired(false);
 
       try {
@@ -159,7 +160,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
         // console.log(response)
         if (response.status === 200) {
-          setOtpSent(true);
           toast.success(response.data.data.message);
           console.log(response);
           return { success: true };
@@ -219,7 +219,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         //  console.log("RESPONSE===>", response);
         if (response.status === 200 || response.status === 201) {
           // Clear OTP state
-          setOtpSent(false);
           toast.success(response.data.message!);
 
           // Return success with response data
@@ -272,7 +271,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ): Promise<{ success: boolean; error?: string }> => {
       setLoading(true);
       setError(null);
-      setOtpSent(false);
       setOtpExpired(false);
 
       try {
@@ -286,7 +284,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
         // console.log(response)
         if (response.status === 200) {
-          setOtpSent(true);
           toast.success(response.data.data.message);
           // console.log(response);
           return { success: true };
@@ -398,7 +395,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setError(null);
       setOtpSent(false);
       setOtpExpired(false);
-
       try {
         const response = await axios.post<OtpResponse>(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/login`,
@@ -408,7 +404,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             prefix_code: "91",
           }
         );
-
         if (response.status === 200) {
           setOtpSent(true);
           // console.log(response);
@@ -445,7 +440,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ): Promise<{ success: boolean; error?: string }> => {
       setLoading(true);
       setError(null);
-      setOtpSent(false);
+      setEmailOtpSent(false);
       setOtpExpired(false);
 
       try {
@@ -459,7 +454,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
 
         if (response.status === 200) {
-          setOtpSent(true);
+          setEmailOtpSent(true);
           // console.log(response);
           toast.success(response.data.data.message);
           return { success: true };
@@ -514,14 +509,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setToken(response.data.token);
             setUser(response.data.user);
             localStorage.setItem("token", response.data.token);
-            localStorage.setItem("user", "patient");
+            localStorage.setItem("user", "indian_patient");
 
             // Redirect based on role
             // const redirectPath =
             //   loginType === "doctor" ? "/doctor/dashboard" : "/";
             // router.push(redirectPath);
             toast.success(response.data.message!);
-            router.back();
 
             return { success: true };
           } else {
@@ -582,14 +576,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setToken(response.data.token);
             setUser(response.data.user);
             localStorage.setItem("token", response.data.token);
-            localStorage.setItem("user", "patient");
+            localStorage.setItem("user", "abroad_patient");
 
             // Redirect based on role
             // const redirectPath =
             //   loginType === "doctor" ? "/doctor/dashboard" : "/";
             // router.push(redirectPath);
             toast.success(response.data.message!);
-            router.back();
 
             return { success: true };
           } else {
@@ -627,6 +620,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setToken(null);
     setOtpSent(false);
+    setEmailOtpSent(false)
     setOtpExpired(false);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -654,6 +648,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const clearOtpState = useCallback((): void => {
     setOtpSent(false);
+    setEmailOtpSent(false);
     setOtpExpired(false);
   }, []);
 
@@ -668,6 +663,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     error,
     otpSent,
+    emailOtpSent,
     otpExpired,
     sendOtp,
     verifyOtp,

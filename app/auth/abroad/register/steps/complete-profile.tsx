@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/components/loading/LoadingComponent";
 
 interface CompleteProfileProps {
   email: string;
@@ -18,7 +19,15 @@ export default function CompleteProfile({
   email,
   isDark,
 }: CompleteProfileProps) {
-  const { isLoadingSalutations, salutations, setUser, setToken } = useAuth();
+  const searchParams: any = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
+  const {
+    isLoadingSalutations,
+    salutations,
+    setUser,
+    setToken,
+    clearOtpState,
+  } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,6 +53,7 @@ export default function CompleteProfile({
     emergencyContactName: "",
     emergencyContactRelation: "",
     emergencyContactPhone: "",
+    emergencyContactCountryCode: "",
     aadhaarNumber: "",
     panNumber: "",
     passportNumber: "",
@@ -51,6 +61,19 @@ export default function CompleteProfile({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
+  const requiredFields = [
+    "salutation",
+    "firstName",
+    "lastName",
+    "gender",
+    "dob",
+    "country",
+    "country",
+    "state",
+    "city",
+    "pincode",
+    "bloodGroup"
+  ];
 
   const getGenderValue = (gender: string): number | null => {
     switch (gender) {
@@ -72,6 +95,36 @@ export default function CompleteProfile({
         s.name.toLowerCase().replace(".", "") === salutationName.toLowerCase()
     );
     return salutation ? salutation.id.toString() : "";
+  };
+
+  const validateForm = () => {
+    const errors: string[] = [];
+
+    requiredFields.forEach((field) => {
+      if (!formData[field as keyof typeof formData]) {
+        const fieldName = field
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase());
+        errors.push(`${fieldName} is required`);
+      }
+    });
+
+    if (formData.phone && !/^\d{10,12}$/.test(formData.phone)) {
+      errors.push("Phone number must be 10-12 digits");
+    }
+
+    if (
+      formData.emergencyContactPhone &&
+      !/^\d{10,12}$/.test(formData.emergencyContactPhone)
+    ) {
+      errors.push("Emergency contact phone must be 10-12 digits");
+    }
+
+    if (formData.dob && !/^\d{4}-\d{2}-\d{2}$/.test(formData.dob)) {
+      errors.push("Invalid date format");
+    }
+
+    return errors;
   };
 
   const handleChange = (
@@ -138,9 +191,19 @@ export default function CompleteProfile({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Validate form
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      toast.error(validationErrors[0]);
+      return;
+    }
     setIsSubmitting(true);
     const data = new FormData();
-
+    const emergencyPhone =
+      "+" +
+      formData.emergencyContactCountryCode +
+      "-" +
+      formData.emergencyContactPhone;
     // Your original data mapping (unchanged)
     data.append("register_type", "patient");
     data.append("first_name", formData.firstName);
@@ -149,7 +212,7 @@ export default function CompleteProfile({
     data.append("father_name", formData.fatherName);
     data.append("dob", formData.dob);
     data.append("phone", formData.phone);
-    data.append("emergencycontact", formData.emergencyContactPhone);
+    data.append("emergencycontact", emergencyPhone);
     data.append("emergencycontact_relation", formData.emergencyContactName);
     const genderValue = getGenderValue(formData.gender);
     if (genderValue !== null) {
@@ -169,7 +232,7 @@ export default function CompleteProfile({
     data.append("registration_type", "3");
     data.append("aadhar_number", formData.aadhaarNumber);
     data.append("pan_number", formData.panNumber);
-    data.append("passport_number", formData.passportNumber);
+    data.append("passport_number", formData.passportNumber ? formData.passportNumber : "0");
 
     if (formData.image) {
       data.append("image", formData.image);
@@ -187,14 +250,19 @@ export default function CompleteProfile({
         setIsSubmitting(false);
         setUser(response?.data?.data.user);
         setToken(response?.data?.data.token);
+        clearOtpState();
         localStorage.setItem("token", response?.data?.data.token);
-        localStorage.setItem("user", "mvt");
+        localStorage.setItem("user", "abroad_patient");
         toast.success(
           "Account Created, Hello ",
           response?.data?.data.user.first_name
         );
         console.log("Registration successful:", response);
-        router.push("/profile");
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        } else {
+          router.push("/profile");
+        }
         setLoading(false);
       }
 
@@ -213,10 +281,16 @@ export default function CompleteProfile({
     }
   };
 
+  const maxDate = new Date(
+    new Date().setFullYear(new Date().getFullYear() - 18)
+  )
+    .toISOString()
+    .split("T")[0];
+
   const inputClasses = `w-full px-2 sm:px-4 py-1 sm:py-2 rounded-lg border ${
     isDark
-      ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
-      : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+      ? "bg-gray-800 border-gray-500 text-white focus:ring-purple-500 focus:border-purple-500"
+      : "bg-white border-gray-500 focus:ring-purple-500 focus:border-purple-500"
   } transition-colors text-sm sm:text-base`;
 
   const labelClasses = `block text-sm font-medium mb-1 ${
@@ -240,6 +314,10 @@ export default function CompleteProfile({
     { id: "emergency", title: "Emergency Contact" },
     { id: "documents", title: "Documents" },
   ];
+
+  if (isSubmitting) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
@@ -328,6 +406,7 @@ export default function CompleteProfile({
                       value={formData.salutation}
                       onChange={handleChange}
                       className={inputClasses}
+                      required
                     >
                       <option value="">Select</option>
                       <option value="Mr">Mr</option>
@@ -347,6 +426,7 @@ export default function CompleteProfile({
                       value={formData.gender}
                       onChange={handleChange}
                       className={inputClasses}
+                      required
                     >
                       <option value="">Select</option>
                       <option value="Male">Male</option>
@@ -367,6 +447,7 @@ export default function CompleteProfile({
                       onChange={handleChange}
                       className={inputClasses}
                       required
+                      maxLength={40}
                     />
                   </div>
 
@@ -382,6 +463,7 @@ export default function CompleteProfile({
                       onChange={handleChange}
                       className={inputClasses}
                       required
+                      maxLength={35}
                     />
                   </div>
 
@@ -397,6 +479,7 @@ export default function CompleteProfile({
                       onChange={handleChange}
                       className={inputClasses}
                       required
+                      max={maxDate}
                     />
                   </div>
                   <div className="mb-4">
@@ -442,9 +525,19 @@ export default function CompleteProfile({
                       {/* Phone Number Input */}
                       <input
                         type="tel"
+                        inputMode="numeric"
                         name="phone"
                         value={formData.phone}
-                        onChange={handleChange}
+                        onChange={(e) => {
+                          const sanitizedValue = e.target.value.replace(
+                            /\D/g,
+                            ""
+                          );
+                          setFormData((prev) => ({
+                            ...prev,
+                            phone: sanitizedValue,
+                          }));
+                        }}
                         className={`flex-1 ${
                           isDark
                             ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
@@ -491,6 +584,7 @@ export default function CompleteProfile({
                     className={inputClasses}
                     placeholder="e.g., Nigeria, South Africa"
                     required
+                    maxLength={20}
                   />
                 </div>
 
@@ -509,13 +603,13 @@ export default function CompleteProfile({
                     placeholder="Enter to auto-fill address"
                     maxLength={10}
                   />
-                  <p
+                  {/* <p
                     className={`text-xs mt-1 ${
                       isDark ? "text-gray-400" : "text-gray-500"
                     }`}
                   >
                     Start typing your postal code after entering country
-                  </p>
+                  </p> */}
                 </div>
 
                 {/* Auto-filled Address Fields */}
@@ -530,6 +624,7 @@ export default function CompleteProfile({
                     value={formData.locality}
                     onChange={handleChange}
                     className={inputClasses}
+                    maxLength={30}
                   />
                 </div>
 
@@ -544,6 +639,7 @@ export default function CompleteProfile({
                     value={formData.state}
                     onChange={handleChange}
                     className={inputClasses}
+                    maxLength={30}
                   />
                 </div>
 
@@ -558,6 +654,7 @@ export default function CompleteProfile({
                     value={formData.area}
                     onChange={handleChange}
                     className={inputClasses}
+                    maxLength={50}
                   />
                 </div>
               </motion.div>
@@ -572,8 +669,10 @@ export default function CompleteProfile({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  // UPDATED: Now a 3-column grid on large screens
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
+                  {/* Name Field (no changes) */}
                   <div>
                     <label
                       htmlFor="emergencyContactName"
@@ -591,6 +690,7 @@ export default function CompleteProfile({
                     />
                   </div>
 
+                  {/* Relation Field (no changes) */}
                   <div>
                     <label
                       htmlFor="emergencyContactRelation"
@@ -607,8 +707,7 @@ export default function CompleteProfile({
                       className={inputClasses}
                     />
                   </div>
-
-                  <div className="md:col-span-2">
+                  <div className="md:col-span-2 lg:col-span-1">
                     <label
                       htmlFor="emergencyContactPhone"
                       className={labelClasses}
@@ -616,33 +715,65 @@ export default function CompleteProfile({
                       Phone Number
                     </label>
                     <div className="flex">
-                      <select
-                        name="emergencyContactCountryCode"
-                        value={formData.emergencyContactCountryCode}
-                        onChange={handleChange}
-                        className={`w-24 px-2 rounded-l-md border-r-0 ${
-                          isDark
-                            ? "bg-gray-700 border-gray-600 text-white"
-                            : "bg-gray-100 border-gray-300 text-gray-700"
-                        }`}
-                      >
-                        <option value="+1">+1 (US)</option>
-                        <option value="+91">+91 (IN)</option>
-                        <option value="+44">+44 (UK)</option>
-                        {/* Add more country codes as needed */}
-                      </select>
+                      <div className="relative w-24">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                          <span
+                            className={
+                              isDark ? "text-gray-400" : "text-gray-500"
+                            }
+                          >
+                            +
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          name="prefix_code"
+                          value={formData.emergencyContactCountryCode.replace(
+                            "+",
+                            ""
+                          )}
+                          onChange={(e) => {
+                            // Allow only numbers and limit length
+                            const value = e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 3);
+                            setFormData((prev) => ({
+                              ...prev,
+                              prefix_code: value ? `+${value}` : "+",
+                            }));
+                          }}
+                          className={`w-full pl-8 py-2 rounded-md ${
+                            isDark
+                              ? "bg-gray-700 border-gray-600 text-white"
+                              : "bg-gray-100 border-gray-300 text-gray-700"
+                          }`}
+                          placeholder="1"
+                          maxLength={3}
+                        />
+                      </div>
                       <input
                         type="tel"
+                        inputMode="numeric"
                         id="emergencyContactPhone"
                         name="emergencyContactPhone"
                         value={formData.emergencyContactPhone}
-                        onChange={handleChange}
+                        onChange={(e) => {
+                          const sanitizedValue = e.target.value.replace(
+                            /\D/g,
+                            ""
+                          );
+                          setFormData((prev) => ({
+                            ...prev,
+                            emergencyContactPhone: sanitizedValue,
+                          }));
+                        }}
                         className={`flex-1 min-w-0 block w-full px-3 py-2 rounded-r-md border-l-0 ${
                           isDark
                             ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
                             : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                         }`}
-                        placeholder="[number]"
+                        placeholder="9876543210"
+                        maxLength={10}
                       />
                     </div>
                   </div>
@@ -671,6 +802,7 @@ export default function CompleteProfile({
                       value={formData.registrationType}
                       onChange={handleChange}
                       className={inputClasses}
+                      required
                     >
                       <option value="">Select Document Type</option>
                       <option value="passport">Passport</option>
