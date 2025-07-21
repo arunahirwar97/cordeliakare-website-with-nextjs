@@ -59,7 +59,7 @@ export default function CompleteProfile({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
   const [loading, setLoading] = useState(false);
-  
+
   // NEW: State to hold the image preview URL
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -91,7 +91,6 @@ export default function CompleteProfile({
       }
     };
   }, [imagePreview]);
-
 
   //Places auto select
   useEffect(() => {
@@ -156,35 +155,36 @@ export default function CompleteProfile({
     }
   };
 
-  const handlePlaceSelect = async (placeId: string, description: string) => {
-    setFormData((prev) => ({ ...prev, address: description }));
-    setShowSuggestions(false);
+ const handlePlaceSelect = async (placeId: string, description: string) => {
+  const shortAddress = description.split(',')[0].trim();
+  setFormData((prev) => ({ ...prev, address: shortAddress }));
+  setShowSuggestions(false);
 
-    try {
-      if (placesService.current) {
-        placesService.current.getDetails(
-          {
-            placeId: placeId,
-            fields: ["address_components", "formatted_address", "geometry"],
-          },
-          async (place, status) => {
-            if (
-              status === window.google.maps.places.PlacesServiceStatus.OK &&
-              place?.address_components
-            ) {
-              parseAndSetAddressComponents(place.address_components);
-            } else {
-              await geocodeAddress(description);
-            }
+  try {
+    if (placesService.current) {
+      placesService.current.getDetails(
+        {
+          placeId: placeId,
+          fields: ["address_components", "formatted_address", "geometry"],
+        },
+        async (place, status) => {
+          if (
+            status === window.google.maps.places.PlacesServiceStatus.OK &&
+            place?.address_components
+          ) {
+            parseAndSetAddressComponents(place.address_components);
+          } else {
+            await geocodeAddress(description);
           }
-        );
-      } else {
-        await geocodeAddress(description);
-      }
-    } catch (error) {
-      console.error("Error getting place details:", error);
+        }
+      );
+    } else {
+      await geocodeAddress(description);
     }
-  };
+  } catch (error) {
+    console.error("Error getting place details:", error);
+  }
+};
 
   const parseAndSetAddressComponents = (
     components: google.maps.GeocoderAddressComponent[]
@@ -238,7 +238,7 @@ export default function CompleteProfile({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   // UPDATED: handleFileChange to manage preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Revoke old URL if one exists
@@ -265,15 +265,25 @@ export default function CompleteProfile({
     }
     setImagePreview(null);
     setFormData((prev) => ({ ...prev, image: null }));
-  };
 
+    const fileInput = document.getElementById(
+      "profileImageInput"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
 
   const getGenderValue = (gender: string): number | null => {
     switch (gender) {
-      case "Male": return 0;
-      case "Female": return 1;
-      case "Other": return 2;
-      default: return null;
+      case "Male":
+        return 0;
+      case "Female":
+        return 1;
+      case "Other":
+        return 2;
+      default:
+        return null;
     }
   };
 
@@ -357,7 +367,7 @@ export default function CompleteProfile({
 
       return result;
     } catch (error: any) {
-      console.error("Registration failed:", error);
+      console.error("Registration failed:", error.response.data.message);
       toast.error(error.message);
       setLoading(false);
       setIsSubmitting(false);
@@ -485,18 +495,16 @@ export default function CompleteProfile({
                     <label className={labelClasses}>
                       Profile Picture (Optional)
                     </label>
-                    <div className="mt-2">
+
+                    {!imagePreview ? (
                       <input
+                        id="profileImageInput" // Add this ID
                         type="file"
                         accept="image/*"
                         onChange={handleFileChange}
                         className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                        // Hide the input if an image is already selected for a cleaner UI
-                        style={{ display: imagePreview ? 'none' : 'block' }}
                       />
-                    </div>
-
-                    {imagePreview && (
+                    ) : (
                       <div className="mt-4 flex items-center gap-4">
                         <img
                           src={imagePreview}
@@ -523,7 +531,7 @@ export default function CompleteProfile({
                     )}
                   </div>
                   {/* End of updated profile picture section */}
-                  
+
                   <div>
                     <label htmlFor="salutation" className={labelClasses}>
                       Salutation
@@ -617,7 +625,6 @@ export default function CompleteProfile({
                       maxLength={50}
                     />
                   </div>
-
                   <div>
                     <label htmlFor="email" className={labelClasses}>
                       Email
@@ -848,7 +855,7 @@ export default function CompleteProfile({
                       htmlFor="emergencyContactName"
                       className={labelClasses}
                     >
-                      Emergency Contact Name
+                      Emergency Contact Name*
                     </label>
                     <input
                       type="text"
@@ -865,7 +872,7 @@ export default function CompleteProfile({
                       htmlFor="emergencyContactRelation"
                       className={labelClasses}
                     >
-                      Relation
+                      Relation*
                     </label>
                     <input
                       type="text"
@@ -883,7 +890,7 @@ export default function CompleteProfile({
                       htmlFor="emergencyContactPhone"
                       className={labelClasses}
                     >
-                      Emergency Contact Phone
+                      Emergency Contact Phone*
                     </label>
                     <div className="flex">
                       <span

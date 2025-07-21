@@ -17,6 +17,7 @@ import { useMVT } from "@/context/MVT_Context";
 
 export default function SurgicalCareForm() {
   const { surgeryOptions } = useMVT();
+  const dropdownRef = useRef(null);
   const [mounted, setMounted] = useState(false);
   const { userData, getUserData } = useUser();
   const initialAddress =
@@ -91,6 +92,19 @@ export default function SurgicalCareForm() {
       }
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event:any) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        clearSuggestions();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [clearSuggestions]);
 
   useEffect(() => {
     getUserData();
@@ -542,7 +556,7 @@ export default function SurgicalCareForm() {
                   Your Location
                 </h3>
 
-                <div className="relative">
+                <div className="relative" ref={dropdownRef}>
                   <input
                     value={value}
                     onChange={(e) => {

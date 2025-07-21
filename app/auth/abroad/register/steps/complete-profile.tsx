@@ -63,18 +63,6 @@ export default function CompleteProfile({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
-  const requiredFields = [
-    "salutation",
-    "firstName",
-    "lastName",
-    "gender",
-    "dob",
-    "country",
-    "state",
-    "locality",
-    "pincode",
-    "bloodGroup",
-  ];
 
   useEffect(() => {
     return () => {
@@ -118,6 +106,7 @@ export default function CompleteProfile({
       "state",
       "locality",
       "pincode",
+      "prefix_code",
     ];
 
     updatedRequiredFields.forEach((field) => {
@@ -127,6 +116,12 @@ export default function CompleteProfile({
           .replace(/^./, (str) => str.toUpperCase());
         if (field === "locality") {
           errors.push(`City is required`);
+        } else if (field === "pincode") {
+          errors.push(`PostalCode is required`);
+        } else if (field === "dob") {
+          errors.push(`DOB is required`);
+        } else if (field === "prefix_code") {
+          errors.push(`Country code is required with phone number`);
         } else {
           errors.push(`${fieldName} is required`);
         }
@@ -178,6 +173,13 @@ export default function CompleteProfile({
     }
     setImagePreview(null);
     setFormData((prev) => ({ ...prev, image: null }));
+
+    const fileInput = document.getElementById(
+      "profileImageInput"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
   };
 
   const handlePostalCodeChange = async (
@@ -246,7 +248,7 @@ export default function CompleteProfile({
     data.append("dob", formData.dob);
     data.append("phone", formData.phone);
     data.append("emergencycontact", emergencyPhone);
-    data.append("emergencycontact_relation", formData.emergencyContactRelation); // Corrected this line
+    data.append("emergencycontact_relation", formData.emergencyContactRelation);
     const genderValue = getGenderValue(formData.gender);
     if (genderValue !== null) {
       data.append("gender", genderValue.toString());
@@ -428,16 +430,16 @@ export default function CompleteProfile({
                     <label className={labelClasses}>
                       Profile Picture (Optional)
                     </label>
-                    <div className="mt-2">
+
+                    {!imagePreview ? (
                       <input
+                        id="profileImageInput" // Add this ID
                         type="file"
                         accept="image/*"
                         onChange={handleFileChange}
                         className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                        style={{ display: imagePreview ? "none" : "block" }}
                       />
-                    </div>
-                    {imagePreview && (
+                    ) : (
                       <div className="mt-4 flex items-center gap-4">
                         <img
                           src={imagePreview}
@@ -610,6 +612,42 @@ export default function CompleteProfile({
                       />
                     </div>
                   </div>
+                  <div>
+                    <label htmlFor="bloodGroup" className={labelClasses}>
+                      Blood Group*
+                    </label>
+                    <select
+                      id="bloodGroup"
+                      name="bloodGroup"
+                      value={formData.bloodGroup}
+                      onChange={handleChange}
+                      className={inputClasses}
+                      required
+                    >
+                      <option value="">Select</option>
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="referredBy" className={labelClasses}>
+                      Referred By (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      id="referredBy"
+                      name="referredBy"
+                      value={formData.referredBy}
+                      onChange={handleChange}
+                      className={inputClasses}
+                    />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -701,7 +739,7 @@ export default function CompleteProfile({
                 </div>
               </motion.div>
             )}
-
+            {/* EMERGENCY SECTION */}
             <AnimatePresence mode="wait">
               {activeSection === "emergency" && (
                 <motion.div

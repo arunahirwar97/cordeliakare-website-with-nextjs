@@ -388,7 +388,7 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
 
     fetchAndFormatOptions();
   }, []); 
-console.log("Suergery Options", surgeryOptions)
+// console.log("Suergery Options", surgeryOptions)
   const notifyBooking = async (
     bookingData: BookingNotificationData
   ): Promise<NotifyBookingResponse> => {

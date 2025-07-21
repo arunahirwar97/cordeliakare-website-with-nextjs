@@ -43,7 +43,7 @@ export default function RootLayout({
               >
                 {/* Place Toaster here, inside ThemeProvider but outside other components */}
                 <Toaster
-                  position="top-center"
+                  position="top-right"
                   toastOptions={{
                     className: "",
                     style: {

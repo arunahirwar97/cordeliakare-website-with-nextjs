@@ -161,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // console.log(response)
         if (response.status === 200) {
           toast.success(response.data.data.message);
-          console.log(response);
+          // console.log(response);
           return { success: true };
         } else {
           const errorMsg =
@@ -319,7 +319,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
       setOtpExpired(false);
-      console.log("Verify otp called step 1")
+      // console.log("Verify otp called step 1")
       try {
         const response = await axios.post<VerifyOtpResponse>(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/otpverification`,
