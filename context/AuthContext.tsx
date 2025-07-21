@@ -624,6 +624,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setOtpExpired(false);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    toast.success("Logged out successfully!");
     router.push("/");
   }, [router]);
 

@@ -118,7 +118,6 @@ export default function CompleteProfile({
       "state",
       "locality",
       "pincode",
-      "bloodGroup",
     ];
 
     updatedRequiredFields.forEach((field) => {
@@ -469,7 +468,7 @@ export default function CompleteProfile({
                   {/* ... other personal info fields ... */}
                   <div>
                     <label htmlFor="salutation" className={labelClasses}>
-                      Salutation
+                      Salutation*
                     </label>
                     <select
                       id="salutation"
@@ -488,7 +487,7 @@ export default function CompleteProfile({
                   </div>
                   <div>
                     <label htmlFor="gender" className={labelClasses}>
-                      Gender
+                      Gender*
                     </label>
                     <select
                       id="gender"

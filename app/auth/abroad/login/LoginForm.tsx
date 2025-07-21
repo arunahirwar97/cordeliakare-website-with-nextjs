@@ -9,6 +9,7 @@ import Turnstile from "react-turnstile";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoadingSpinner from "@/components/loading/LoadingComponent";
+import { clear } from "node:console";
 
 export default function LoginForm() {
   const searchParams: any = useSearchParams();
@@ -38,7 +39,9 @@ export default function LoginForm() {
   const TURNSTILE_SITE_KEY = "1x00000000000000000000AA";
 
   useEffect(() => {
+    clearError()
     setMounted(true);
+    clearOtpState()
   }, []);
 
   useEffect(() => {

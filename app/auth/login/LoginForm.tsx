@@ -41,6 +41,7 @@ export default function LoginForm() {
   useEffect(() => {
     setMounted(true);
     clearOtpState()
+    clearError()
   }, []);
 
   useEffect(() => {
