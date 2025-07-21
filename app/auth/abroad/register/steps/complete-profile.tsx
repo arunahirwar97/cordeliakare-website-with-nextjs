@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
@@ -19,6 +19,7 @@ export default function CompleteProfile({
   email,
   isDark,
 }: CompleteProfileProps) {
+  const formContainerRef = useRef<HTMLDivElement>(null);
   const searchParams: any = useSearchParams();
   const redirectUrl = searchParams.get("redirect");
   const {
@@ -59,6 +60,7 @@ export default function CompleteProfile({
     passportNumber: "",
     registrationType: "",
   });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
   const requiredFields = [
@@ -68,12 +70,19 @@ export default function CompleteProfile({
     "gender",
     "dob",
     "country",
-    "country",
     "state",
-    "city",
+    "locality",
     "pincode",
-    "bloodGroup"
+    "bloodGroup",
   ];
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const getGenderValue = (gender: string): number | null => {
     switch (gender) {
@@ -88,7 +97,6 @@ export default function CompleteProfile({
     }
   };
 
-  // Convert salutation to ID as required by API
   const getSalutationId = (salutationName: string): string => {
     const salutation = salutations.find(
       (s: any) =>
@@ -100,12 +108,29 @@ export default function CompleteProfile({
   const validateForm = () => {
     const errors: string[] = [];
 
-    requiredFields.forEach((field) => {
+    const updatedRequiredFields = [
+      "salutation",
+      "firstName",
+      "lastName",
+      "gender",
+      "dob",
+      "country",
+      "state",
+      "locality",
+      "pincode",
+      "bloodGroup",
+    ];
+
+    updatedRequiredFields.forEach((field) => {
       if (!formData[field as keyof typeof formData]) {
         const fieldName = field
           .replace(/([A-Z])/g, " $1")
           .replace(/^./, (str) => str.toUpperCase());
-        errors.push(`${fieldName} is required`);
+        if (field === "locality") {
+          errors.push(`City is required`);
+        } else {
+          errors.push(`${fieldName} is required`);
+        }
       }
     });
 
@@ -135,9 +160,25 @@ export default function CompleteProfile({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData((prev) => ({ ...prev, image: e.target.files![0] }));
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
     }
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setFormData((prev) => ({ ...prev, image: file }));
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setFormData((prev) => ({ ...prev, image: null }));
+      setImagePreview(null);
+    }
+  };
+
+  const removeImage = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
+    setFormData((prev) => ({ ...prev, image: null }));
   };
 
   const handlePostalCodeChange = async (
@@ -145,24 +186,20 @@ export default function CompleteProfile({
   ) => {
     const { value } = e.target;
     setFormData((prev) => ({ ...prev, pincode: value }));
-    console.log(value);
-    // Only fetch if postal code has at least 3 characters AND country is entered
+
     if (value.length >= 3 && formData.country) {
       try {
-        // Convert country name to country code (e.g., "Nigeria" → "NG")
         const countryCode = getCountryCode(formData.country);
-
         if (countryCode) {
           const response = await fetch(
-            `http://api.geonames.org/postalCodeSearchJSON?postalcode=${value}&country=${countryCode}&maxRows=1&username=YOUR_GEONAMES_USERNAME`
+            `https://secure.geonames.org/postalCodeSearchJSON?postalcode_startsWith=${value}&country=${countryCode}&maxRows=1&username=YOUR_GEONAMES_USERNAME`
           );
           const data = await response.json();
-          console.log(data);
           if (data.postalCodes?.[0]) {
             const { placeName, adminName1, adminName2 } = data.postalCodes[0];
             setFormData((prev) => ({
               ...prev,
-              city: placeName || prev.locality,
+              locality: placeName || prev.locality,
               state: adminName1 || prev.state,
               area: adminName2 || prev.area,
             }));
@@ -174,7 +211,6 @@ export default function CompleteProfile({
     }
   };
 
-  // Helper: Convert country name to country code
   const getCountryCode = (countryName: string) => {
     const countryMap: Record<string, string> = {
       nigeria: "NG",
@@ -184,14 +220,12 @@ export default function CompleteProfile({
       ethiopia: "ET",
       india: "IN",
       pakistan: "PK",
-      // Add more mappings as needed
     };
     return countryMap[countryName.toLowerCase()] || null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate form
     const validationErrors = validateForm();
     if (validationErrors.length > 0) {
       toast.error(validationErrors[0]);
@@ -204,7 +238,7 @@ export default function CompleteProfile({
       formData.emergencyContactCountryCode +
       "-" +
       formData.emergencyContactPhone;
-    // Your original data mapping (unchanged)
+
     data.append("register_type", "patient");
     data.append("first_name", formData.firstName);
     data.append("last_name", formData.lastName);
@@ -213,7 +247,7 @@ export default function CompleteProfile({
     data.append("dob", formData.dob);
     data.append("phone", formData.phone);
     data.append("emergencycontact", emergencyPhone);
-    data.append("emergencycontact_relation", formData.emergencyContactName);
+    data.append("emergencycontact_relation", formData.emergencyContactRelation); // Corrected this line
     const genderValue = getGenderValue(formData.gender);
     if (genderValue !== null) {
       data.append("gender", genderValue.toString());
@@ -232,7 +266,10 @@ export default function CompleteProfile({
     data.append("registration_type", "3");
     data.append("aadhar_number", formData.aadhaarNumber);
     data.append("pan_number", formData.panNumber);
-    data.append("passport_number", formData.passportNumber ? formData.passportNumber : "0");
+    data.append(
+      "passport_number",
+      formData.passportNumber ? formData.passportNumber : "0"
+    );
 
     if (formData.image) {
       data.append("image", formData.image);
@@ -243,7 +280,6 @@ export default function CompleteProfile({
         `${API_BASE_URL}/api/confirmForeignRegistration`,
         data
       );
-      console.log("Registration response==>", response);
       const result = response.data;
 
       if (response.status === 201) {
@@ -257,7 +293,6 @@ export default function CompleteProfile({
           "Account Created, Hello ",
           response?.data?.data.user.first_name
         );
-        console.log("Registration successful:", response);
         if (redirectUrl) {
           router.push(redirectUrl);
         } else {
@@ -315,12 +350,21 @@ export default function CompleteProfile({
     { id: "documents", title: "Documents" },
   ];
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (formContainerRef.current) {
+        formContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [activeSection]);
+
   if (isSubmitting) {
     return <LoadingSpinner />;
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6">
+    <div ref={formContainerRef} className="max-w-6xl mx-auto p-4 sm:p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -329,7 +373,6 @@ export default function CompleteProfile({
           isDark ? "bg-gray-800" : "bg-white"
         }`}
       >
-        {/* Form Header */}
         <div
           className={`p-6 border-b ${
             isDark
@@ -349,7 +392,6 @@ export default function CompleteProfile({
           </p>
         </div>
 
-        {/* Form Navigation */}
         <div
           className={`p-4 border-b ${
             isDark
@@ -370,10 +412,8 @@ export default function CompleteProfile({
           </nav>
         </div>
 
-        {/* Form Content */}
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Personal Information */}
             <AnimatePresence mode="wait">
               {activeSection === "personal" && (
                 <motion.div
@@ -384,18 +424,49 @@ export default function CompleteProfile({
                   transition={{ duration: 0.3 }}
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
+                  {/* UPDATED: Profile Picture Input with Preview */}
                   <div className="md:col-span-2">
                     <label className={labelClasses}>
                       Profile Picture (Optional)
                     </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                    />
+                    <div className="mt-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                        style={{ display: imagePreview ? "none" : "block" }}
+                      />
+                    </div>
+                    {imagePreview && (
+                      <div className="mt-4 flex items-center gap-4">
+                        <img
+                          src={imagePreview}
+                          alt="Profile Preview"
+                          className="h-20 w-20 rounded-full object-cover border-2 border-purple-300"
+                        />
+                        <div className="text-sm">
+                          <p
+                            className={`font-medium ${
+                              isDark ? "text-gray-300" : "text-gray-800"
+                            }`}
+                          >
+                            {formData.image?.name}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="text-red-500 hover:text-red-700 font-semibold transition-colors"
+                          >
+                            Remove Image
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                  {/* End of updated profile picture section */}
 
+                  {/* ... other personal info fields ... */}
                   <div>
                     <label htmlFor="salutation" className={labelClasses}>
                       Salutation
@@ -415,7 +486,6 @@ export default function CompleteProfile({
                       <option value="Dr">Dr</option>
                     </select>
                   </div>
-
                   <div>
                     <label htmlFor="gender" className={labelClasses}>
                       Gender
@@ -434,7 +504,6 @@ export default function CompleteProfile({
                       <option value="Other">Other</option>
                     </select>
                   </div>
-
                   <div>
                     <label htmlFor="firstName" className={labelClasses}>
                       First Name*
@@ -450,7 +519,6 @@ export default function CompleteProfile({
                       maxLength={40}
                     />
                   </div>
-
                   <div>
                     <label htmlFor="lastName" className={labelClasses}>
                       Last Name*
@@ -466,7 +534,6 @@ export default function CompleteProfile({
                       maxLength={35}
                     />
                   </div>
-
                   <div>
                     <label htmlFor="dob" className={labelClasses}>
                       Date of Birth*
@@ -487,7 +554,6 @@ export default function CompleteProfile({
                       Phone Number*
                     </label>
                     <div className="flex gap-2">
-                      {/* Prefix Code Input */}
                       <div className="relative w-24">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                           <span
@@ -503,13 +569,12 @@ export default function CompleteProfile({
                           name="prefix_code"
                           value={formData.prefix_code.replace("+", "")}
                           onChange={(e) => {
-                            // Allow only numbers and limit length
                             const value = e.target.value
                               .replace(/\D/g, "")
                               .slice(0, 3);
                             setFormData((prev) => ({
                               ...prev,
-                              prefix_code: value ? `+${value}` : "+",
+                              prefix_code: value ? `+${value}` : "",
                             }));
                           }}
                           className={`w-full pl-8 py-2 rounded-md ${
@@ -518,11 +583,8 @@ export default function CompleteProfile({
                               : "bg-gray-100 border-gray-300 text-gray-700"
                           }`}
                           placeholder="1"
-                          maxLength={3}
                         />
                       </div>
-
-                      {/* Phone Number Input */}
                       <input
                         type="tel"
                         inputMode="numeric"
@@ -548,19 +610,11 @@ export default function CompleteProfile({
                         maxLength={12}
                       />
                     </div>
-                    <p
-                      className={`text-xs mt-1 ${
-                        isDark ? "text-gray-400" : "text-gray-500"
-                      }`}
-                    >
-                      Example: 1 (US), 44 (UK), 91 (IN), 234 (NG)
-                    </p>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Address Information */}
             {activeSection === "address" && (
               <motion.div
                 key="address"
@@ -570,7 +624,6 @@ export default function CompleteProfile({
                 transition={{ duration: 0.3 }}
                 className="grid grid-cols-1 md:grid-cols-2 gap-6"
               >
-                {/* Country Input (Text Field) */}
                 <div className="md:col-span-2">
                   <label htmlFor="country" className={labelClasses}>
                     Country*
@@ -582,55 +635,45 @@ export default function CompleteProfile({
                     value={formData.country}
                     onChange={handleChange}
                     className={inputClasses}
-                    placeholder="e.g., Nigeria, South Africa"
+                    placeholder="e.g., Nigeria, India"
                     required
                     maxLength={20}
                   />
                 </div>
-
-                {/* Postal Code Input */}
                 <div className="md:col-span-2">
-                  <label htmlFor="postalCode" className={labelClasses}>
-                    Postal Code
+                  <label htmlFor="pincode" className={labelClasses}>
+                    Postal Code*
                   </label>
                   <input
                     type="text"
-                    id="postalCode"
+                    id="pincode"
                     name="pincode"
                     value={formData.pincode}
-                    onChange={handleChange}
+                    onChange={handlePostalCodeChange}
                     className={inputClasses}
                     placeholder="Enter to auto-fill address"
                     maxLength={10}
+                    required
                   />
-                  {/* <p
-                    className={`text-xs mt-1 ${
-                      isDark ? "text-gray-400" : "text-gray-500"
-                    }`}
-                  >
-                    Start typing your postal code after entering country
-                  </p> */}
                 </div>
-
-                {/* Auto-filled Address Fields */}
                 <div>
-                  <label htmlFor="city" className={labelClasses}>
-                    City
+                  <label htmlFor="locality" className={labelClasses}>
+                    City*
                   </label>
                   <input
                     type="text"
-                    id="city"
+                    id="locality"
                     name="locality"
                     value={formData.locality}
                     onChange={handleChange}
                     className={inputClasses}
                     maxLength={30}
+                    required
                   />
                 </div>
-
                 <div>
                   <label htmlFor="state" className={labelClasses}>
-                    State/Province
+                    State/Province*
                   </label>
                   <input
                     type="text"
@@ -640,18 +683,18 @@ export default function CompleteProfile({
                     onChange={handleChange}
                     className={inputClasses}
                     maxLength={30}
+                    required
                   />
                 </div>
-
                 <div className="md:col-span-2">
-                  <label htmlFor="area" className={labelClasses}>
-                    Area/Street
+                  <label htmlFor="address" className={labelClasses}>
+                    Address Line
                   </label>
                   <input
                     type="text"
-                    id="area"
-                    name="area"
-                    value={formData.area}
+                    id="address"
+                    name="address"
+                    value={formData.address}
                     onChange={handleChange}
                     className={inputClasses}
                     maxLength={50}
@@ -660,7 +703,6 @@ export default function CompleteProfile({
               </motion.div>
             )}
 
-            {/* Emergency Contact */}
             <AnimatePresence mode="wait">
               {activeSection === "emergency" && (
                 <motion.div
@@ -669,10 +711,8 @@ export default function CompleteProfile({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
-                  // UPDATED: Now a 3-column grid on large screens
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
-                  {/* Name Field (no changes) */}
                   <div>
                     <label
                       htmlFor="emergencyContactName"
@@ -690,7 +730,6 @@ export default function CompleteProfile({
                     />
                   </div>
 
-                  {/* Relation Field (no changes) */}
                   <div>
                     <label
                       htmlFor="emergencyContactRelation"
@@ -727,19 +766,20 @@ export default function CompleteProfile({
                         </div>
                         <input
                           type="text"
-                          name="prefix_code"
+                          name="emergencyContactCountryCode"
                           value={formData.emergencyContactCountryCode.replace(
                             "+",
                             ""
                           )}
                           onChange={(e) => {
-                            // Allow only numbers and limit length
                             const value = e.target.value
                               .replace(/\D/g, "")
                               .slice(0, 3);
                             setFormData((prev) => ({
                               ...prev,
-                              prefix_code: value ? `+${value}` : "+",
+                              emergencyContactCountryCode: value
+                                ? `+${value}`
+                                : "",
                             }));
                           }}
                           className={`w-full pl-8 py-2 rounded-md ${
@@ -748,7 +788,6 @@ export default function CompleteProfile({
                               : "bg-gray-100 border-gray-300 text-gray-700"
                           }`}
                           placeholder="1"
-                          maxLength={3}
                         />
                       </div>
                       <input
@@ -781,7 +820,6 @@ export default function CompleteProfile({
               )}
             </AnimatePresence>
 
-            {/* Documents */}
             <AnimatePresence mode="wait">
               {activeSection === "documents" && (
                 <motion.div
@@ -802,7 +840,6 @@ export default function CompleteProfile({
                       value={formData.registrationType}
                       onChange={handleChange}
                       className={inputClasses}
-                      required
                     >
                       <option value="">Select Document Type</option>
                       <option value="passport">Passport</option>
@@ -821,17 +858,16 @@ export default function CompleteProfile({
                       onChange={handleChange}
                       className={inputClasses}
                       placeholder="Enter passport number"
-                      maxLength={10}
+                      maxLength={20}
                     />
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Form Actions */}
             <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
               <div className="flex space-x-3">
-                {formSections.map((section, index) => (
+                {formSections.map((section) => (
                   <button
                     key={section.id}
                     type="button"
@@ -870,9 +906,9 @@ export default function CompleteProfile({
 
                 {activeSection !== "documents" ? (
                   <button
-                    type="button" // Ensure this is always type="button"
+                    type="button"
                     onClick={(e) => {
-                      e.preventDefault(); // Prevent form submission
+                      e.preventDefault();
                       const currentIndex = formSections.findIndex(
                         (s) => s.id === activeSection
                       );

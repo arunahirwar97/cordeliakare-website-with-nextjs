@@ -59,7 +59,10 @@ export default function CompleteProfile({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
   const [loading, setLoading] = useState(false);
-  // Add these new state variables for Google Places
+  
+  // NEW: State to hold the image preview URL
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
@@ -68,19 +71,38 @@ export default function CompleteProfile({
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const [isConfirm, setIsConfirm] = useState(false);
+  const formContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top when the active section changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (formContainerRef.current) {
+        formContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [activeSection]);
+
+  // NEW: Cleanup effect for the object URL to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
 
   //Places auto select
-  // Initialize Google Places services
   useEffect(() => {
     const initializeGooglePlaces = () => {
       if (window.google && window.google.maps && window.google.maps.places) {
         autocompleteService.current =
           new window.google.maps.places.AutocompleteService();
 
-        // Create a hidden map for PlacesService
         if (mapRef.current) {
           const map = new window.google.maps.Map(mapRef.current, {
-            center: { lat: 28.6139, lng: 77.209 }, // Delhi coordinates
+            center: { lat: 28.6139, lng: 77.209 },
             zoom: 13,
           });
           placesService.current = new window.google.maps.places.PlacesService(
@@ -93,7 +115,6 @@ export default function CompleteProfile({
     if (window.google) {
       initializeGooglePlaces();
     } else {
-      // Wait for Google Maps to load
       const checkGoogle = setInterval(() => {
         if (window.google) {
           initializeGooglePlaces();
@@ -103,7 +124,6 @@ export default function CompleteProfile({
     }
   }, []);
 
-  // Handle address input change with autocomplete
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setFormData((prev) => ({ ...prev, address: value }));
@@ -113,7 +133,7 @@ export default function CompleteProfile({
       autocompleteService.current.getPlacePredictions(
         {
           input: value,
-          componentRestrictions: { country: "in" }, // Restrict to India
+          componentRestrictions: { country: "in" },
           types: ["address"],
         },
         (predictions, status) => {
@@ -136,13 +156,11 @@ export default function CompleteProfile({
     }
   };
 
-  // Alternative handlePlaceSelect using Geocoding API
   const handlePlaceSelect = async (placeId: string, description: string) => {
     setFormData((prev) => ({ ...prev, address: description }));
     setShowSuggestions(false);
 
     try {
-      // Method 1: Try with Places API first
       if (placesService.current) {
         placesService.current.getDetails(
           {
@@ -150,22 +168,17 @@ export default function CompleteProfile({
             fields: ["address_components", "formatted_address", "geometry"],
           },
           async (place, status) => {
-            console.log("=== GOOGLE PLACES API RESPONSE ===");
-            console.log("Status:", status);
-            console.log("Full place object:", place);
             if (
               status === window.google.maps.places.PlacesServiceStatus.OK &&
               place?.address_components
             ) {
               parseAndSetAddressComponents(place.address_components);
             } else {
-              // Method 2: Fallback to Geocoding API
               await geocodeAddress(description);
             }
           }
         );
       } else {
-        // Method 2: Direct geocoding if Places service not available
         await geocodeAddress(description);
       }
     } catch (error) {
@@ -173,7 +186,6 @@ export default function CompleteProfile({
     }
   };
 
-  // Helper function to parse address components
   const parseAndSetAddressComponents = (
     components: google.maps.GeocoderAddressComponent[]
   ) => {
@@ -182,18 +194,12 @@ export default function CompleteProfile({
       pincode = "",
       area = "";
 
-    // console.log("Address components:", components);
-
     components.forEach((component) => {
       const types = component.types;
       const longName = component.long_name;
 
-      if (types.includes("postal_code")) {
-        pincode = longName;
-      }
-      if (types.includes("administrative_area_level_1")) {
-        state = longName;
-      }
+      if (types.includes("postal_code")) pincode = longName;
+      if (types.includes("administrative_area_level_1")) state = longName;
       if (types.includes("locality")) {
         city = longName;
       } else if (types.includes("administrative_area_level_2") && !city) {
@@ -208,8 +214,6 @@ export default function CompleteProfile({
       }
     });
 
-    // console.log("Parsed data:", { city, state, pincode, area });
-
     setFormData((prev) => ({
       ...prev,
       locality: city,
@@ -219,10 +223,8 @@ export default function CompleteProfile({
     }));
   };
 
-  // Helper function for geocoding
   const geocodeAddress = async (address: string) => {
     const geocoder = new window.google.maps.Geocoder();
-
     geocoder.geocode({ address: address }, (results, status) => {
       if (status === "OK" && results && results[0]) {
         parseAndSetAddressComponents(results[0].address_components);
@@ -236,28 +238,45 @@ export default function CompleteProfile({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+  
+  // UPDATED: handleFileChange to manage preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Revoke old URL if one exists
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+
     if (e.target.files && e.target.files[0]) {
-      setFormData((prev) => ({ ...prev, image: e.target.files![0] }));
+      const file = e.target.files[0];
+      setFormData((prev) => ({ ...prev, image: file }));
+      // Create a new preview URL
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      // If user cancels, clear the state
+      setFormData((prev) => ({ ...prev, image: null }));
+      setImagePreview(null);
     }
   };
 
-  // Convert gender to numeric value as required by API
+  // NEW: Function to remove the selected image
+  const removeImage = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
+    setFormData((prev) => ({ ...prev, image: null }));
+  };
+
+
   const getGenderValue = (gender: string): number | null => {
     switch (gender) {
-      case "Male":
-        return 0;
-      case "Female":
-        return 1;
-      case "Other":
-        return 2;
-      default:
-        return null;
+      case "Male": return 0;
+      case "Female": return 1;
+      case "Other": return 2;
+      default: return null;
     }
   };
 
-  // Convert salutation to ID as required by API
   const getSalutationId = (salutationName: string): string => {
     const salutation = salutations.find(
       (s: any) =>
@@ -272,7 +291,6 @@ export default function CompleteProfile({
     const data = new FormData();
     setIsSubmitting(true);
 
-    // Your original data mapping (unchanged)
     data.append("register_type", "user");
     data.append("first_name", formData.firstName);
     data.append("last_name", formData.lastName);
@@ -311,7 +329,6 @@ export default function CompleteProfile({
         `${API_BASE_URL}/api/confirmregistration`,
         data
       );
-      console.log("Registration response==>", response);
       const result = response.data;
 
       if (response.status === 201) {
@@ -324,7 +341,6 @@ export default function CompleteProfile({
           "Account Created, Hello ",
           response?.data?.data.user.first_name
         );
-        // console.log("Registration successful:", response);
         if (redirectUrl) {
           router.push(redirectUrl);
         } else {
@@ -350,7 +366,6 @@ export default function CompleteProfile({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Basic validation
     if (!formData.firstName || !formData.lastName || !formData.dob) {
       alert("Please fill in all required fields");
       return;
@@ -401,6 +416,7 @@ export default function CompleteProfile({
   ) : (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
       <motion.div
+        ref={formContainerRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
@@ -464,18 +480,50 @@ export default function CompleteProfile({
                   transition={{ duration: 0.3 }}
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
+                  {/* UPDATED: Profile Picture Input with Preview */}
                   <div className="md:col-span-2">
                     <label className={labelClasses}>
                       Profile Picture (Optional)
                     </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                    />
-                  </div>
+                    <div className="mt-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                        // Hide the input if an image is already selected for a cleaner UI
+                        style={{ display: imagePreview ? 'none' : 'block' }}
+                      />
+                    </div>
 
+                    {imagePreview && (
+                      <div className="mt-4 flex items-center gap-4">
+                        <img
+                          src={imagePreview}
+                          alt="Profile Preview"
+                          className="h-20 w-20 rounded-full object-cover border-2 border-purple-300"
+                        />
+                        <div className="text-sm">
+                          <p
+                            className={`font-medium ${
+                              isDark ? "text-gray-300" : "text-gray-800"
+                            }`}
+                          >
+                            {formData.image?.name}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="text-red-500 hover:text-red-700 font-semibold transition-colors"
+                          >
+                            Remove Image
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  {/* End of updated profile picture section */}
+                  
                   <div>
                     <label htmlFor="salutation" className={labelClasses}>
                       Salutation
@@ -668,7 +716,6 @@ export default function CompleteProfile({
                       autoComplete="off"
                     />
 
-                    {/* Suggestions dropdown */}
                     {showSuggestions && (
                       <div
                         className={`absolute z-10 w-full mt-1 max-h-60 overflow-auto rounded-md border shadow-lg ${
@@ -709,7 +756,6 @@ export default function CompleteProfile({
                       </div>
                     )}
                   </div>
-                  {/* Hidden map div for Google Places service */}
                   <div ref={mapRef} style={{ display: "none" }} />
                   <div>
                     <label htmlFor="area" className={labelClasses}>
@@ -870,7 +916,6 @@ export default function CompleteProfile({
             </AnimatePresence>
 
             {/* Documents */}
-            {/* Documents */}
             <AnimatePresence mode="wait">
               {activeSection === "documents" && (
                 <motion.div
@@ -881,7 +926,6 @@ export default function CompleteProfile({
                   transition={{ duration: 0.3 }}
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
-                  {/* Document Type Dropdown (This stays the same) */}
                   <div>
                     <label htmlFor="registrationType" className={labelClasses}>
                       Registration Document Type
@@ -898,7 +942,6 @@ export default function CompleteProfile({
                       <option value="pan">PAN Card</option>
                     </select>
                   </div>
-                  {/* This empty div is for layout, so we keep it */}
                   <div></div>
                   <div className="md:col-span-2">
                     <AnimatePresence mode="wait">
