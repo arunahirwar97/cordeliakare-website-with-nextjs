@@ -3,7 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import LoadingSpinner from "../loading/LoadingComponent";
 
 export default function PublicRoute({
@@ -11,14 +11,16 @@ export default function PublicRoute({
 }: {
   children: React.ReactNode;
 }) {
-  const { loading, token } = useAuth();
+  const { loading } = useAuth();
   const router = useRouter();
 
+  const [token, setToken] = useState(localStorage.getItem('token'))
+  console.log(token)
   useEffect(() => {
-    if (!loading && token) {
+    if (token) {
       router.push("/");
     }
-  }, [loading, router, token]);
+  }, []);
 
   if (loading) {
     return <LoadingSpinner />;

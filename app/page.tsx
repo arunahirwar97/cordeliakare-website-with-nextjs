@@ -24,6 +24,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import LoginModal from "@/components/LoginModal";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -48,8 +51,25 @@ export default function CordeliakarePage() {
   const heroY = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
   const backgroundY = useTransform(scrollYProgress, [0, 1], [0, -100]);
-
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const router = useRouter();
+
+  const loginToPlatformHandler = () => {
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (token) {
+      toast.success("You are already logged in. Redirecting...");
+      router.push("/profile");
+    } else {
+      setIsLoginModalOpen(true);
+    }
+  };
+
+  // NEW: Function to close the modal
+  const closeLoginModal = () => {
+    setIsLoginModalOpen(false);
+  };
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -920,34 +940,28 @@ export default function CordeliakarePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
+                asChild
                 size="lg"
                 variant="secondary"
                 className="px-8 py-6 text-lg"
               >
-                <Link
-                  href="#"
-                  className="flex items-center"
-                >
-                  Request A Demo
+                <Link href="/contact" className="flex items-center">
+                  Request A Demo <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
-                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
                 size="lg"
-                variant="secondary"
-                className="px-8 py-6 text-lg flex flex-col sm:flex-row gap-4 justify-center"
+                variant="outline"
+                className="px-8 py-6 text-lg bg-transparent text-white border-white hover:bg-white hover:text-blue-600"
+                onClick={loginToPlatformHandler} // Attached the handler here
               >
-                <Link
-                  href="https://prod.cordeliakare.com/login"
-                  className="flex items-center"
-                >
-                  Login to Platform
-                </Link>
+                Login to Platform
               </Button>
             </div>
           </motion.div>
         </div>
       </section>
+      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </div>
   );
 }

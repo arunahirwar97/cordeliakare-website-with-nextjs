@@ -81,8 +81,8 @@ export default function AudiencePage() {
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
-  const section = searchParams.get("section");
-  const router = useRouter(); // Add this import from 'next/navigation'
+  const section = searchParams?.get("section");
+  const router = useRouter();
 
   // Create refs for each section
   const patientsRef = useRef<HTMLDivElement>(null);
@@ -121,7 +121,6 @@ export default function AudiencePage() {
       }
 
       if (ref?.current) {
-        // Use setTimeout to ensure the DOM is ready
         setTimeout(() => {
           ref.current?.scrollIntoView({
             behavior: "smooth",
@@ -138,13 +137,11 @@ export default function AudiencePage() {
     return null;
   }
 
-  // Determine the actual theme being displayed
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
 
   return (
     <div className="relative min-h-[calc(100vh-64px)] overflow-hidden">
-      {/* Animated Gradient Background */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -152,7 +149,6 @@ export default function AudiencePage() {
         className="absolute inset-0 bg-gradient-to-br from-purple-100 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 z-0"
       />
 
-      {/* Floating animated elements */}
       <motion.div
         animate={{
           y: [0, -15, 0],
@@ -183,7 +179,6 @@ export default function AudiencePage() {
         variants={containerVariants}
         className="relative z-10 max-w-6xl mx-auto px-4 py-8"
       >
-        {/* Hero Section */}
         <motion.div variants={itemVariants} className="text-center mb-12">
           <motion.h1
             className="text-4xl font-bold text-gray-900 dark:text-white mb-4"
@@ -675,6 +670,7 @@ export default function AudiencePage() {
                 effectively.
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
+                {/* UPDATED: Mapping over the new diagnosisPointers data */}
                 {diagnosisPointers.map((feature, index) => (
                   <motion.div
                     key={index}
