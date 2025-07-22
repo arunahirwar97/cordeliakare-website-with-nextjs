@@ -20,7 +20,7 @@ export default function LoginForm() {
   const [loginType, setLoginType] = useState("patient");
   const searchParams: any = useSearchParams();
   const redirectUrl = searchParams.get("redirect");
-  const [timer, setTimer] = useState(6);
+  const [timer, setTimer] = useState(60);
 
 
   // Use auth context
