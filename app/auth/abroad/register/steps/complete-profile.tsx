@@ -599,8 +599,8 @@ export default function CompleteProfile({
                         }}
                         className={`flex-1 ${
                           isDark
-                            ? "bg-gray-800 border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
-                            : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+                            ? "bg-gray-800 border-gray-500 text-white focus:ring-purple-500 focus:border-purple-500"
+                            : "bg-white border-gray-500 focus:ring-purple-500 focus:border-purple-500"
                         } rounded-md px-3 py-2`}
                         placeholder="Phone number"
                         required

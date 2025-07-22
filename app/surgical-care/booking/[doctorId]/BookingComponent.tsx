@@ -230,12 +230,15 @@ const BookingComponent = () => {
   };
 
   const handleBookingNotification = async (userNotes: string = "") => {
-    const enquiryType = bookingData?.bookingType!.charAt(0).toUpperCase() + bookingData?.bookingType!.slice(1);
-    let bookType = "Indian Patient"
-    if(localStorage.getItem("user")==='abroad_patient'){
-      bookType="Abroad Patient"
+    const enquiryType =
+      bookingData?.bookingType!.charAt(0).toUpperCase() +
+      bookingData?.bookingType!.slice(1);
+    let bookType = "Indian Patient";
+    if (localStorage.getItem("user") === "abroad_patient") {
+      bookType = "Abroad Patient";
     }
     try {
+      const coordinates = sessionData.coordinates ?? { lat: "", lng: "" };
       setShowLoadingModal(true);
       const notifyBookingData = {
         Enquiry_Type: enquiryType,
@@ -247,7 +250,7 @@ const BookingComponent = () => {
         User_Age: userData?.age,
         User_DOB: userData?.dob,
         User_Gender: userData?.gender === 0 ? "male" : "female",
-        Enquiry_Coordinates: sessionData.coordinates,
+        Enquiry_Coordinates: coordinates,
         Enquiry_Location: sessionData.location,
         Enquiry_Location_Type: sessionData.locationType,
         Enquiry_Date_Range: sessionData.dateRange,
@@ -261,7 +264,7 @@ const BookingComponent = () => {
         Hospital_Phone: hospital?.hospital_phone,
         Notes: userNotes || "No notes given",
       };
-      
+
       console.log("INITIATE BOOKING===>", notifyBookingData);
       const result = await notifyBooking(notifyBookingData);
       setShowLoadingModal(false);
