@@ -230,12 +230,12 @@ export default function CompleteProfile({
     }
     setIsSubmitting(true);
     const data = new FormData();
-    const emergencyPhone =
-      "+" +
-      formData.emergencyContactCountryCode +
-      "-" +
-      formData.emergencyContactPhone;
-
+    // const emergencyPhone =
+    //   "+" +
+    //   formData.emergencyContactCountryCode +
+    //   "-" +
+    //   formData.emergencyContactPhone;
+    const emergencycontactName = `${formData.emergencyContactName} - (${formData.emergencyContactRelation})`
     data.append("register_type", "patient");
     data.append("first_name", formData.firstName);
     data.append("last_name", formData.lastName);
@@ -243,13 +243,13 @@ export default function CompleteProfile({
     data.append("father_name", formData.fatherName);
     data.append("dob", formData.dob);
     data.append("phone", formData.phone);
-    data.append("emergencycontact", emergencyPhone);
-    data.append("emergencycontact_relation", formData.emergencyContactRelation);
+    data.append("emergencycontact", formData.emergencyContactPhone);
+    data.append("emergencycontact_relation", emergencycontactName);
     const genderValue = getGenderValue(formData.gender);
     if (genderValue !== null) {
       data.append("gender", genderValue.toString());
     }
-    data.append("emergency_prefix_code", "");
+    data.append("emergency_prefix_code", formData.emergencyContactCountryCode);
     data.append("prefix_code", formData.prefix_code);
     data.append("address1", formData.address);
     data.append("address2", formData.area);

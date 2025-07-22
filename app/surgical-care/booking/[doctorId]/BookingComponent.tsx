@@ -230,11 +230,16 @@ const BookingComponent = () => {
   };
 
   const handleBookingNotification = async (userNotes: string = "") => {
+    const enquiryType = bookingData?.bookingType!.charAt(0).toUpperCase() + bookingData?.bookingType!.slice(1);
+    let bookType = "Indian Patient"
+    if(localStorage.getItem("user")==='abroad_patient'){
+      bookType="Abroad Patient"
+    }
     try {
       setShowLoadingModal(true);
       const notifyBookingData = {
-        Enquiry_Type: bookingData.bookingType,
-        User_Type: localStorage.getItem("user"),
+        Enquiry_Type: enquiryType,
+        User_Type: bookType,
         User_Full_Name: userData?.full_name,
         User_Id: userData?.id,
         User_Email: userData?.email,

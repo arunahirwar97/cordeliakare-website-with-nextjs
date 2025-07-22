@@ -945,7 +945,7 @@ export default function CordeliakarePage() {
                 variant="secondary"
                 className="px-8 py-6 text-lg"
               >
-                <Link href="/contact" className="flex items-center">
+                <Link href="/" className="flex items-center">
                   Request A Demo <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -953,7 +953,7 @@ export default function CordeliakarePage() {
                 size="lg"
                 variant="outline"
                 className="px-8 py-6 text-lg bg-transparent text-white border-white hover:bg-white hover:text-blue-600"
-                onClick={loginToPlatformHandler} // Attached the handler here
+                onClick={loginToPlatformHandler} 
               >
                 Login to Platform
               </Button>

@@ -155,36 +155,36 @@ export default function CompleteProfile({
     }
   };
 
- const handlePlaceSelect = async (placeId: string, description: string) => {
-  const shortAddress = description.split(',')[0].trim();
-  setFormData((prev) => ({ ...prev, address: shortAddress }));
-  setShowSuggestions(false);
+  const handlePlaceSelect = async (placeId: string, description: string) => {
+    const shortAddress = description.split(",")[0].trim();
+    setFormData((prev) => ({ ...prev, address: shortAddress }));
+    setShowSuggestions(false);
 
-  try {
-    if (placesService.current) {
-      placesService.current.getDetails(
-        {
-          placeId: placeId,
-          fields: ["address_components", "formatted_address", "geometry"],
-        },
-        async (place, status) => {
-          if (
-            status === window.google.maps.places.PlacesServiceStatus.OK &&
-            place?.address_components
-          ) {
-            parseAndSetAddressComponents(place.address_components);
-          } else {
-            await geocodeAddress(description);
+    try {
+      if (placesService.current) {
+        placesService.current.getDetails(
+          {
+            placeId: placeId,
+            fields: ["address_components", "formatted_address", "geometry"],
+          },
+          async (place, status) => {
+            if (
+              status === window.google.maps.places.PlacesServiceStatus.OK &&
+              place?.address_components
+            ) {
+              parseAndSetAddressComponents(place.address_components);
+            } else {
+              await geocodeAddress(description);
+            }
           }
-        }
-      );
-    } else {
-      await geocodeAddress(description);
+        );
+      } else {
+        await geocodeAddress(description);
+      }
+    } catch (error) {
+      console.error("Error getting place details:", error);
     }
-  } catch (error) {
-    console.error("Error getting place details:", error);
-  }
-};
+  };
 
   const parseAndSetAddressComponents = (
     components: google.maps.GeocoderAddressComponent[]
@@ -296,6 +296,8 @@ export default function CompleteProfile({
   };
 
   const registerApi = async () => {
+    const emergencycontactName = `${formData.emergencyContactName} - (${formData.emergencyContactRelation})`;
+
     if (!isConfirm) return;
 
     const data = new FormData();
@@ -309,7 +311,7 @@ export default function CompleteProfile({
     data.append("dob", formData.dob);
     data.append("phone", phone);
     data.append("emergencycontact", formData.emergencyContactPhone);
-    data.append("emergencycontact_relation", formData.emergencyContactName);
+    data.append("emergencycontact_relation", emergencycontactName);
     const genderValue = getGenderValue(formData.gender);
     if (genderValue !== null) {
       data.append("gender", genderValue.toString());
