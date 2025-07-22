@@ -40,7 +40,7 @@ export default function IndianRegistration() {
   };
 
   return (
-    <PublicRoute>
+   
       <div className={`min-h-screen ${isDark ? "bg-gray-900" : "bg-gray-50"}`}>
         <div className="w-full px-4 py-8 sm:px-6 lg:px-8">
           <motion.div
@@ -100,6 +100,6 @@ export default function IndianRegistration() {
           </motion.div>
         </div>
       </div>
-    </PublicRoute>
+    
   );
 }

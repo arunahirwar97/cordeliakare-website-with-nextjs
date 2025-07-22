@@ -38,7 +38,7 @@ export default function InternationalRegistration() {
   // Render a neutral version during SSR
   if (!mounted) {
     return (
-      <PublicRoute>
+      
         <div className="min-h-screen bg-gray-50">
           <div className="w-full px-4 py-8 sm:px-6 lg:px-8">
             <div className="mx-auto space-y-8">
@@ -77,7 +77,7 @@ export default function InternationalRegistration() {
             </div>
           </div>
         </div>
-      </PublicRoute>
+      
     );
   }
 
@@ -85,7 +85,7 @@ export default function InternationalRegistration() {
   const isDark = theme === "dark";
 
   return (
-    <PublicRoute>
+    
       <div className={`min-h-screen ${isDark ? "bg-gray-900" : "bg-gray-50"}`}>
         <div className="w-full px-4 py-8 sm:px-6 lg:px-8">
           <motion.div
@@ -145,6 +145,6 @@ export default function InternationalRegistration() {
           </motion.div>
         </div>
       </div>
-    </PublicRoute>
+   
   );
 }
