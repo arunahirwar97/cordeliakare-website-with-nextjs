@@ -845,7 +845,7 @@ export default function CompleteProfile({
                             : "bg-white border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                         }`}
                         placeholder="9876543210"
-                        maxLength={10}
+                        maxLength={11}
                       />
                     </div>
                   </div>
