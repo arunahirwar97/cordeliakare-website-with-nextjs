@@ -253,14 +253,6 @@ const DoctorCard = ({ doctor, onSelect }: DoctorCardProps) => {
                       Available for virtual and in-person consultations
                     </p>
                   </div>
-                  {onSelect && (
-                    <button
-                      onClick={() => onSelect(doctor)}
-                      className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                    >
-                      Select This Doctor
-                    </button>
-                  )}
                 </div>
               </div>
             </div>

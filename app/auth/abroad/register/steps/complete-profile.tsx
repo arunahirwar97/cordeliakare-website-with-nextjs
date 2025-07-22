@@ -128,10 +128,6 @@ export default function CompleteProfile({
       }
     });
 
-    if (formData.phone && !/^\d{10,12}$/.test(formData.phone)) {
-      errors.push("Phone number must be 10-12 digits");
-    }
-
     if (
       formData.emergencyContactPhone &&
       !/^\d{10,12}$/.test(formData.emergencyContactPhone)
@@ -688,7 +684,7 @@ export default function CompleteProfile({
                     value={formData.pincode}
                     onChange={handlePostalCodeChange}
                     className={inputClasses}
-                    placeholder="Enter to auto-fill address"
+                    placeholder="Enter Postal code/Zip Code"
                     maxLength={10}
                     required
                   />
