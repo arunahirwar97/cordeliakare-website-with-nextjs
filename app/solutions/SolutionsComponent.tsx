@@ -663,11 +663,11 @@ export default function AudiencePage() {
                   isDark ? "text-gray-300" : "text-gray-700"
                 } mb-6`}
               >
-                Surgeons and Surgical Teams: The platform's focus on surgical
-                care, seamlessly connected to HIMS, means surgeons can access
-                comprehensive patient histories, pre- and post-operative
-                information, and manage their surgical schedules more
-                effectively.
+                Quickly onboard new labs with standardized workflows and
+                automated processes for sample registration, reporting, and
+                compliance. The platform minimizes manual effort thru through
+                intelligent automation, improves inventory control, and supports
+                NABL, ISO, and HIPAA standards with audit-ready documentation.
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
                 {/* UPDATED: Mapping over the new diagnosisPointers data */}
