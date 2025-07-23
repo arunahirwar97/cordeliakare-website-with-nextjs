@@ -3,7 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import LoadingSpinner from "../loading/LoadingComponent";
 
 export default function PublicRoute({
@@ -11,20 +11,19 @@ export default function PublicRoute({
 }: {
   children: React.ReactNode;
 }) {
-  const { loading } = useAuth();
+  const { isAuthenticated, loading, otpSent } = useAuth();
   const router = useRouter();
 
-  const [token, setToken] = useState(localStorage.getItem('token'))
-  console.log(token)
   useEffect(() => {
-    if (token) {
+    if (!loading && isAuthenticated && !otpSent) {
       router.push("/");
     }
-  }, []);
+  }, [isAuthenticated, loading, otpSent, router]);
 
   if (loading) {
     return <LoadingSpinner />;
   }
 
-  return !token ? <>{children}</> : null;
+  // Only show children if not authenticated OR during OTP flow
+  return !isAuthenticated || otpSent ? <>{children}</> : null;
 }

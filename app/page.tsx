@@ -253,6 +253,8 @@ export default function CordeliakarePage() {
     setPopupData(null);
   };
 
+  const mvtButton = `group relative inline-flex items-center gap-2 px-6 py-3 font-semibold text-white rounded-full transition-all duration-300 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-br shadow-lg hover:shadow-xl overflow-hidden ring-1 ring-white/10 hover:ring-white/20`;
+
   const solutions = [
     {
       title: "Enabling Remote care delivery",
@@ -382,12 +384,11 @@ export default function CordeliakarePage() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-0">
         <motion.div
           style={{ y: backgroundY }}
           className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900"
         />
-
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
 
         <motion.div
@@ -411,19 +412,49 @@ export default function CordeliakarePage() {
             </span>
           </motion.h1>
 
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-xl md:text-2xl text-muted-foreground mb-1 max-w-3xl mx-auto"
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-xl md:text-2xl text-muted-foreground mb-1 max-w-3xl mx-auto text-center space-y-6"
           >
-            Our comprehensive mHealth integrated solution with HMS enables
-            <br />
-            healthcare providers to deliver patient-centric, efficient, and
-            high-quality care. By leveraging mobile technologies, data
-            analytics, and AI-driven insights, we can improve patient outcomes,
-            enhance the patient experience, and optimize healthcare operations
-          </motion.p>
+            <div>
+              Our comprehensive mHealth integrated solution with HMS enables
+              healthcare providers to deliver patient-centric, efficient, and
+              high-quality care. By leveraging mobile technologies, data
+              analytics, and AI-driven insights, we can improve patient
+              outcomes, enhance the patient experience, and optimize healthcare
+              operations.
+            </div>
+
+            <div className="mt-2 flex justify-center">
+              <motion.div
+                animate={{
+                  scale: [1, 1.03, 1],
+                }}
+                transition={{
+                  duration: 3,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                }}
+              >
+                <Link href="/medical-tourism" className={mvtButton}>
+                  <span
+                    className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 
+                        opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
+                  />
+                  <span
+                    className="absolute inset-0 bg-gradient-to-r from-indigo-400/30 via-purple-400/30 to-pink-400/30 
+                        opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  />
+                  <span className="relative z-10 flex items-center gap-2">
+                    Explore Medical Tourism
+                    <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Floating Elements */}
@@ -953,7 +984,7 @@ export default function CordeliakarePage() {
                 size="lg"
                 variant="outline"
                 className="px-8 py-6 text-lg bg-transparent text-white border-white hover:bg-white hover:text-blue-600"
-                onClick={loginToPlatformHandler} 
+                onClick={loginToPlatformHandler}
               >
                 Login to Platform
               </Button>

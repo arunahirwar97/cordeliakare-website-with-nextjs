@@ -2,11 +2,87 @@
 "use client";
 
 import ContactButton from "@/components/ContactButton";
-import { comprehensiveServices, treatments } from "@/constants/constants";
 import { motion } from "framer-motion";
+import { Baby, Bone, Brain, CalendarCheck, Car, Dna, HeartPulse, Languages, Plane, Smile, Stethoscope, Syringe, VideoIcon, Weight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+const treatments = [
+  {
+    title: "Cardiology & Cardiothoracic Surgery",
+    icon: <HeartPulse className="w-4 h-4" />,
+    description: "Advanced heart care and surgical treatments",
+  },
+  {
+    title: "Orthopedics & Joint Replacement",
+    icon: <Bone className="w-4 h-4" />,
+    description: "Bone, joint and musculoskeletal treatments",
+  },
+  {
+    title: "Oncology (Cancer Treatment)",
+    icon: <Dna className="w-4 h-4" />,
+    description: "Comprehensive cancer diagnosis and therapy",
+  },
+  {
+    title: "Cosmetic & Plastic Surgery",
+    icon: <Syringe className="w-4 h-4" />,
+    description: "Aesthetic and reconstructive procedures",
+  },
+  {
+    title: "IVF and Fertility Treatments",
+    icon: <Baby className="w-4 h-4" />,
+    description: "Assisted reproductive technologies",
+  },
+  {
+    title: "Neurology & Neurosurgery",
+    icon: <Brain className="w-4 h-4" />,
+    description: "Brain and nervous system treatments",
+  },
+  {
+    title: "Dental Procedures",
+    icon: <Smile className="w-4 h-4" />,
+    description: "Specialized dental care and surgeries",
+  },
+  {
+    title: "Bariatric Surgery",
+    icon: <Weight className="w-4 h-4" />,
+    description: "Weight loss and metabolic surgery",
+  },
+];
+
+const comprehensiveServices = [
+  {
+    title: "Pre-Travel Medical Consultation",
+    icon: <Stethoscope className="w-5 h-5" />,
+    description: "Comprehensive health assessment before your medical journey",
+  },
+  {
+    title: "Visa Assistance and Travel Coordination",
+    icon: <Plane className="w-5 h-5" />,
+    description: "Help with medical visas and travel arrangements",
+  },
+  {
+    title: "Hospital and Doctor Appointments",
+    icon: <CalendarCheck className="w-5 h-5" />,
+    description: "Schedule consultations with top specialists",
+  },
+  {
+    title: "Translation and Interpretation Services",
+    icon: <Languages className="w-5 h-5" />,
+    description: "Professional language support during treatment",
+  },
+  {
+    title: "Local Transportation and Accommodation",
+    icon: <Car className="w-5 h-5" />,
+    description: "Comfortable stays and reliable local transport",
+  },
+  {
+    title: "Post-Treatment Follow-ups (In-person & Telehealth)",
+    icon: <VideoIcon className="w-5 h-5" />,
+    description: "Continued care after your medical procedure",
+  },
+];
 
 export default function PretextInfo() {
   const { theme } = useTheme();
@@ -18,20 +94,11 @@ export default function PretextInfo() {
     setMounted(true);
   }, []);
 
-  const handleNavigation = async () => {
-    setIsLoading(true);
-
-    try {
-      await router.push("/surgical-care/search?location=Abroad");
-
-      // Scroll to top after navigation
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (error) {
-      console.error("Navigation error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleNavigation =  () => {
+  setIsLoading(true);
+  router.push("/surgical-care/search?location=Abroad");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
   if (!mounted) return null;
 

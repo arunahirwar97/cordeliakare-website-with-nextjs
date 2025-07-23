@@ -1,5 +1,6 @@
 import {
   Activity,
+  Award,
   Baby,
   Bone,
   BookOpen,
@@ -10,17 +11,21 @@ import {
   ClipboardCheck,
   ClipboardEdit,
   ClipboardList,
+  Clock,
   Cpu,
   CreditCard,
   Database,
   Dna,
+  Eye,
   FileText,
   HeartPulse,
   HeartPulseIcon,
   Languages,
   LineChart,
   Mail,
+  MapPin,
   MessageSquare,
+  Phone,
   Pill,
   Plane,
   Shield,
@@ -35,6 +40,26 @@ import {
   Weight,
   Workflow,
 } from "lucide-react";
+
+export const RupeeIcon = (props:any) => (
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`lucide lucide-rupee ${props.className || ""}`}
+  >
+    <path d="M6 3h12" />
+    <path d="M6 8h12" />
+    <path d="M6 13l8 8" />
+    <path d="M6 13h3a6 6 0 0 0 6-6V3" />
+  </svg>
+);
+
 
 export const patientsPointers = [
   {
@@ -72,75 +97,214 @@ export const patientsPointers = [
 export const treatments = [
   {
     title: "Cardiology & Cardiothoracic Surgery",
-    icon: <HeartPulse className="w-4 h-4" />,
+    icon: HeartPulse,
     description: "Advanced heart care and surgical treatments",
+    image: "/cardio.png",
+    savings: "70% savings vs. US",
+  },
+  {
+    title: "Ophthalmology",
+    icon: Eye,
+    description: "Advanced treatments for vision and eye disorders",
+    image: "/optha.png",
+    savings: "60% savings vs. UK",
+  },
+  {
+    title: "General Surgery",
+    icon: Stethoscope,
+    description: "Comprehensive surgical care for a variety of conditions",
+    image: "/general_surgery.png",
+    savings: "55% savings vs. US",
   },
   {
     title: "Orthopedics & Joint Replacement",
-    icon: <Bone className="w-4 h-4" />,
+    icon: Bone,
     description: "Bone, joint and musculoskeletal treatments",
+    image: "/ortho.png",
+    savings: "65% savings vs. UK",
   },
   {
     title: "Oncology (Cancer Treatment)",
-    icon: <Dna className="w-4 h-4" />,
+    icon: Dna,
     description: "Comprehensive cancer diagnosis and therapy",
+    image: "/onco.png",
+    savings: "60% savings vs. Germany",
   },
   {
     title: "Cosmetic & Plastic Surgery",
-    icon: <Syringe className="w-4 h-4" />,
+    icon: Syringe,
     description: "Aesthetic and reconstructive procedures",
+    image: "/cosmetic.png",
+    savings: "75% savings vs. Canada",
   },
   {
     title: "IVF and Fertility Treatments",
-    icon: <Baby className="w-4 h-4" />,
+    icon: Baby,
     description: "Assisted reproductive technologies",
+    image: "/ivf.png",
+    savings: "70% savings vs. Australia",
   },
   {
     title: "Neurology & Neurosurgery",
-    icon: <Brain className="w-4 h-4" />,
+    icon: Brain,
     description: "Brain and nervous system treatments",
+    image: "/neuro.png",
+    savings: "65% savings vs. USA",
+  },
+];
+
+
+export const services = [
+  {
+    title: "Affordable Pricing",
+    emoji: "💰",
+    description:
+      "Up to 70% cost savings compared to treatments in the U.S., UK, or Europe",
+    icon: RupeeIcon,
+    color: "text-green-500",
   },
   {
-    title: "Dental Procedures",
-    icon: <Smile className="w-4 h-4" />,
-    description: "Specialized dental care and surgeries",
+    title: "Minimal Waiting Time",
+    emoji: "⏱️",
+    description:
+      "Immediate access to diagnostics, consultations, and surgeries",
+    icon: Clock,
+    color: "text-blue-500",
   },
   {
-    title: "Bariatric Surgery",
-    icon: <Weight className="w-4 h-4" />,
-    description: "Weight loss and metabolic surgery",
+    title: "Global-Standard Facilities",
+    emoji: "🏥",
+    description:
+      "JCI, NABH, ISO certified hospitals with advanced technologies",
+    icon: Award,
+    color: "text-purple-500",
+  },
+  {
+    title: "Personalized Care",
+    emoji: "👩‍⚕️",
+    description: "Dedicated patient coordinators ensure end-to-end support",
+    icon: Users,
+    color: "text-pink-500",
+  },
+  {
+    title: "Safe Recovery",
+    emoji: "🌿",
+    description:
+      "Partnerships with rehabilitation centres and wellness resorts",
+    icon: Shield,
+    color: "text-yellow-500",
+  },
+  {
+    title: "Post-Care Programs",
+    emoji: "💆‍♂️",
+    description:
+      "Wellness programs, nutrition advice, and alternative therapies",
+    icon: HeartPulse,
+    color: "text-red-500",
+  },
+];
+
+export const carePath = [
+  {
+    title: "Virtual OPD Centers",
+    description: "Consult with specialists from your location",
+    icon: VideoIcon,
+    side: "left",
+  },
+  {
+    title: "Patient Consultation and Diagnostics",
+    description: "Comprehensive health assessment and tests",
+    icon: Stethoscope,
+    side: "right",
+  },
+  {
+    title: "Upload Medical Records",
+    description: "Secure digital transfer of your medical history",
+    icon: ClipboardList,
+    side: "left",
+  },
+  {
+    title: "Hospital Recommendations in India",
+    description: "Personalized hospital suggestions based on your needs",
+    icon: MapPin,
+    side: "right",
+  },
+  {
+    title: "Travel and Accommodation Arrangements",
+    description: "Comprehensive travel planning and stay coordination",
+    icon: Plane,
+    side: "left",
+  },
+  {
+    title: "Hospital Liaison and Booking",
+    description: "Direct coordination with hospitals for your treatment",
+    icon: CalendarCheck,
+    side: "right",
+  },
+  {
+    title: "Post-treatment Follow-up",
+    description: "Continued care and monitoring after your procedure",
+    icon: Phone,
+    side: "left",
+  },
+];
+
+export const dummyTestimonials = [
+  {
+    name: "Sarah Johnson",
+    country: "United Kingdom",
+    treatment: "Hip Replacement",
+    quote:
+      "The care I received was exceptional. The surgery was successful and I saved over £15,000 compared to UK prices.",
+    image: "/images/patient-uk.jpg",
+  },
+  {
+    name: "Michael Brown",
+    country: "United States",
+    treatment: "Cardiac Bypass",
+    quote:
+      "From the first consultation to my follow-up care, everything was perfectly organized. The hospital was world-class.",
+    image: "/images/patient-us.jpg",
+  },
+  {
+    name: "Amina Al-Mansoori",
+    country: "United Arab Emirates",
+    treatment: "Spine Surgery",
+    quote:
+      "The doctors were incredibly skilled and the aftercare was thorough. I'm now pain-free and back to my active lifestyle.",
+    image: "/images/patient-uae.jpg",
   },
 ];
 
 export const comprehensiveServices = [
   {
     title: "Pre-Travel Medical Consultation",
-    icon: <Stethoscope className="w-5 h-5" />,
+    icon: Stethoscope,
     description: "Comprehensive health assessment before your medical journey",
   },
   {
     title: "Visa Assistance and Travel Coordination",
-    icon: <Plane className="w-5 h-5" />,
+    icon: Plane,
     description: "Help with medical visas and travel arrangements",
   },
   {
     title: "Hospital and Doctor Appointments",
-    icon: <CalendarCheck className="w-5 h-5" />,
+    icon: CalendarCheck,
     description: "Schedule consultations with top specialists",
   },
   {
     title: "Translation and Interpretation Services",
-    icon: <Languages className="w-5 h-5" />,
+    icon: Languages,
     description: "Professional language support during treatment",
   },
   {
     title: "Local Transportation and Accommodation",
-    icon: <Car className="w-5 h-5" />,
+    icon: Car,
     description: "Comfortable stays and reliable local transport",
   },
   {
     title: "Post-Treatment Follow-ups (In-person & Telehealth)",
-    icon: <VideoIcon className="w-5 h-5" />,
+    icon: VideoIcon,
     description: "Continued care after your medical procedure",
   },
 ];
