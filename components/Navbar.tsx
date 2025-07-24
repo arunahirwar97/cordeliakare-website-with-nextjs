@@ -540,7 +540,7 @@ export default function Navbar() {
                             className="p-2 hover:bg-muted rounded-lg cursor-pointer"
                             onClick={() => setIsMenuOpen(false)}
                           >
-                            <Link href={`/surgical-care/${solution.slug}`}>
+                            <Link href={`${solution.slug}`}>
                               <div className="flex items-center space-x-3">
                                 {solution.slug === "india" ? (
                                   <Image
