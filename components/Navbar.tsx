@@ -5,31 +5,15 @@ import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname,  } from "next/navigation";
 import {
-  Users,
-  Building2,
-  Shield,
-  Calendar,
   ChevronDown,
   Menu,
   X,
   Sun,
   Moon,
-  UserPlus,
-  Stethoscope,
-  Building2 as BuildingHospital,
-  Microscope,
   Network as NetworkIcon,
   Image as ImageIcon,
-  ScissorsSquareDashedBottom,
-  Globe,
-  Flag,
-  Video,
-  Hospital,
-  PackageSearch,
-  Sliders,
-  Smartphone,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -46,7 +30,6 @@ import {
 
 export default function Navbar() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -78,14 +61,18 @@ export default function Navbar() {
   };
 
   const buildLoginUrl = (baseUrl: string) => {
-    const existingRedirect = searchParams?.get("redirect");
-
+    if (typeof window === "undefined") {
+      return baseUrl;
+    }
+    const existingRedirect = new URLSearchParams(window.location.search).get(
+      "redirect"
+    );
     if (existingRedirect) {
       return `${baseUrl}?redirect=${existingRedirect}`;
     }
-    if (pathname?.includes('/auth') || pathname === baseUrl) {
-    return baseUrl;
-  }
+    if (pathname?.includes("/auth") || pathname === baseUrl) {
+      return baseUrl;
+    }
     return `${baseUrl}?redirect=${pathname}`;
   };
 
@@ -733,7 +720,7 @@ export default function Navbar() {
                         {loginOptions.map((option) => (
                           <Link
                             key={option.title}
-                            href={`${option.url}?redirect=${pathname}`}
+                            href={buildLoginUrl(option.url)}
                             onClick={() => {
                               setIsLoginMenuOpen(false);
                               setIsMenuOpen(false);
