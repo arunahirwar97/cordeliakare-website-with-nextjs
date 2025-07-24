@@ -1,11 +1,11 @@
 "use client";
 
-import { AlertCircle, LogOut, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Users,
   Building2,
@@ -45,6 +45,8 @@ import {
 } from "@/constants/navConstants";
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -75,6 +77,18 @@ export default function Navbar() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  const buildLoginUrl = (baseUrl: string) => {
+    const existingRedirect = searchParams?.get("redirect");
+
+    if (existingRedirect) {
+      return `${baseUrl}?redirect=${existingRedirect}`;
+    }
+    if (pathname?.includes('/auth') || pathname === baseUrl) {
+    return baseUrl;
+  }
+    return `${baseUrl}?redirect=${pathname}`;
+  };
+
   const toggleMobileDropdown = (dropdown: any) => {
     setMobileDropdowns((prev: any) => ({
       ...prev,
@@ -88,6 +102,17 @@ export default function Navbar() {
     setIsLoggedIn(false);
     setIsMenuOpen(false);
   };
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen]);
 
   if (!mounted) return null;
 
@@ -127,6 +152,7 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8 mb-2">
+            {/* SOLUTIONS */}
             <div className="relative group">
               <button className="flex items-center text-sm font-medium hover:text-blue-600 transition-colors">
                 Solutions <ChevronDown className="ml-1 h-4 w-4" />
@@ -364,7 +390,7 @@ export default function Navbar() {
                   {loginOptions.map((option) => (
                     <Link
                       key={option.title}
-                      href={option.url}
+                      href={buildLoginUrl(option.url)}
                       className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors border-b last:border-b-0"
                     >
                       <div
@@ -402,7 +428,7 @@ export default function Navbar() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-background border-t"
+              className="md:hidden bg-background border-t max-h-[calc(100vh-80px)] overflow-y-auto"
             >
               <div className="px-4 py-4 space-y-4">
                 {/* Solutions Dropdown */}
@@ -707,7 +733,7 @@ export default function Navbar() {
                         {loginOptions.map((option) => (
                           <Link
                             key={option.title}
-                            href={option.url}
+                            href={`${option.url}?redirect=${pathname}`}
                             onClick={() => {
                               setIsLoginMenuOpen(false);
                               setIsMenuOpen(false);

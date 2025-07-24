@@ -230,11 +230,6 @@ export default function CompleteProfile({
     }
     setIsSubmitting(true);
     const data = new FormData();
-    // const emergencyPhone =
-    //   "+" +
-    //   formData.emergencyContactCountryCode +
-    //   "-" +
-    //   formData.emergencyContactPhone;
     const emergencycontactName = `${formData.emergencyContactName} - (${formData.emergencyContactRelation})`
     data.append("register_type", "patient");
     data.append("first_name", formData.firstName);
@@ -286,10 +281,7 @@ export default function CompleteProfile({
         clearOtpState();
         localStorage.setItem("token", response?.data?.data.token);
         localStorage.setItem("user", "abroad_patient");
-        toast.success(
-          "Account Created, Hello ",
-          response?.data?.data.user.first_name
-        );
+        toast.success(`Account Created, Hello ${result?.data?.user?.first_name}`);
         if (redirectUrl) {
           router.push(redirectUrl);
         } else {

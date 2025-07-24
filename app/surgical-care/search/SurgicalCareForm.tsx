@@ -19,7 +19,6 @@ import SurgerySelectionModal from "./SurgerySelectionModal";
 export default function SurgicalCareForm() {
   const [showSurgeryModal, setShowSurgeryModal] = useState(false);
   const { surgeryOptions } = useMVT();
-  console.log(surgeryOptions);
   const dropdownRef = useRef(null);
   const [mounted, setMounted] = useState(false);
   const { userData, getUserData } = useUser();

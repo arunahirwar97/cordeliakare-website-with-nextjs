@@ -39,10 +39,17 @@ export default function LoginForm() {
   const TURNSTILE_SITE_KEY = "1x00000000000000000000AA";
 
   useEffect(() => {
-    clearError()
+    clearError();
     setMounted(true);
-    clearOtpState()
+    clearOtpState();
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/");
+    }
+  }, [router]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -77,7 +84,7 @@ export default function LoginForm() {
       if (redirectUrl) {
         router.push(redirectUrl);
       } else {
-        router.back();
+        router.push("/");
       }
     }
   };

@@ -58,6 +58,7 @@ const dashboardItems = [
 ];
 
 const ProfileComponent = () => {
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -150,8 +151,8 @@ const ProfileComponent = () => {
       data.append("last_name", formData.lastName);
       data.append("email", formData.email);
       data.append("dob", formData.dob);
-      data.append("gender", undefined);
-      data.append("registration_type", 1);
+      data.append("gender", userData?.gender);
+      data.append("registration_type", userData?.owner?.registration_type);
       data.append("prefix_code", "91");
       data.append("address1", formData.premises);
       data.append("address2", "");
@@ -230,18 +231,20 @@ const ProfileComponent = () => {
       </motion.div>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-8">
-        {/* Profile Info */}
+        {/* Profile Info - Updated for better mobile layout */}
         <motion.div
           variants={itemVariants}
           className={`rounded-xl shadow-sm p-6 ${
             isDark ? "bg-gray-800" : "bg-white"
           }`}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* Profile Image - Centered on mobile */}
+            <div className="flex flex-col items-center sm:items-start sm:flex-row sm:space-x-4">
               <motion.div
                 whileHover={{ rotate: 5 }}
-                className="w-16 h-16 rounded-full overflow-hidden border-2 border-teal-500"
+                className="w-20 h-20 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-teal-500 cursor-pointer"
+                onClick={() => setIsImageViewerOpen(true)}
               >
                 {userData?.image_url ? (
                   <img
@@ -256,7 +259,8 @@ const ProfileComponent = () => {
                 )}
               </motion.div>
 
-              <div>
+              {/* Name and Address - Stacked on mobile */}
+              <div className="text-center sm:text-left">
                 <h2
                   className={`text-2xl font-bold ${
                     isDark ? "text-white" : "text-gray-900"
@@ -264,19 +268,23 @@ const ProfileComponent = () => {
                 >
                   {userData?.full_name}
                 </h2>
-                <div className="flex items-center space-x-2 mt-1">
+                <div className="flex items-center justify-center sm:justify-start space-x-2 mt-1">
                   <MapPin
                     className={`w-4 h-4 ${
                       isDark ? "text-gray-400" : "text-gray-600"
                     }`}
                   />
-                  <span className={isDark ? "text-gray-400" : "text-gray-600"}>
+                  <span
+                    className={`text-sm sm:text-base ${
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
                     {[
                       userData?.owner?.address?.address1,
                       userData?.owner?.address?.address2,
                       userData?.owner?.address?.city,
-                      userData?.owner?.address?.state, 
-                      userData?.owner?.address?.country, 
+                      userData?.owner?.address?.state,
+                      userData?.owner?.address?.country,
                     ]
                       .filter(Boolean)
                       .join(", ")}
@@ -284,31 +292,35 @@ const ProfileComponent = () => {
                 </div>
               </div>
             </div>
-            {/* Replace the existing edit button with this: */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-3 bg-teal-500 hover:bg-teal-600 text-white rounded-full transition-colors"
-              onClick={() => {
-                if (userData) {
-                  setFormData({
-                    firstName: userData.first_name || "",
-                    lastName: userData.last_name || "",
-                    email: userData.email || "",
-                    dob: userData.dob || "",
-                    gender: null,
-                    premises: userData?.owner?.address?.address1 || "",
-                    zipCode: userData?.owner?.address?.zip || "",
-                    locality: userData?.city || "",
-                    state: userData?.owner?.address?.state || "",
-                    country: "India",
-                  });
-                }
-                setIsEditModalOpen(true);
-              }}
-            >
-              <Edit className="w-5 h-5" />
-            </motion.button>
+
+            {/* Edit Button - Positioned properly for both mobile and desktop */}
+            <div className="flex justify-center sm:justify-end">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center space-x-2 px-4 py-3 sm:px-3 sm:py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-full transition-colors"
+                onClick={() => {
+                  if (userData) {
+                    setFormData({
+                      firstName: userData.first_name || "",
+                      lastName: userData.last_name || "",
+                      email: userData.email || "",
+                      dob: userData.dob || "",
+                      gender: null,
+                      premises: userData?.owner?.address?.address1 || "",
+                      zipCode: userData?.owner?.address?.zip || "",
+                      locality: userData?.owner?.address?.city || "",
+                      state: userData?.owner?.address?.state || "",
+                      country: userData?.owner?.address?.country || "",
+                    });
+                  }
+                  setIsEditModalOpen(true);
+                }}
+              >
+                <Edit className="w-5 h-5" />
+                <span className="sm:hidden">Edit Profile</span>
+              </motion.button>
+            </div>
           </div>
         </motion.div>
 
@@ -451,7 +463,6 @@ const ProfileComponent = () => {
       </div>
 
       {/* Edit Profile Modal */}
-      {/* Edit Profile Modal */}
       <AnimatePresence>
         {isEditModalOpen && (
           <motion.div
@@ -540,8 +551,7 @@ const ProfileComponent = () => {
                       value={formData.firstName}
                       onChange={(e) => {
                         const value = e.target.value;
-                        if (/^[a-zA-Z ]*$/.test(value) && value.length <= 30) {
-                          // Only letters and spaces, max 30 chars
+                        if (/^[a-zA-Z ]*$/.test(value) && value.length <= 25) {
                           setFormData({ ...formData, firstName: value });
                         }
                       }}
@@ -565,8 +575,7 @@ const ProfileComponent = () => {
                       value={formData.lastName}
                       onChange={(e) => {
                         const value = e.target.value;
-                        if (/^[a-zA-Z ]*$/.test(value) && value.length <= 30) {
-                          // Only letters and spaces, max 30 chars
+                        if (/^[a-zA-Z ]*$/.test(value) && value.length <= 25) {
                           setFormData({ ...formData, lastName: value });
                         }
                       }}
@@ -585,6 +594,26 @@ const ProfileComponent = () => {
                       isDark ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
+                    Registration Number
+                  </label>
+                  <input
+                    type="text"
+                    value={userData?.owner?.patient_unique_id || ""}
+                    readOnly
+                    className={`w-full p-2 rounded-lg border ${
+                      isDark
+                        ? "bg-gray-700 border-gray-600"
+                        : "bg-white border-gray-300"
+                    } opacity-70 cursor-not-allowed`}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    className={`block mb-1 ${
+                      isDark ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
                     Email
                   </label>
                   <input
@@ -593,7 +622,6 @@ const ProfileComponent = () => {
                     onChange={(e) => {
                       const value = e.target.value;
                       if (value.length <= 50) {
-                        // Max 50 chars
                         setFormData({ ...formData, email: value });
                       }
                     }}
@@ -604,7 +632,25 @@ const ProfileComponent = () => {
                     }`}
                   />
                 </div>
-
+                <div>
+                  <label
+                    className={`block mb-1 ${
+                      isDark ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    value={userData?.phone || ""}
+                    readOnly
+                    className={`w-full p-2 rounded-lg border ${
+                      isDark
+                        ? "bg-gray-700 border-gray-600"
+                        : "bg-white border-gray-300"
+                    } opacity-70 cursor-not-allowed`}
+                  />
+                </div>
                 <div>
                   <label
                     className={`block mb-1 ${
@@ -619,12 +665,28 @@ const ProfileComponent = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, dob: e.target.value })
                     }
+                    max={
+                      new Date(
+                        new Date().setFullYear(new Date().getFullYear() - 18)
+                      )
+                        .toISOString()
+                        .split("T")[0]
+                    }
                     className={`w-full p-2 rounded-lg border ${
                       isDark
                         ? "bg-gray-700 border-gray-600"
                         : "bg-white border-gray-300"
                     }`}
                   />
+                  {formData.dob &&
+                    new Date(formData.dob) >
+                      new Date(
+                        new Date().setFullYear(new Date().getFullYear() - 18)
+                      ) && (
+                      <p className="text-red-500 text-sm mt-1">
+                        You must be at least 18 years old
+                      </p>
+                    )}
                 </div>
                 <div>
                   <label
@@ -641,7 +703,7 @@ const ProfileComponent = () => {
                       const value = e.target.value;
                       if (
                         /^[a-zA-Z0-9\s,.-]*$/.test(value) &&
-                        value.length <= 100
+                        value.length <= 50
                       ) {
                         setFormData({ ...formData, premises: value });
                       }
@@ -661,31 +723,7 @@ const ProfileComponent = () => {
                         isDark ? "text-gray-300" : "text-gray-700"
                       }`}
                     >
-                      ZIP Code
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.zipCode}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (/^\d*$/.test(value) && value.length <= 6) {
-                          setFormData({ ...formData, zipCode: value });
-                        }
-                      }}
-                      className={`w-full p-2 rounded-lg border ${
-                        isDark
-                          ? "bg-gray-700 border-gray-600"
-                          : "bg-white border-gray-300"
-                      }`}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      className={`block mb-1 ${
-                        isDark ? "text-gray-300" : "text-gray-700"
-                      }`}
-                    >
-                      Locality
+                      City
                     </label>
                     <input
                       type="text"
@@ -694,7 +732,7 @@ const ProfileComponent = () => {
                         const value = e.target.value;
                         if (
                           /^[a-zA-Z0-9\s]*$/.test(value) &&
-                          value.length <= 50
+                          value.length <= 20
                         ) {
                           setFormData({ ...formData, locality: value });
                         }
@@ -704,6 +742,47 @@ const ProfileComponent = () => {
                           ? "bg-gray-700 border-gray-600"
                           : "bg-white border-gray-300"
                       }`}
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      className={`block mb-1 ${
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      ZIP Code
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.zipCode}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const isIndia =
+                          userData?.owner?.address?.country?.toLowerCase() ===
+                          "india";
+                        const maxLength = isIndia ? 6 : 8;
+                        if (/^\d*$/.test(value) && value.length <= maxLength) {
+                          setFormData({ ...formData, zipCode: value });
+                        }
+                      }}
+                      maxLength={
+                        userData?.owner?.address?.country?.toLowerCase() ===
+                        "india"
+                          ? 6
+                          : 8
+                      }
+                      className={`w-full p-2 rounded-lg border ${
+                        isDark
+                          ? "bg-gray-700 border-gray-600"
+                          : "bg-white border-gray-300"
+                      }`}
+                      placeholder={
+                        userData?.owner?.address?.country?.toLowerCase() ===
+                        "india"
+                          ? "6 digit PIN code"
+                          : "Postal/ZIP code"
+                      }
                     />
                   </div>
                 </div>
@@ -722,7 +801,7 @@ const ProfileComponent = () => {
                       value={formData.state}
                       onChange={(e) => {
                         const value = e.target.value;
-                        if (/^[a-zA-Z\s]*$/.test(value) && value.length <= 50) {
+                        if (/^[a-zA-Z\s]*$/.test(value) && value.length <= 20) {
                           setFormData({ ...formData, state: value });
                         }
                       }}
@@ -731,6 +810,28 @@ const ProfileComponent = () => {
                           ? "bg-gray-700 border-gray-600"
                           : "bg-white border-gray-300"
                       }`}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className={`block mb-1 ${
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      Country
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.country}
+                      onChange={(e) =>
+                        setFormData({ ...formData, country: e.target.value })
+                      }
+                      className={`w-full p-2 rounded-lg border ${
+                        isDark
+                          ? "bg-gray-700 border-gray-600"
+                          : "bg-white border-gray-300"
+                      }`}
+                      placeholder="Enter country name"
                     />
                   </div>
                 </div>
@@ -751,9 +852,95 @@ const ProfileComponent = () => {
                     onClick={updateProfile}
                     className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
                   >
-                    Save Changes
+                    Update
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Profile Image Viewer Modal */}
+      <AnimatePresence>
+        {isImageViewerOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+            onClick={() => setIsImageViewerOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="relative max-w-4xl w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-end mb-4">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 bg-gray-800 rounded-full"
+                  onClick={() => setIsImageViewerOpen(false)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </motion.button>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <div className="max-w-full max-h-[70vh] overflow-hidden rounded-lg">
+                  {userData?.image_url ? (
+                    <img
+                      src={userData.image_url}
+                      alt="Profile"
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="w-64 h-64 bg-gray-800 rounded-lg flex items-center justify-center">
+                      <User className="w-32 h-32 text-gray-500" />
+                    </div>
+                  )}
+                </div>
+
+                {userData?.image_url && (
+                  <motion.a
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    href={userData.image_url}
+                    download={`${userData.full_name}-profile.jpg`}
+                    className="mt-6 px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-lg flex items-center space-x-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                    <span>Download Image</span>
+                  </motion.a>
+                )}
               </div>
             </motion.div>
           </motion.div>

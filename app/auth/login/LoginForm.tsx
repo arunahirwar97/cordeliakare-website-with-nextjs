@@ -22,7 +22,6 @@ export default function LoginForm() {
   const redirectUrl = searchParams.get("redirect");
   const [timer, setTimer] = useState(60);
 
-
   // Use auth context
   const {
     otpSent,
@@ -40,9 +39,16 @@ export default function LoginForm() {
 
   useEffect(() => {
     setMounted(true);
-    clearOtpState()
-    clearError()
+    clearOtpState();
+    clearError();
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/");
+    }
+  }, [router]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -77,7 +83,7 @@ export default function LoginForm() {
       if (redirectUrl) {
         router.push(redirectUrl);
       } else {
-        router.back();
+        router.push("/");
       }
     }
   };
@@ -104,7 +110,7 @@ export default function LoginForm() {
     clearError();
   };
 
-   if (loading) {
+  if (loading) {
     return <LoadingSpinner />;
   }
 

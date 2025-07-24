@@ -61,7 +61,7 @@ export default function MedicalTourismPage() {
     if (token) {
       toast.success("You are already logged In");
     } else {
-      router.push("/auth/abroad/login");
+      router.push("/auth/abroad/login?redirect=/medical-tourism");
     }
   };
 
@@ -71,7 +71,7 @@ export default function MedicalTourismPage() {
     if (token) {
       toast.success("You are already logged In");
     } else {
-      router.push("/auth/abroad/register");
+      router.push("/auth/abroad/register?redirect=/medical-tourism");
     }
   };
 

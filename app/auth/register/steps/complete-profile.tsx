@@ -349,10 +349,7 @@ export default function CompleteProfile({
         setIsSubmitting(false);
         localStorage.setItem("token", response?.data?.data.token);
         localStorage.setItem("user", "indian_patient");
-        toast.success(
-          "Account Created, Hello ",
-          response?.data?.data.user.first_name
-        );
+        toast.success(`Account Created, Hello ${result?.data?.user?.first_name}`);
         if (redirectUrl) {
           router.push(redirectUrl);
         } else {
