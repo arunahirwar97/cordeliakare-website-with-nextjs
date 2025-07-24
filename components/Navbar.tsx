@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useRouter, usePathname,  } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   ChevronDown,
   Menu,
@@ -64,16 +64,17 @@ export default function Navbar() {
     if (typeof window === "undefined") {
       return baseUrl;
     }
+    const currentPathname = window.location.pathname;
     const existingRedirect = new URLSearchParams(window.location.search).get(
       "redirect"
     );
-    if (existingRedirect) {
+    if (existingRedirect && !existingRedirect.includes("/auth")) {
       return `${baseUrl}?redirect=${existingRedirect}`;
     }
-    if (pathname?.includes("/auth") || pathname === baseUrl) {
+    if (currentPathname?.includes("/auth") || currentPathname === baseUrl) {
       return baseUrl;
     }
-    return `${baseUrl}?redirect=${pathname}`;
+    return `${baseUrl}?redirect=${currentPathname}`;
   };
 
   const toggleMobileDropdown = (dropdown: any) => {
