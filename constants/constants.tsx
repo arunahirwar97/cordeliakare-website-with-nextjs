@@ -1,7 +1,10 @@
 import {
   Activity,
+  AlertTriangle,
   Award,
   Baby,
+  Bandage,
+  Bed,
   Bone,
   BookOpen,
   Brain,
@@ -16,11 +19,15 @@ import {
   CreditCard,
   Database,
   Dna,
+  Ear,
   Eye,
   FileText,
+  FlaskConical,
+  Heart,
   HeartPulse,
   HeartPulseIcon,
   Languages,
+  Leaf,
   LineChart,
   Mail,
   MapPin,
@@ -28,10 +35,14 @@ import {
   Phone,
   Pill,
   Plane,
+  Radiation,
+  Scan,
   Shield,
+  Skull,
   Smile,
   Stethoscope,
   Syringe,
+  Thermometer,
   TrendingUp,
   Users,
   Users2,
@@ -39,9 +50,27 @@ import {
   VideoIcon,
   Weight,
   Workflow,
+  X,
 } from "lucide-react";
+import { JSX } from "react";
 
-export const RupeeIcon = (props:any) => (
+export const ScalpelIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+  >
+    <path d="M18.6 2.4l3 3L10 17H7v-3L18.6 2.4z" />
+    <path d="M7 17l-4 4" />
+  </svg>
+);
+
+export const RupeeIcon = (props: any) => (
   <svg
     {...props}
     xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +88,6 @@ export const RupeeIcon = (props:any) => (
     <path d="M6 13h3a6 6 0 0 0 6-6V3" />
   </svg>
 );
-
 
 export const patientsPointers = [
   {
@@ -152,7 +180,6 @@ export const treatments = [
     savings: "65% savings vs. USA",
   },
 ];
-
 
 export const services = [
   {
@@ -446,3 +473,4 @@ export const diagnosisPointers = [
       "Patients receive reports via mobile/web apps with multilingual support.",
   },
 ];
+

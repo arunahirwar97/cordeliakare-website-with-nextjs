@@ -9,14 +9,17 @@ import { ChevronDown, ChevronUp, Calendar, MapPin, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useSearchParams } from "next/navigation";
-import { surgeryOptions, specificSurgeries } from "./constants";
+import { specificSurgeries } from "./constants";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import toast from "react-hot-toast";
 import { useMVT } from "@/context/MVT_Context";
+import SurgerySelectionModal from "./SurgerySelectionModal";
 
 export default function SurgicalCareForm() {
+  const [showSurgeryModal, setShowSurgeryModal] = useState(false);
   const { surgeryOptions } = useMVT();
+  console.log(surgeryOptions);
   const dropdownRef = useRef(null);
   const [mounted, setMounted] = useState(false);
   const { userData, getUserData } = useUser();
@@ -49,7 +52,6 @@ export default function SurgicalCareForm() {
     { id: "other", label: "Other", selected: false },
   ]);
   const [otherCondition, setOtherCondition] = useState("");
-  const [showSurgeryDropdown, setShowSurgeryDropdown] = useState(false);
   const inputRef = useRef(null);
   const [coordinates, setCoordinates] = useState(null);
   const {
@@ -94,7 +96,7 @@ export default function SurgicalCareForm() {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event:any) => {
+    const handleClickOutside = (event: any) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         clearSuggestions();
       }
@@ -370,45 +372,14 @@ export default function SurgicalCareForm() {
                   <motion.button
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
-                    onClick={() => setShowSurgeryDropdown(!showSurgeryDropdown)}
+                    onClick={() => setShowSurgeryModal(true)}
                     className="w-full p-3 text-left border rounded-lg transition flex items-center justify-between border-gray-200 bg-white hover:border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:hover:border-gray-600"
                   >
                     <span className="text-gray-700 dark:text-gray-200">
                       {getSelectedSurgeryLabel()}
                     </span>
-                    <ChevronDown
-                      className={`w-5 h-5 transition-transform ${
-                        showSurgeryDropdown ? "rotate-180" : ""
-                      } text-gray-500 dark:text-gray-400`}
-                    />
+                    <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                   </motion.button>
-
-                  {showSurgeryDropdown && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-10 bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700"
-                    >
-                      {surgeryOptions.map((option) => (
-                        <motion.button
-                          key={option.value}
-                          whileHover={{
-                            backgroundColor:
-                              mounted && isDark ? "#374151" : "#f9fafb",
-                          }}
-                          onClick={() => {
-                            setSurgeryType(option.value);
-                            setShowSurgeryDropdown(false);
-                            setSpecificSurgery("");
-                            setSpecificSurgeryInput("");
-                          }}
-                          className="w-full p-3 text-left transition first:rounded-t-lg last:rounded-b-lg text-gray-700 dark:text-gray-200"
-                        >
-                          {option.label}
-                        </motion.button>
-                      ))}
-                    </motion.div>
-                  )}
                 </div>
 
                 {/* Specific Surgery Input */}
@@ -651,6 +622,18 @@ export default function SurgicalCareForm() {
           </div>
         </motion.section>
       </motion.div>
+      {/* Surgery Selection Modal */}
+      <SurgerySelectionModal
+        isOpen={showSurgeryModal}
+        onClose={() => setShowSurgeryModal(false)}
+        surgeryOptions={surgeryOptions}
+        onSelect={(option) => {
+          setSurgeryType(option.value);
+          setSpecificSurgery("");
+          setSpecificSurgeryInput("");
+        }}
+        selectedValue={surgeryType}
+      />
     </div>
   );
 }

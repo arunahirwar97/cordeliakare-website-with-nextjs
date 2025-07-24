@@ -1,7 +1,16 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  JSX,
+} from "react";
 import axios from "axios";
+import { Activity } from "lucide-react";
+import { DEPARTMENT_ICONS } from "@/constants/constants";
 
 // Types (could also be in a separate types.ts file)
 type MvtApiResponse = {
@@ -12,6 +21,7 @@ type MvtApiResponse = {
 type SurgeryOption = {
   label: string;
   value: string;
+  icon: JSX.Element;
 };
 
 type Doctor = {
@@ -346,7 +356,6 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
 
   const getServiceDepartments =
     async (): Promise<ServiceDepartmentsResponse> => {
-      // This function remains available if you need the raw data elsewhere
       try {
         const response = await axios.get<ServiceDepartmentsResponse>(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/surgeries/with-packages`
@@ -362,7 +371,61 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error in getServiceDepartments:", err);
         throw err;
       }
+  };
+
+  const getDepartmentEmoji = (departmentName: string): string => {
+    const lowerName = departmentName.toLowerCase();
+    const emojiMap: Record<string, string> = {
+      biopsies: "🔬",
+      breast: "🌸",
+      burn: "🔥",
+      cardiology: "❤️",
+      covid: "🦠",
+      ct: "📷",
+      ctv: "❤️",
+      ent: "👂",
+      emergency: "🚨",
+      gastro: "🧫",
+      general: "🩺",
+      head: "🧠",
+      neck: "🧠",
+      diagnostics: "🔍",
+      infectious: "🦠",
+      radiology: "📷",
+      oncology: "🦠",
+      neurosurgery: "🧠",
+      obstetrics: "🤰",
+      gynecology: "🤰",
+      ophthalmology: "👁️",
+      oral: "🦷",
+      maxillofacial: "🦷",
+      ortho: "🦴",
+      pediatric: "👶",
+      plastic: "✨",
+      reconstructive: "✨",
+      radiation: "☢️",
+      urology: "🚹",
+      usg: "📷",
+      "x-ray": "📷",
+      transplant: "💚",
+      palliative: "🛌",
+      mental: "🧠",
+      neo: "👶",
+      trauma: "🚑",
+      surgery: "🔪",
     };
+    for (const [key, emoji] of Object.entries(emojiMap)) {
+      if (lowerName === key) {
+        return emoji;
+      }
+    }
+    for (const [key, emoji] of Object.entries(emojiMap)) {
+      if (lowerName.includes(key)) {
+        return emoji;
+      }
+    }
+    return "⚕️";
+  };
 
   useEffect(() => {
     const fetchAndFormatOptions = async () => {
@@ -370,14 +433,35 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true);
         setError(null);
         const response = await getServiceDepartments();
-        
-        const formattedOptions = response.data.map((department) => ({
-          label: getEmoji(department.department_name) + formatDepartmentName(department.department_name),
-          value: department.department_name, 
-        }));
+
+        const formattedOptions = response.data.reduce(
+          (acc: SurgeryOption[], department) => {
+            const firstPart = department.department_name
+              .split(" ")[0]
+              .toLowerCase();
+
+            const exists = acc.some(
+              (option) =>
+                option.value === firstPart ||
+                department.department_name.toLowerCase().includes(option.value)
+            );
+
+            if (!exists) {
+              const emoji = getDepartmentEmoji(department.department_name);
+              acc.push({
+                label: `${emoji} ${formatDepartmentName(
+                  department.department_name
+                )}`,
+                value: firstPart,
+              });
+            }
+
+            return acc;
+          },
+          []
+        );
 
         setSurgeryOptions(formattedOptions);
-
       } catch (err) {
         console.error("Failed to initialize surgery options:", err);
         setError("Could not load initial department data.");
@@ -387,8 +471,8 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
     };
 
     fetchAndFormatOptions();
-  }, []); 
-// console.log("Suergery Options", surgeryOptions)
+  }, []);
+  // console.log("Suergery Options", surgeryOptions)
   const notifyBooking = async (
     bookingData: BookingNotificationData
   ): Promise<NotifyBookingResponse> => {
@@ -435,7 +519,7 @@ export const MVTProvider = ({ children }: { children: ReactNode }) => {
     getDoctorsByTenant,
     galleryImages,
     getGalleryImages,
-    getServiceDepartments, 
+    getServiceDepartments,
     notifyBooking,
   };
 
