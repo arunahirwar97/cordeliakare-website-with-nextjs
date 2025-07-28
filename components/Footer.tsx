@@ -45,15 +45,20 @@ export default function Footer() {
             </div>
             <p className="text-sm text-muted-foreground text-justify leading-relaxed">
               CordeLiakare is a cutting-edge HealthTech platform developed by
-              Cordelia Technology Pvt. Ltd., a pioneering next-generation
-              company committed to transforming healthcare delivery. Designed to
-              empower healthcare providers, CordeLiakare bridges the gaps
-              between patients, providers, and care networks through its
-              integrated Hospital Information Management System (HIMS) and
-              mobile health (mHealth) platform. Leveraging advanced technologies
-              such as AI, data analytics, and mobile innovation, these solutions
-              ensure the delivery of reliable, efficient, and compassionate
-              healthcare services.
+              <a
+                href="https://www.cordeliatech.com"
+                className="ml-1 font-medium text-primary underline-offset-4 hover:underline hover:text-primary/90 transition-colors"
+              >
+                Cordelia Technology Pvt. Ltd.
+              </a>
+              , a pioneering next-generation company committed to transforming
+              healthcare delivery. Designed to empower healthcare providers,
+              CordeLiakare bridges the gaps between patients, providers, and
+              care networks through its integrated Hospital Information
+              Management System (HIMS) and mobile health (mHealth) platform.
+              Leveraging advanced technologies such as AI, data analytics, and
+              mobile innovation, these solutions ensure the delivery of
+              reliable, efficient, and compassionate healthcare services.
             </p>
           </div>
 
@@ -134,9 +139,13 @@ export default function Footer() {
                   <Facebook className="w-5 h-5" />
                 </a>
                 <a
-                  href="https://x.com/test?lang=en"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="https://x.com"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toast.error(
+                      "Twitter/X integration is not available right now."
+                    );
+                  }}
                   className="text-muted-foreground hover:text-blue-400 transition-colors"
                 >
                   <FaXTwitter className="w-5 h-5" />

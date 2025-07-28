@@ -1,18 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  AnimatePresence,
-} from "framer-motion";
+import { useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Users,
-  Building2,
   Shield,
   Calendar,
   CheckCircle,
@@ -24,9 +17,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import LoginModal from "@/components/LoginModal";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -52,23 +42,9 @@ export default function CordeliakarePage() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
   const backgroundY = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const router = useRouter();
 
   const loginToPlatformHandler = () => {
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    if (token) {
-      toast.success("You are already logged in. Redirecting...");
-      router.push("/profile");
-    } else {
-      setIsLoginModalOpen(true);
-    }
-  };
-
-  // NEW: Function to close the modal
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
+    window.location.href = "https://prod.cordeliakare.com/login";
   };
 
   const nextSlide = () => {
@@ -992,7 +968,6 @@ export default function CordeliakarePage() {
           </motion.div>
         </div>
       </section>
-      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </div>
   );
 }
