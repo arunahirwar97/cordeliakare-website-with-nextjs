@@ -378,12 +378,12 @@ export default function CordeliakarePage() {
             className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
           >
             Transforming{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="inline-block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Healthcare
             </span>
             <br />
             with{" "}
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Innovation
             </span>
           </motion.h1>
