@@ -282,12 +282,6 @@ export default function CordeliakarePage() {
       color: "bg-purple-500",
       image_name: "/images/advanced_hims.png",
     },
-    // {
-    //   title: "Virtual Delivery",
-    //   description: "Expand your digital borders with telehealth capabilities.",
-    //   icon: Monitor,
-    //   color: "bg-orange-500",
-    // },
   ];
 
   const challenges = [

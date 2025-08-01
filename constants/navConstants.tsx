@@ -1,3 +1,4 @@
+
 import {
   Users,
   Building2,
@@ -140,7 +141,7 @@ export const appointments = [
       "Saves time and cost, reduces hospital burden, improves access to healthcare, and supports continuity of care",
     icon: Video,
     color: "bg-indigo-500",
-    url: () => toast("Not available now.", { icon: "ℹ️" }),
+    url: '/appointments#teleconsultation',
   },
   {
     title: "Hospital Appointments",
@@ -148,7 +149,7 @@ export const appointments = [
       "Ensure timely access to medical care, reduce waiting times, streamline patient flow, and enable better coordination",
     icon: Calendar,
     color: "bg-cyan-500",
-    url: () => toast("Not available now.", { icon: "ℹ️" }),
+    url: '/appointments#hospital-appointments',
   },
 ];
 
@@ -163,12 +164,12 @@ export const hospitals = [
       (window.location.href = "https://prod.cordeliakare.com/hospitals"),
   },
   {
-    title: "Hospital With Surgical Facilities",
+    title: "Client Testimonials & Success Stories",
     description:
       "Solutions for payers focused on cost management, analytics, and improving member engagement.",
     icon: ScissorsSquareDashedBottom,
     color: "bg-amber-500",
-    url: () => toast("Not available now.", { icon: "ℹ️" }),
+    slug: "/testimonials",
   },
   {
     title: "Gallery",

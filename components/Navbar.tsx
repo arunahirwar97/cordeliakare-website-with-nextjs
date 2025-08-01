@@ -250,14 +250,17 @@ export default function Navbar() {
             </div>
 
             <div className="relative group">
-              <button className="flex items-center text-sm font-medium hover:text-blue-600 transition-colors">
+              <button
+                onClick={() => router.push("/appointments")}
+                className="flex items-center text-sm font-medium hover:text-blue-600 transition-colors"
+              >
                 Appointments <ChevronDown className="ml-1 h-4 w-4" />
               </button>
               <div className="absolute top-full left-0 mt-2 w-64 bg-background border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 {appointments.map((solution, index) => (
                   <div
                     key={index}
-                    onClick={solution.url}
+                    onClick={() => router.push(solution.url)}
                     className="p-3 hover:bg-muted rounded-lg cursor-pointer"
                   >
                     <div className="flex items-center space-x-3">
@@ -290,7 +293,7 @@ export default function Navbar() {
                     <div
                       key={index}
                       className="p-3 hover:bg-muted rounded-lg cursor-pointer"
-                      onClick={solution.url}
+                      onClick={()=>{solution.slug ? router.push(solution.slug) : solution.url()}}
                     >
                       <div className="flex items-center space-x-3">
                         <div
@@ -615,7 +618,7 @@ export default function Navbar() {
                             className="p-2 hover:bg-muted rounded-lg cursor-pointer"
                             onClick={() => {
                               setIsMenuOpen(false);
-                              solution.url();
+                              router.push(solution.url);
                             }}
                           >
                             <div className="flex items-center space-x-3">
@@ -667,7 +670,7 @@ export default function Navbar() {
                               key={index}
                               onClick={() => {
                                 setIsMenuOpen(false);
-                                solution.url();
+                                solution.slug ? router.push(solution.slug) : solution.url();
                               }}
                               className="p-2 hover:bg-muted rounded-lg cursor-pointer"
                             >
