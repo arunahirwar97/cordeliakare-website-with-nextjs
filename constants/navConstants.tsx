@@ -137,7 +137,7 @@ export const appointments = [
   {
     title: "Teleconsultation",
     description:
-      "We provide comprehensive tools tailored for hospitals and health systems to improve care coordination and patient outcomes.",
+      "Saves time and cost, reduces hospital burden, improves access to healthcare, and supports continuity of care",
     icon: Video,
     color: "bg-indigo-500",
     url: () => toast("Not available now.", { icon: "ℹ️" }),
@@ -145,7 +145,7 @@ export const appointments = [
   {
     title: "Hospital Appointments",
     description:
-      "Solutions for payers focused on cost management, analytics, and improving member engagement.",
+      "Ensure timely access to medical care, reduce waiting times, streamline patient flow, and enable better coordination",
     icon: Calendar,
     color: "bg-cyan-500",
     url: () => toast("Not available now.", { icon: "ℹ️" }),

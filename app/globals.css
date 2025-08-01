@@ -59,6 +59,16 @@
   }
 }
 
+/* Safari-specific fix */
+@media not all and (min-resolution: 0.001dpcm) {
+  @supports (-webkit-appearance: none) {
+    .safari-font-fix {
+      -webkit-text-fill-color: transparent;
+      display: inline-block; /* Helps with rendering */
+    }
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
