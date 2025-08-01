@@ -236,7 +236,7 @@ const AppointmentsPage = () => {
                     }`}
                   >
                     <Image
-                      src="/teleconsultation.jpg"
+                      src="/teleconsultation.png"
                       alt="CordeliaKare mHealth Mobile App Interface"
                       width={500}
                       height={600}
