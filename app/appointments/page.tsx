@@ -269,6 +269,12 @@ const AppointmentsPage = () => {
                   >
                     <motion.button
                       whileHover={{ scale: 1.05 }}
+                      onClick={() =>
+                        window.open(
+                          "https://apps.apple.com/in/app/cordeliakare/id6502236753",
+                          "_blank"
+                        )
+                      }
                       className={`px-6 py-3 bg-black text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-shadow flex items-center gap-2 text-sm ${
                         isDark &&
                         "dark:shadow-[0_10px_15px_-3px_rgba(255,255,255,0.07),0_4px_6px_-4px_rgba(255,255,255,0.07)] dark:hover:shadow-[0_20px_25px_-5px_rgba(255,255,255,0.1),0_8px_10px_-6px_rgba(255,255,255,0.1)]"
@@ -277,8 +283,15 @@ const AppointmentsPage = () => {
                       <Smartphone className="h-4 w-4" />
                       App Store
                     </motion.button>
+
                     <motion.button
                       whileHover={{ scale: 1.05 }}
+                      onClick={() =>
+                        window.open(
+                          "https://play.google.com/store/apps/details?id=com.cordeliakare",
+                          "_blank"
+                        )
+                      }
                       className={`px-6 py-3 bg-green-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-shadow flex items-center gap-2 text-sm ${
                         isDark &&
                         "dark:shadow-[0_10px_15px_-3px_rgba(9,151,64,0.3),0_4px_6px_-4px_rgba(9,151,64,0.3)] dark:hover:shadow-[0_20px_25px_-5px_rgba(9,151,64,0.4),0_8px_10px_-6px_rgba(9,151,64,0.4)]"
